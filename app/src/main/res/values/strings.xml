@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">CFPLUS Cafee</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="anh_san_pham">Ảnh sản phẩm</string>
+    <string name="giam_so_luong">Giảm</string>
+    <string name="them_so_luong">Tăng</string>
+    <string name="testMkDn">Nếu đăng nhập sai quá 3 lần,bạn sẽ phải chờ (đếm ngược từ 1 phút) trước khi thử lại</string>
+</resources>

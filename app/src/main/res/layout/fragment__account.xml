@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".Fragment_Account">
+
+    <TextView
+        android:id="@+id/tvthongtin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/kem"
+        android:text="THÔNG TIN NHÂN VIÊN"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:textStyle="normal|bold" />
+
+
+
+    <TextView
+        android:id="@+id/tvHoTen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:autofillHints="name"
+        android:gravity="center_vertical"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
+        android:text="Họ Tên:"
+        android:textSize="20dp"
+        android:textStyle="normal|bold" />
+
+    <TextView
+        android:id="@+id/tvNgaySinh"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:autofillHints="birthDate"
+        android:gravity="center_vertical"
+        android:inputType="date"
+        android:minHeight="48dp"
+        android:text="Ngày sinh:"
+        android:textSize="20dp"
+        android:textStyle="normal|bold" />
+
+    <TextView
+        android:id="@+id/tvGioiTinh"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:autofillHints="gender"
+        android:gravity="center_vertical"
+        android:inputType="text"
+        android:minHeight="48dp"
+        android:text="Giới tính:"
+        android:textSize="20dp"
+        android:textStyle="normal|bold" />
+
+    <TextView
+        android:id="@+id/tvEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:autofillHints="emailAddress"
+        android:gravity="center_vertical"
+        android:inputType="textEmailAddress"
+        android:minHeight="48dp"
+        android:text="Email:"
+        android:textSize="20dp"
+        android:textStyle="normal|bold" />
+
+    <TextView
+        android:id="@+id/tvSoDienThoai"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:autofillHints="phone"
+        android:gravity="center_vertical"
+        android:inputType="phone"
+        android:minHeight="48dp"
+        android:text="Số điện thoại:"
+        android:textSize="20dp"
+        android:textStyle="normal|bold" />
+
+    <Button
+        android:id="@+id/btn_suaTT"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:backgroundTint="@color/brown"
+        android:text="SỬA THÔNG TIN CÁ NHÂN"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/btnTroVe"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/brown"
+        android:text="TRỞ VỀ"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+</LinearLayout>

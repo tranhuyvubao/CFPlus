@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<item android:id="@+id/bottom_home"
+    android:title="Trang chủ"
+    android:icon="@drawable/baseline_home_24"/>
+
+    <item android:id="@+id/bottom_history"
+    android:title="Đơn hàng"
+    android:icon="@drawable/baseline_history_24"/>
+
+    <item android:id="@+id/bottom_account"
+        android:title="Tài khoản"
+        android:icon="@drawable/outline_account_circle_24"/>
+    <!--        android:title="Tài khoản" hoặc thông tin  khách hàng-->
+ <item android:id="@+id/bottom_setting"
+     android:title="Cài đặt"
+     android:icon="@drawable/baseline_app_settings_alt_24"/>
+</menu>

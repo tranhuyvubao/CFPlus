@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:textAlignment="center"
+    tools:context=".FragmentHistory">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/kem"
+        android:text="LỊCH SỬ ĐƠN HÀNG ĐÃ ĐẶT"
+        android:textAlignment="center"
+        android:textColor="@color/brown"
+        android:textSize="24sp"
+        android:textStyle="normal|bold"
+        android:layout_marginTop="10dp"/>
+
+    <Button
+        android:id="@+id/button_themhang"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_marginRight="10dp"
+        android:backgroundTint="@color/brown"
+        android:drawableLeft="@drawable/baseline_add_circle_outline_24"
+        android:text="Thêm hàng" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvHistory"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="Danh sách lịch sử mua hàng"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp" />
+
+</LinearLayout>

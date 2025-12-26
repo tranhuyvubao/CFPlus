@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvXacthucotp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FEF6E17D"
+        android:gravity="center_horizontal"
+        android:text="Xác thực Email bằng OTP"
+        android:textColor="#D50000"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="20dp">
+
+        <TextView
+            android:id="@+id/tvmaotp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|start"
+            android:text="Mã  OTP:"
+            android:textColor="@color/brown"
+            android:textSize="20sp"
+            android:textStyle="normal|bold" />
+        <EditText
+            android:id="@+id/edtotp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_background"
+            android:ems="10"
+            android:inputType="text"
+            android:hint="Nhập mã OTP"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/grey"
+            android:minHeight="48dp"
+            android:textSize="20sp" />
+    </LinearLayout>
+    <TextView
+        android:id="@+id/testdemgiay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="Mã OTP sẽ hết hạn sau: (đếm thời gian)"
+        android:textColor="#DD2C00"
+        android:layout_marginTop="10dp"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+    <TextView
+        android:id="@+id/luuy"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:hint="*Lưu ý: Mã OTP sẽ hết hạn sau 2 phút và vui lòng kiểm tra email cá nhân để nhận lại"
+        android:layout_margin="15dp"
+        android:textColor="@color/grey"
+        android:textSize="14sp"
+        android:textStyle="bold|italic"/>
+
+    <TextView
+        android:id="@+id/tvXacnhan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/rounded_background_2"
+        android:backgroundTint="@color/grey"
+        android:text="Xác nhận"
+        android:textAlignment="center"
+        android:textColor="@color/brown"
+        android:textSize="20sp"
+        android:textStyle="normal|bold" />
+</LinearLayout>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    tools:context=".Fragment_Setting">
+
+    <TextView
+        android:id="@+id/tvTaiKhoan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/round_background_3"
+        android:drawableLeft="@drawable/outline_account_circle_24"
+        android:drawableRight="@drawable/baseline_keyboard_arrow_right_24"
+        android:gravity="center_horizontal"
+        android:padding="12dp"
+        android:text="Tài khoản"
+        android:textSize="20sp"
+        android:textStyle="normal|bold" />
+
+    <TextView
+        android:id="@+id/tvThongTinCuaHang"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/round_background_3"
+        android:drawableLeft="@drawable/baseline_info_outline_24"
+        android:drawableRight="@drawable/baseline_keyboard_arrow_right_24"
+        android:gravity="center"
+        android:padding="12dp"
+        android:text="Thông tin cửa hàng"
+        android:textSize="20sp"
+        android:textStyle="normal|bold" />
+
+    <TextView
+        android:id="@+id/tvDangXuat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/round_background_3"
+        android:drawableStart="@drawable/baseline_exit_to_app_24"
+        android:gravity="center"
+        android:padding="12dp"
+        android:text="Đăng xuất"
+        android:textSize="20sp"
+        android:textStyle="normal|bold" />
+
+
+</LinearLayout>
