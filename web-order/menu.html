@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CafePlus | Gọi món tại bàn</title>
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <link rel="stylesheet" href="./styles.css?v=web-20260409">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-block">
+        <div class="brand-mark">CF</div>
+        <div>
+          <p class="brand-kicker">CafePlus Table Order - Web Menu 20260409</p>
+          <h1>Goi mon tai ban</h1>
+        </div>
+      </div>
+
+      <div class="topbar-meta">
+        <div class="meta-chip">
+          <span class="meta-label">Ban hien tai</span>
+          <strong id="tableDisplay">Dang tai...</strong>
+        </div>
+        <div class="meta-chip status">
+          <span class="meta-label">Ket noi</span>
+          <strong id="authStatus">Dang ket noi...</strong>
+        </div>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="category-rail panel">
+        <div class="rail-head">
+          <p class="section-kicker">Danh muc</p>
+          <h2>Thuc don</h2>
+        </div>
+        <div id="categoryList" class="category-list"></div>
+      </aside>
+
+      <section class="menu-stage panel">
+        <div class="stage-head">
+          <div>
+            <p class="section-kicker">Menu tai ban</p>
+            <h2 id="menuHeading">Tat ca mon</h2>
+          </div>
+
+          <div class="stage-actions">
+            <label class="search-field">
+              <input id="searchInput" type="search" placeholder="Tim mon, vi du: ca phe sua da">
+            </label>
+          </div>
+        </div>
+
+        <section class="guest-bar">
+          <label class="compact-field">
+            <span>Ten khach</span>
+            <input id="customerName" type="text" placeholder="Nhap ten cua ban">
+          </label>
+
+          <label class="compact-field">
+            <span>So dien thoai</span>
+            <input id="customerPhone" type="tel" placeholder="Nhap so dien thoai (tuy chon)">
+          </label>
+        </section>
+
+        <div id="menuGrid" class="menu-grid"></div>
+        <div id="menuEmpty" class="menu-empty hidden">Khong co mon phu hop voi bo loc hien tai.</div>
+      </section>
+
+      <aside id="cartPanel" class="cart-panel panel">
+        <div class="cart-head">
+          <div>
+            <p class="section-kicker">Gio hang</p>
+            <h2>Don dang chon</h2>
+          </div>
+          <div class="cart-head-actions">
+            <span id="cartCount" class="cart-count">0 mon</span>
+            <button id="closeCartBtn" class="close-cart-btn" type="button" aria-label="Dong gio hang">x</button>
+          </div>
+        </div>
+
+        <div id="emptyState" class="cart-empty">Chua co mon nao trong don. Hay chon mon tu thuc don.</div>
+        <div id="cartList" class="cart-list"></div>
+
+        <label class="note-field">
+          <span>Ghi chu chung</span>
+          <textarea id="commonNote" rows="3" placeholder="Vi du: len mon theo dot, it da, can them ly..."></textarea>
+        </label>
+
+        <div class="totals-card">
+          <div class="total-row">
+            <span>Tam tinh</span>
+            <strong id="subtotalValue">0d</strong>
+          </div>
+          <div class="total-row total-row-main">
+            <span>Tong cong</span>
+            <strong id="grandTotalValue">0d</strong>
+          </div>
+        </div>
+
+        <button id="submitOrderBtn" class="primary-btn" type="button">Dat mon</button>
+        <p id="messageBox" class="message"></p>
+      </aside>
+    </main>
+  </div>
+
+  <button id="mobileCartBar" class="mobile-cart-bar hidden" type="button">
+    <span class="mobile-cart-label">Xem gio hang</span>
+    <strong id="mobileCartSummary">0 mon • 0d</strong>
+  </button>
+
+  <div id="mobileCartBackdrop" class="mobile-cart-backdrop hidden"></div>
+
+  <script type="module" src="./app.js?v=web-20260409"></script>
+</body>
+</html>

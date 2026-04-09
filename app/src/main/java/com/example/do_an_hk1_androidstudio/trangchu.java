@@ -2,149 +2,168 @@ package com.example.do_an_hk1_androidstudio;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.example.do_an_hk1_androidstudio.cloud.UserCloudRepository;
+import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
+import com.example.do_an_hk1_androidstudio.ui.InsetsHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
-import com.google.android.material.tabs.TabLayout;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 public class trangchu extends AppCompatActivity implements FragmentHistory.OnThemHangClickListener {
 
-    TabLayout tabLayout;
-    ViewPager2 viewPager2;
-    ViewPagerAdapter viewPagerAdapter;
-    BottomNavigationView bottomNavigationView;
-    FrameLayout frameLayout;
-    TextView textView2;
-    FirebaseFirestore db;
-    FirebaseUser currentUser;
+    private ViewPager2 viewPager2;
+    private BottomNavigationView bottomNavigationView;
+    private FrameLayout frameLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.trangchu);
 
+        LinearLayout headerContainer = findViewById(R.id.headerContainer);
         viewPager2 = findViewById(R.id.viewPager);
-        viewPagerAdapter = new ViewPagerAdapter(this);
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this);
         viewPager2.setAdapter(viewPagerAdapter);
-        
-        // Đảm bảo ViewPager2 hiển thị ngay từ đầu
         viewPager2.setVisibility(ViewPager2.VISIBLE);
-        viewPager2.setCurrentItem(0, false); // Load fragment đầu tiên ngay
+        viewPager2.setCurrentItem(0, false);
 
         bottomNavigationView = findViewById(R.id.bottomNav);
         frameLayout = findViewById(R.id.frameLayout);
+        InsetsHelper.applyStatusBarPadding(headerContainer);
+        InsetsHelper.applyNavigationBarPadding(bottomNavigationView);
 
-        // Load FragmentHome ngay từ đầu vào frameLayout
+        String role = new LocalSessionManager(this).getCurrentUserRole();
+        applyBottomNavForRole(role);
+
         frameLayout.setVisibility(FrameLayout.VISIBLE);
         viewPager2.setVisibility(ViewPager2.GONE);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frameLayout, new FragmentHome())
+                .replace(R.id.frameLayout, createHomeFragment(role))
                 .commit();
-        
-        // Đặt tab Home được chọn mặc định
-        bottomNavigationView.setSelectedItemId(R.id.bottom_home);
 
+        bottomNavigationView.setSelectedItemId(R.id.bottom_home);
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @SuppressLint("NonConstantResourceId")
             @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            public boolean onNavigationItemSelected(@NonNull android.view.MenuItem item) {
                 viewPager2.setVisibility(ViewPager2.GONE);
                 frameLayout.setVisibility(FrameLayout.VISIBLE);
 
                 int id = item.getItemId();
                 if (id == R.id.bottom_home) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FragmentHome()).commit();
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.frameLayout, createHomeFragment(new LocalSessionManager(trangchu.this).getCurrentUserRole()))
+                            .commit();
                     return true;
                 } else if (id == R.id.bottom_history) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new FragmentHistory()).commit();
-                    return true;
+                    String currentRole = new LocalSessionManager(trangchu.this).getCurrentUserRole();
+                    if ("staff".equals(currentRole)) {
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.frameLayout, new FragmentOnlineOrders())
+                                .commit();
+                        return true;
+                    }
+                    return false;
                 } else if (id == R.id.bottom_account) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new Fragment_Account()).commit();
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.frameLayout, new Fragment_Account())
+                            .commit();
                     return true;
                 } else if (id == R.id.bottom_setting) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new Fragment_Setting()).commit();
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.frameLayout, new Fragment_Setting())
+                            .commit();
                     return true;
                 }
-
                 return false;
             }
         });
-        //Xử lý trang accout
+
         String fragmentToShow = getIntent().getStringExtra("fragmentToShow");
         if ("account".equals(fragmentToShow)) {
-            viewPager2.setCurrentItem(3); // Đặt ViewPager2 hiện tại thành Fragment_Account nằm ở vị trí 3
+            viewPager2.setCurrentItem(3);
         }
 
-        //Xử lý textView2 thay Hello,CFPUS
-        textView2 = findViewById(R.id.textView2);
-        db = FirebaseFirestore.getInstance();
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
-
-        if (currentUser != null) {
-            String userUid = currentUser.getUid();
-            
-            // Load dữ liệu theo UID của user hiện tại
-            db.collection("Người dùng").document(userUid).get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            String hoTen = documentSnapshot.getString("Họ tên NV");
-                            
-                            if (hoTen != null && !hoTen.isEmpty()) {
-                                textView2.setText("Xin chào, " + hoTen);
-                            } else {
-                                // Nếu chưa có tên, hiển thị email
-                                String userEmail = currentUser.getEmail();
-                                if (userEmail != null) {
-                                    textView2.setText("Xin chào, " + userEmail);
-                                } else {
-                                    textView2.setText("Xin chào!");
-                                }
-                            }
-                        } else {
-                            // Nếu chưa có dữ liệu, hiển thị email
-                            String userEmail = currentUser.getEmail();
-                            if (userEmail != null) {
-                                textView2.setText("Xin chào, " + userEmail);
-                            } else {
-                                textView2.setText("Xin chào!");
-                            }
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        // Nếu có lỗi, vẫn hiển thị email
-                        String userEmail = currentUser.getEmail();
-                        if (userEmail != null) {
-                            textView2.setText("Xin chào, " + userEmail);
-                        } else {
-                            textView2.setText("Xin chào!");
-                        }
-                    });
-        } else {
-            // Nếu chưa đăng nhập
-            textView2.setText("Hello, CFPLUS");
-        }
+        bindGreeting();
     }
-    // Gọi khi nút "Thêm hàng" được bấm trong FragmentHistory
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        bindGreeting();
+    }
+
+    private void bindGreeting() {
+        TextView greetingView = findViewById(R.id.textView2);
+        String userId = new LocalSessionManager(this).getCurrentUserId();
+        if (userId == null) {
+            greetingView.setText("Xin chào, CFPLUS");
+            return;
+        }
+
+        new UserCloudRepository(this).getUserById(userId, (user, message) -> runOnUiThread(() -> {
+            if (user == null) {
+                greetingView.setText("Xin chào, CFPLUS");
+                return;
+            }
+
+            if (user.getFullName() != null && !user.getFullName().trim().isEmpty()) {
+                greetingView.setText("Xin chào, " + user.getFullName());
+                return;
+            }
+
+            if (user.getEmail() != null && !user.getEmail().trim().isEmpty()) {
+                greetingView.setText("Xin chào, " + user.getEmail());
+                return;
+            }
+
+            greetingView.setText("Xin chào!");
+        }));
+    }
+
     @Override
     public void onThemHangClick() {
         frameLayout.setVisibility(FrameLayout.GONE);
         viewPager2.setVisibility(ViewPager2.VISIBLE);
-        viewPager2.setCurrentItem(0, true); // Quay về FragmentTrangChu
-        bottomNavigationView.setSelectedItemId(R.id.bottom_home); // Cập nhật icon nav
+        viewPager2.setCurrentItem(0, true);
+        bottomNavigationView.setSelectedItemId(R.id.bottom_home);
+    }
+
+    private void applyBottomNavForRole(String role) {
+        if (bottomNavigationView == null) {
+            return;
+        }
+        android.view.Menu menu = bottomNavigationView.getMenu();
+        if (menu == null) {
+            return;
+        }
+        android.view.MenuItem historyItem = menu.findItem(R.id.bottom_history);
+        if (historyItem == null) {
+            return;
+        }
+        boolean showHistory = "staff".equals(role);
+        historyItem.setVisible(showHistory);
+        if (showHistory) {
+            historyItem.setTitle("Đơn online");
+        }
+    }
+
+    private androidx.fragment.app.Fragment createHomeFragment(String role) {
+        if ("manager".equals(role)) {
+            return new FragmentManagerDashboard();
+        }
+        if ("staff".equals(role)) {
+            return new FragmentStaffTables();
+        }
+        return new FragmentHome();
     }
 }

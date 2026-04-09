@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvTableNameLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ten ban"
+            android:textColor="@color/coffee_dark"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/edtTableName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_background"
+            android:hint="Ten ban"
+            android:padding="12dp" />
+
+        <TextView
+            android:id="@+id/tvTableCodeLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Ma ban"
+            android:textColor="@color/coffee_dark"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/edtTableCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_background"
+            android:hint="Ma ban tu dong sinh"
+            android:padding="12dp"
+            android:textAllCaps="true" />
+
+        <TextView
+            android:id="@+id/tvTableAreaLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Khu vuc"
+            android:textColor="@color/coffee_dark"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/edtTableArea"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_background"
+            android:hint="Khu vuc (tuy chon)"
+            android:padding="12dp" />
+
+        <TextView
+            android:id="@+id/tvTableStatusLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Trang thai ban"
+            android:textColor="@color/coffee_dark"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/spTableStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/swTableActive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Dang su dung" />
+
+    </LinearLayout>
+</ScrollView>

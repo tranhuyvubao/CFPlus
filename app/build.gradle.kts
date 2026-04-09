@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -48,12 +47,10 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.impress)
-
-    // ✅ Firebase BoM (đồng bộ version Firebase tránh conflict)
     implementation(platform("com.google.firebase:firebase-bom:32.7.3"))
-    implementation("com.google.firebase:firebase-auth")
+    implementation(libs.firebase.auth)
     implementation("com.google.firebase:firebase-firestore")
-    implementation("com.google.firebase:firebase-storage")
+
     implementation("com.squareup.picasso:picasso:2.8") // Dùng để load ảnh từ URL
 
     // ✅ Google Sign-In
@@ -64,6 +61,7 @@ dependencies {
     // ✅ Glide
     implementation("com.github.bumptech.glide:glide:4.15.1")
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
     //Thêm thư viện JavaMail
     implementation ("com.sun.mail:android-mail:1.6.7")

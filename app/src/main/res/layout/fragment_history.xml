@@ -1,40 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/app_screen_background"
     android:orientation="vertical"
-    android:textAlignment="center"
-    tools:context=".FragmentHistory">
+    android:padding="16dp">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/kem"
-        android:text="LỊCH SỬ ĐƠN HÀNG ĐÃ ĐẶT"
-        android:textAlignment="center"
-        android:textColor="@color/brown"
-        android:textSize="24sp"
-        android:textStyle="normal|bold"
-        android:layout_marginTop="10dp"/>
+        android:background="@drawable/app_card_background"
+        android:orientation="vertical"
+        android:padding="18dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lich su don hang"
+            android:textColor="@color/coffee_dark"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Xem lai nhung mon da phuc vu va them nhanh don moi khi can."
+            android:textColor="@color/coffee_muted"
+            android:textSize="14sp" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/button_themhang"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:layout_marginRight="10dp"
-        android:backgroundTint="@color/brown"
-        android:drawableLeft="@drawable/baseline_add_circle_outline_24"
-        android:text="Thêm hàng" />
+        android:layout_gravity="end"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/coffee_primary"
+        android:text="Them hang"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvHistoryEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:background="@drawable/app_card_background"
+        android:gravity="center"
+        android:padding="24dp"
+        android:text="Chua co lich su don nao."
+        android:textColor="@color/coffee_muted"
+        android:textSize="15sp"
+        android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvHistory"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:contentDescription="Danh sách lịch sử mua hàng"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp" />
+        android:layout_height="0dp"
+        android:layout_marginTop="14dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingBottom="8dp" />
 
 </LinearLayout>

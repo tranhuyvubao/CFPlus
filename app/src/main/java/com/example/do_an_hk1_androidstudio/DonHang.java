@@ -3,7 +3,8 @@ package com.example.do_an_hk1_androidstudio;
 public class DonHang {
     public String tenBan, tenSanPham, size, mucDa, hinhThuc, trangThai, hinhAnh;
     public int soLuong, tongTien;
-    private String docId; // Lưu document ID để dùng khi sửa/xóa
+    private String docId; // Lưu document ID cũ (Đơn hàng/Giỏ hàng/Sản phẩm) nếu cần
+    private String orderId; // ID trong collection orders
 
     public DonHang() {}
 
@@ -62,5 +63,13 @@ public class DonHang {
 
     public void setDocId(String docId) {
         this.docId = docId;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 }

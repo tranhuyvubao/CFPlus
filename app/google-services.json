@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "362209257142",
-    "project_id": "coffee-plus-app",
-    "storage_bucket": "coffee-plus-app.firebasestorage.app"
+    "project_number": "105381932857",
+    "project_id": "cafeplus-1fd32",
+    "storage_bucket": "cafeplus-1fd32.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:362209257142:android:da07ef92c6c4d08e5ba817",
+        "mobilesdk_app_id": "1:105381932857:android:4c76bed4adbd5ebb4002e8",
         "android_client_info": {
           "package_name": "com.example.do_an_hk1_androidstudio"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBhWqMdcHYFw4RJ5UGgJZvIn3VHVls7-dU"
+          "current_key": "AIzaSyAkS5x8aqlgEi0EAfCJQxG2iQISA1IxRso"
         }
       ],
       "services": {

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/app_card_background"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tvTxnType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Loai"
+        android:textColor="@color/coffee_dark"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvTxnIngredient"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Nguyen lieu"
+        android:textColor="@color/coffee_muted"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tvTxnQty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="So luong"
+        android:textColor="@color/coffee_muted"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tvTxnTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Thoi gian"
+        android:textColor="@color/coffee_muted"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tvTxnNote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Ghi chu"
+        android:textColor="@color/coffee_primary"
+        android:textSize="14sp" />
+
+</LinearLayout>

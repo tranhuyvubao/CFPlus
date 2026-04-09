@@ -1,8 +1,18 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Base.Theme.Do_an_hk1_Androidstudio" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/coffee_primary</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/coffee_accent</item>
+        <item name="colorOnPrimaryContainer">@color/coffee_dark</item>
+        <item name="colorSecondary">@color/coffee_secondary</item>
+        <item name="colorOnSecondary">@color/coffee_dark</item>
+        <item name="android:colorBackground">@color/coffee_background</item>
+        <item name="colorSurface">@color/coffee_surface</item>
+        <item name="colorOnSurface">@color/coffee_text</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/coffee_surface</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
     </style>
 
     <style name="Theme.Do_an_hk1_Androidstudio" parent="Base.Theme.Do_an_hk1_Androidstudio" />

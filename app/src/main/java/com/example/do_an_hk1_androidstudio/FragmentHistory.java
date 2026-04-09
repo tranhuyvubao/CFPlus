@@ -2,50 +2,46 @@ package com.example.do_an_hk1_androidstudio;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.example.do_an_hk1_androidstudio.cloud.OrderCloudRepository;
+import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
+import com.example.do_an_hk1_androidstudio.local.model.LocalOrder;
+import com.example.do_an_hk1_androidstudio.local.model.LocalOrderItem;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FragmentHistory extends Fragment {
 
-    private RecyclerView rvHistory;
+    private final List<DonHang> listDonHang = new ArrayList<>();
     private DonHangAdapter adapter;
-    private List<DonHang> listDonHang;
-    private Button btnThemHang;
-
     private OnThemHangClickListener callback;
+    private TextView tvEmpty;
+    private ListenerRegistration historyListener;
 
-    // Interface để gọi về Activity
     public interface OnThemHangClickListener {
         void onThemHangClick();
     }
 
-    // Gắn interface khi Fragment được attach vào Activity
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (context instanceof OnThemHangClickListener) {
             callback = (OnThemHangClickListener) context;
         } else {
-            throw new RuntimeException(context.toString() + " phải implement OnThemHangClickListener");
+            throw new RuntimeException(context + " phải implement OnThemHangClickListener");
         }
     }
 
@@ -55,59 +51,106 @@ public class FragmentHistory extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_history, container, false);
 
-        rvHistory = view.findViewById(R.id.rvHistory);
-        btnThemHang = view.findViewById(R.id.button_themhang);
+        RecyclerView rvHistory = view.findViewById(R.id.rvHistory);
+        Button btnThemHang = view.findViewById(R.id.button_themhang);
+        tvEmpty = view.findViewById(R.id.tvHistoryEmpty);
 
-        listDonHang = new ArrayList<>();
-        adapter = new DonHangAdapter(getContext(), listDonHang);
+        adapter = new DonHangAdapter(requireContext(), listDonHang);
         rvHistory.setLayoutManager(new LinearLayoutManager(getContext()));
         rvHistory.setAdapter(adapter);
 
-        // Gọi dữ liệu từ Firestore - chỉ lấy đơn hàng của user hiện tại
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser == null) {
-            Log.e("FragmentHistory", "User chưa đăng nhập");
-            return view;
-        }
-        
-        String userId = currentUser.getUid();
-        FirebaseFirestore.getInstance()
-                .collection("Đơn hàng")
-                .document("Giỏ hàng")
-                .collection("Sản phẩm")
-                .whereEqualTo("userId", userId) // Chỉ lấy đơn hàng của user hiện tại
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    listDonHang.clear();
-                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        String tenBan = doc.getString("Tên bàn");
-                        String tenSanPham = doc.getString("Tên sản phẩm");
-                        String size = doc.contains("Size") ? doc.getString("Size") : "Không xác định";
-                        String da = doc.getString("Mức đá");
-                        Long soLuongLong = doc.getLong("Số lượng");
-                        int soLuong = soLuongLong != null ? soLuongLong.intValue() : 0;
-                        Long tongTienLong = doc.getLong("Tổng tiền");
-                        int tongTien = tongTienLong != null ? tongTienLong.intValue() : 0;
-                        String hinhThuc = doc.getString("hình thức");
-                        String trangThai = doc.getString("trangthaithanhtoan");
-                        String hinhAnh = doc.getString("hinhAnh");
-                        String docId = doc.getId(); // Lưu document ID để dùng khi sửa/xóa
-
-                        DonHang donHang = new DonHang(tenBan, tenSanPham, size, da, soLuong, tongTien, hinhThuc, trangThai, hinhAnh);
-                        donHang.setDocId(docId); // Lưu document ID
-                        listDonHang.add(donHang);
-                    }
-                    adapter.notifyDataSetChanged();
-                })
-                .addOnFailureListener(e -> Log.e("FragmentHistory", "Lỗi tải dữ liệu", e));
-
-        // Gọi về Activity khi click nút
         btnThemHang.setOnClickListener(v -> {
             if (callback != null) {
                 callback.onThemHangClick();
             }
         });
 
+        listenHistory();
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (historyListener != null) {
+            historyListener.remove();
+        }
+    }
+
+    private void listenHistory() {
+        if (getContext() == null || adapter == null) {
+            return;
+        }
+
+        LocalSessionManager sessionManager = new LocalSessionManager(requireContext());
+        String userId = sessionManager.getCurrentUserId();
+        if (userId == null || userId.trim().isEmpty()) {
+            listDonHang.clear();
+            adapter.notifyDataSetChanged();
+            updateEmptyState();
+            return;
+        }
+
+        if (historyListener != null) {
+            historyListener.remove();
+        }
+        historyListener = new OrderCloudRepository(requireContext()).listenOrdersByStaff(userId, orders -> {
+            listDonHang.clear();
+            for (LocalOrder order : orders) {
+                for (LocalOrderItem item : order.getItems()) {
+                    DonHang donHang = new DonHang(
+                            order.getTableName(),
+                            item.getProductName(),
+                            item.getVariantName() != null ? item.getVariantName() : "Không xác định",
+                            item.getNote(),
+                            item.getQty(),
+                            item.getLineTotal(),
+                            mapOrderType(order.getOrderType(), order.getOrderChannel()),
+                            mapStatus(order.getStatus()),
+                            item.getImageUrl()
+                    );
+                    donHang.setOrderId(order.getOrderId());
+                    listDonHang.add(donHang);
+                }
+            }
+            if (isAdded()) {
+                requireActivity().runOnUiThread(() -> {
+                    adapter.notifyDataSetChanged();
+                    updateEmptyState();
+                });
+            }
+        });
+    }
+
+    private void updateEmptyState() {
+        if (tvEmpty != null) {
+            tvEmpty.setVisibility(listDonHang.isEmpty() ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    private String mapOrderType(String orderType, String orderChannel) {
+        if ("dine_in".equals(orderType)) {
+            return "Tại chỗ (" + mapOrderChannel(orderChannel) + ")";
+        }
+        if ("takeaway".equals(orderType)) {
+            return "Mang về";
+        }
+        if ("online".equals(orderType)) {
+            return "Online";
+        }
+        return "Tại chỗ";
+    }
+
+    private String mapOrderChannel(String orderChannel) {
+        if ("customer_qr".equals(orderChannel)) return "QR";
+        if ("customer_app".equals(orderChannel)) return "App";
+        if ("staff_pos".equals(orderChannel)) return "Nhân viên";
+        return "Khác";
+    }
+
+    private String mapStatus(String status) {
+        if ("paid".equals(status)) return "Đã thanh toán";
+        if ("cancelled".equals(status)) return "Đã hủy";
+        return "Chưa thanh toán";
     }
 }

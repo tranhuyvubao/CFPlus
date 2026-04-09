@@ -1,63 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootTrangChu"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/app_screen_background"
     android:orientation="vertical">
-<!--    android:id="@+id/main"-->
-
-    <ImageView
-        android:id="@+id/hinh1"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:background="@color/kem"
-        app:srcCompat="@drawable/cfplus2" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:id="@+id/headerContainer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:background="@color/coffee_surface"
+        android:elevation="4dp"
+        android:orientation="vertical"
+        android:paddingHorizontal="18dp"
+        android:paddingTop="18dp"
+        android:paddingBottom="14dp">
 
         <ImageView
-            android:id="@+id/hinh2"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="left"
-            android:layout_weight="1"
-            app:srcCompat="@drawable/cfplus" />
+            android:id="@+id/hinh1"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/cfplus2" />
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:text="Hello,CFPUS"
-            android:textColor="@color/brown"
-            android:textSize="20sp"
-            android:textStyle="normal|bold" />
+            android:layout_marginTop="14dp"
+            android:background="@drawable/app_card_background"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="14dp">
 
+            <ImageView
+                android:id="@+id/hinh2"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:src="@drawable/cfplus" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Xin chào"
+                    android:textColor="@color/coffee_muted"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Hello, CFPLUS"
+                    android:textColor="@color/coffee_dark"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
-
-
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_marginTop="20dp"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:visibility="gone" />
 
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:visibility="gone"/>
+        android:layout_weight="1" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/coffee_surface"
+        android:elevation="8dp"
+        app:itemIconTint="@color/coffee_primary_dark"
+        app:itemTextColor="@color/coffee_primary_dark"
+        app:labelVisibilityMode="labeled"
         app:menu="@menu/bottom_nav" />
 </LinearLayout>

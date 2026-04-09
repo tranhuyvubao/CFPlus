@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    package="com.example.do_an_hk1_androidstudio"
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
@@ -29,10 +28,33 @@
         <activity android:name=".chitiet_sanpham" />
         <activity android:name=".SuaThongTinCaNhanActivity" />
         <activity android:name=".ThongTinCuaHangActivity" />
+        <activity android:name=".ThongKeActivity" />
+        <activity android:name=".NhanDonOnlineActivity" />
+        <activity android:name=".NhanDonTaiBanActivity" />
+        <activity android:name=".HoaDonBanActivity" />
+        <activity android:name=".QuanLyNhanVienActivity" />
+        <activity android:name=".QuanLyMonActivity" />
+        <activity android:name=".QuanLyDanhMucActivity" />
+        <activity android:name=".QuanLyBanActivity" />
+        <activity android:name=".QuanLyKhoActivity" />
+        <activity android:name=".QuanLyKhuyenMaiActivity" />
+        <activity android:name=".TableQrActivity" />
+        <activity android:name=".DatBanActivity" />
+        <activity android:name=".DonHangCuaToiActivity" />
+        <activity android:name=".DatMonOnlineActivity" />
+        <activity android:name=".DatMonTaiBanActivity" />
+        <activity android:name=".ThanhToanKhachActivity" />
+        <activity android:name=".ChatboxActivity" />
+        <activity android:name=".QuanLyKhachHangActivity" />
+        <activity android:name=".ThongKeTongHopActivity" />
+        <activity android:name=".HoSoKhachHangActivity" />
+        <activity android:name=".FirebaseSeederActivity" />
+        <activity android:name=".BootstrapManagerActivity" />
 
     </application>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 </manifest>

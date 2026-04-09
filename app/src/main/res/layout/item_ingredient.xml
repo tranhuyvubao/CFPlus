@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/app_card_background"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tvIngName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nguyen lieu"
+        android:textColor="@color/coffee_dark"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvIngUnit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Don vi"
+        android:textColor="@color/coffee_muted"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tvIngQty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Ton"
+        android:textColor="@color/coffee_muted"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tvIngMin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Toi thieu"
+        android:textColor="@color/coffee_muted"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tvIngActive"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Trang thai"
+        android:textColor="@color/coffee_primary"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/btnIngEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_background"
+            android:paddingLeft="14dp"
+            android:paddingTop="8dp"
+            android:paddingRight="14dp"
+            android:paddingBottom="8dp"
+            android:text="Sua"
+            android:textColor="@color/coffee_dark"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btnIngDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/rounded_background"
+            android:paddingLeft="14dp"
+            android:paddingTop="8dp"
+            android:paddingRight="14dp"
+            android:paddingBottom="8dp"
+            android:text="Xoa"
+            android:textColor="@color/coffee_danger"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</LinearLayout>

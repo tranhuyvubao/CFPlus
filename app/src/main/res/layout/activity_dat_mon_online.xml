@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollContent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/app_screen_background"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:id="@+id/tvBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/app_chip_accent"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="14dp"
+            android:paddingTop="10dp"
+            android:paddingRight="14dp"
+            android:paddingBottom="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="←"
+                android:textColor="@color/coffee_primary_dark"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Trở về"
+                android:textColor="@color/coffee_primary_dark"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/app_card_background"
+            android:orientation="vertical"
+            android:padding="18dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Đặt món qua app"
+                android:textColor="@color/coffee_dark"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Luồng này dành cho khách đặt mang đi hoặc giao đến địa chỉ đã lưu."
+                android:textColor="@color/coffee_muted"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/rounded_background"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Địa chỉ giao hàng"
+                    android:textColor="@color/coffee_dark"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvSelectedAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Chưa chọn địa chỉ giao hàng"
+                    android:textColor="@color/coffee_muted" />
+
+                <TextView
+                    android:id="@+id/btnChooseAddress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/app_button_secondary"
+                    android:paddingLeft="14dp"
+                    android:paddingTop="10dp"
+                    android:paddingRight="14dp"
+                    android:paddingBottom="10dp"
+                    android:text="Chọn địa chỉ"
+                    android:textColor="@color/coffee_primary_dark"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/edtTenMon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/rounded_background"
+                android:hint="Tên món"
+                android:paddingHorizontal="14dp"
+                android:textColor="@color/coffee_text"
+                android:textColorHint="@color/coffee_muted" />
+
+            <TextView
+                android:id="@+id/btnChonMonTuMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/app_button_secondary"
+                android:gravity="center"
+                android:padding="12dp"
+                android:text="Chọn món từ menu"
+                android:textColor="@color/coffee_primary_dark"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/edtGiaMon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/rounded_background"
+                android:hint="Giá (VND)"
+                android:inputType="number"
+                android:paddingHorizontal="14dp"
+                android:textColor="@color/coffee_text"
+                android:textColorHint="@color/coffee_muted" />
+
+            <EditText
+                android:id="@+id/edtSoLuongMon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/rounded_background"
+                android:hint="Số lượng"
+                android:inputType="number"
+                android:paddingHorizontal="14dp"
+                android:textColor="@color/coffee_text"
+                android:textColorHint="@color/coffee_muted" />
+
+            <EditText
+                android:id="@+id/edtSizeMon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/rounded_background"
+                android:hint="Size (S/M/L - tùy chọn)"
+                android:paddingHorizontal="14dp"
+                android:textColor="@color/coffee_text"
+                android:textColorHint="@color/coffee_muted" />
+
+            <EditText
+                android:id="@+id/edtGhiChuMon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/rounded_background"
+                android:hint="Ghi chú (ít đá, ít đường...)"
+                android:minLines="2"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="12dp"
+                android:textColor="@color/coffee_text"
+                android:textColorHint="@color/coffee_muted" />
+
+            <EditText
+                android:id="@+id/edtImageUrlMon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/rounded_background"
+                android:hint="Đường dẫn ảnh (tùy chọn)"
+                android:paddingHorizontal="14dp"
+                android:textColor="@color/coffee_text"
+                android:textColorHint="@color/coffee_muted" />
+
+            <TextView
+                android:id="@+id/btnDatMonOnline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/app_button_primary"
+                android:gravity="center"
+                android:padding="14dp"
+                android:text="Xác nhận đặt món"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

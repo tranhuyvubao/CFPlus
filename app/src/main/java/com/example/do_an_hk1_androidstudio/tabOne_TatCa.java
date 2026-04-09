@@ -14,71 +14,86 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.example.do_an_hk1_androidstudio.cloud.CatalogCloudRepository;
+import com.example.do_an_hk1_androidstudio.local.model.LocalProduct;
+import com.google.firebase.firestore.ListenerRegistration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class tabOne_TatCa extends Fragment {
 
-    LinearLayout linearCafe, linearTraSua, linearMatcha, linearTopping;
-    FirebaseFirestore db;
+    private LinearLayout linearCafe;
+    private LinearLayout linearTraSua;
+    private LinearLayout linearMatcha;
+    private LinearLayout linearTopping;
+    private CatalogCloudRepository catalogRepository;
+    private ListenerRegistration productsListener;
+    private final List<LocalProduct> allProducts = new ArrayList<>();
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_tab_one__tatca, container, false);
 
+        catalogRepository = new CatalogCloudRepository(requireContext());
         linearCafe = view.findViewById(R.id.linearCafe);
         linearTraSua = view.findViewById(R.id.linearTraSua);
         linearMatcha = view.findViewById(R.id.linearMatcha);
         linearTopping = view.findViewById(R.id.linearTopping);
 
-        db = FirebaseFirestore.getInstance();
-
-        loadSanPham("CaFe", "Cafe", linearCafe, inflater);
-        loadSanPham("Trà sữa", "trasua", linearTraSua, inflater);
-        loadSanPham("Matcha", "matcha", linearMatcha, inflater);
-        loadSanPham("Topping", "topping", linearTopping, inflater);
-
+        productsListener = catalogRepository.listenProducts(products -> {
+            allProducts.clear();
+            for (LocalProduct product : products) {
+                if (product.isActive()) {
+                    allProducts.add(product);
+                }
+            }
+            if (!isAdded()) {
+                return;
+            }
+            LayoutInflater currentInflater = LayoutInflater.from(requireContext());
+            loadProducts(linearCafe, currentInflater, "cafe");
+            loadProducts(linearTraSua, currentInflater, "tra_sua");
+            loadProducts(linearMatcha, currentInflater, "matcha");
+            loadProducts(linearTopping, currentInflater, "topping");
+        });
         return view;
     }
 
-    private void loadSanPham(String docName, String collectionName, LinearLayout layout, LayoutInflater inflater) {
-        db.collection("SanPham")
-                .document(docName)
-                .collection(collectionName)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
-                        String ten = snapshot.getString("Ten");
-                        String gia = snapshot.getString("Gia");
-                        String hinh = snapshot.getString("hinhAnh");
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (productsListener != null) {
+            productsListener.remove();
+        }
+    }
 
-                        View itemView = inflater.inflate(R.layout.listview_layout, null);
+    private void loadProducts(LinearLayout layout, LayoutInflater inflater, String categoryId) {
+        layout.removeAllViews();
+        for (LocalProduct product : allProducts) {
+            if (!categoryId.equals(product.getCategoryId())) {
+                continue;
+            }
 
-                        ImageButton img = itemView.findViewById(R.id.imageButton1);
-                        TextView tvTen = itemView.findViewById(R.id.tvTen);
-                        TextView tvGia = itemView.findViewById(R.id.tvGia);
+            View itemView = inflater.inflate(R.layout.listview_layout, null);
+            ImageButton img = itemView.findViewById(R.id.imageButton1);
+            TextView tvTen = itemView.findViewById(R.id.tvTen);
+            TextView tvGia = itemView.findViewById(R.id.tvGia);
 
-                        tvTen.setText(ten);
-                        tvGia.setText(gia + "đ");
-                        Glide.with(getContext()).load(hinh).into(img);
+            tvTen.setText(product.getName());
+            tvGia.setText(product.getBasePrice() + "đ");
+            Glide.with(requireContext()).load(product.getImageUrl()).into(img);
 
-                        // 👉 Bắt sự kiện click để mở chi tiết
-                        // Truyền thông tin sản phẩm qua Intent
-                        itemView.setOnClickListener(v -> {
-                            Intent intent = new Intent(getActivity(), chitiet_sanpham.class);
-                            intent.putExtra("Ten", ten);  // Chỉnh sửa thành "ten"
-                            intent.putExtra("Gia", gia);  // Chỉnh sửa thành "gia"
-                            intent.putExtra("hinhAnh", hinh);  // Đảm bảo tên tham số khớp
-                            startActivity(intent);
-                        });
-
-
-                        layout.addView(itemView);
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    // Log lỗi nếu cần
-                });
+            itemView.setOnClickListener(v -> {
+                Intent intent = new Intent(getActivity(), chitiet_sanpham.class);
+                intent.putExtra("Ten", product.getName());
+                intent.putExtra("Gia", String.valueOf(product.getBasePrice()));
+                intent.putExtra("hinhAnh", product.getImageUrl());
+                intent.putExtra("productId", product.getProductId());
+                startActivity(intent);
+            });
+            layout.addView(itemView);
+        }
     }
 }

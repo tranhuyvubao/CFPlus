@@ -1,176 +1,174 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:backgroundTint="@color/grey"
+    android:background="@drawable/app_screen_background"
+    android:fillViewport="true"
     tools:context=".MainActivity">
 
     <LinearLayout
-        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:orientation="vertical">
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="24dp">
 
         <ImageView
             android:id="@+id/logo"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:layout_gravity="center_horizontal"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:layout_marginTop="24dp"
             android:src="@drawable/cfplus" />
 
         <TextView
             android:id="@+id/tvDki1"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ĐĂNG NHẬP"
-            android:textAlignment="center"
-            android:textColor="@color/brown"
+            android:layout_marginTop="12dp"
+            android:text="Dang nhap"
+            android:textColor="@color/coffee_dark"
             android:textSize="30sp"
-            android:textStyle="normal|bold" />
-
-        <TextView
-            android:id="@+id/tvnguoidung"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|center_horizontal"
-            android:layout_marginStart="25dp"
-            android:layout_marginTop="20dp"
-            android:text="Người dùng"
-            android:textColor="@color/brown"
-            android:textSize="20sp"
-            android:textStyle="normal|bold" />
-
-
-        <EditText
-            android:id="@+id/editemail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="40dp"
-            android:background="@drawable/rounded_background"
-            android:hint="Nhập tên email của bạn"
-            android:textColor="@color/grey"
-            android:textSize="20sp"
-            android:minHeight="48dp"
-            android:paddingTop="12dp"
-            android:paddingBottom="12dp"
-            android:ems="10" />
-
-        <TextView
-            android:id="@+id/tvmatkhau"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|center_horizontal"
-            android:layout_marginStart="25dp"
-            android:layout_marginTop="20dp"
-            android:text="Mật khẩu"
-            android:textColor="@color/brown"
-            android:textSize="20sp"
-            android:textStyle="normal|bold" />
-
-        <EditText
-            android:id="@+id/edtmk"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="40dp"
-            android:background="@drawable/rounded_background"
-            android:minHeight="48dp"
-            android:hint="Nhập mật khẩu của bạn"
-            android:textColor="@color/grey"
-            android:textSize="20sp"
-            android:ems="10"
-            android:inputType="textPassword" />
-
-        <TextView
-            android:id="@+id/testMkDn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginLeft="40dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="40dp"
-            android:gravity="center"
-            android:text="@string/testMkDn"
-            android:textColor="#DD2C00"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:visibility="gone"
-            />
-<!--ẩn cảnh báo:android:visibility="gone"-->
-
-        <CheckBox
-            android:id="@+id/autofill"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:text="Nhớ mật khẩu"
-            android:textSize="16sp"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/tvDN"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="40dp"
-            android:background="@drawable/bg_color"
-            android:text="Đăng nhập"
-            android:textAlignment="center"
-            android:textColor="@color/brown"
-            android:textSize="25sp"
-            android:textStyle="normal|bold" />
-
-        <TextView
-            android:id="@+id/tvQuenmk"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="40dp"
-            android:text="Quên mật khẩu?"
-            android:textAlignment="center"
-            android:textColor="@color/brown"
-            android:textSize="18sp"
-            android:textStyle="normal|bold" />
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:text="Quản lý quán cà phê và đặt món nhanh hơn với dữ liệu đồng bộ Firebase."
+            android:textColor="@color/coffee_muted"
+            android:textSize="14sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/app_card_background"
+            android:elevation="3dp"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/tvnguoidung"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email"
+                android:textColor="@color/coffee_text"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/editemail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rounded_background"
+                android:hint="Nhap email cua ban"
+                android:inputType="textEmailAddress"
+                android:minHeight="52dp"
+                android:paddingHorizontal="14dp"
+                android:textColor="@color/coffee_text"
+                android:textColorHint="@color/coffee_muted"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tvmatkhau"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:text="Mat khau"
+                android:textColor="@color/coffee_text"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/edtmk"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rounded_background"
+                android:hint="Nhap mat khau cua ban"
+                android:inputType="textPassword"
+                android:minHeight="52dp"
+                android:paddingHorizontal="14dp"
+                android:textColor="@color/coffee_text"
+                android:textColorHint="@color/coffee_muted"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/testMkDn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="@string/testMkDn"
+                android:textColor="@color/coffee_danger"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <CheckBox
+                android:id="@+id/autofill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Nho mat khau"
+                android:textColor="@color/coffee_text"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvDN"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_color"
+                android:gravity="center"
+                android:padding="14dp"
+                android:text="Dang nhap"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvQuenmk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="14dp"
+                android:text="Quen mat khau?"
+                android:textColor="@color/coffee_primary"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:gravity="center"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/txtTK"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="right"
                 android:text="Chưa có tài khoản?"
-                android:textSize="20sp"
-                android:textStyle="normal|bold" />
+                android:textColor="@color/coffee_muted"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvDK"
-                android:layout_width="117dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_weight="1"
-                android:gravity="center|left"
-                android:text="Đăng ký"
-                android:textColor="@color/brown"
-                android:textSize="20sp"
-                android:textStyle="normal|bold" />
+                android:layout_marginStart="8dp"
+                android:text="Dang ky"
+                android:textColor="@color/coffee_primary"
+                android:textSize="15sp"
+                android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
-
-</RelativeLayout>
+</ScrollView>

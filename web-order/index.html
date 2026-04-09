@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CafePlus | Chuyển hướng web mới</title>
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <script>
+    (function redirectToLatestWebVersion() {
+      const target = new URL("./menu.html", window.location.href);
+      const currentParams = new URLSearchParams(window.location.search);
+      currentParams.set("v", "web-20260409");
+      target.search = currentParams.toString();
+      window.location.replace(target.toString());
+    })();
+  </script>
+</head>
+<body>
+  <p>Dang chuyen sang phien ban web moi...</p>
+</body>
+</html>

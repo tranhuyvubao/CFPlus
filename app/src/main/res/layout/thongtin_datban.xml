@@ -7,81 +7,72 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/app_screen_background"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="18dp">
 
-        <TextView
-            android:id="@+id/thongtin"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="THÔNG TIN ĐẶT BÀN"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
-
-        <TextView
-            android:id="@+id/luuy"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:gravity="center"
-            android:text="*Lưu ý: Nhân viên phải ghi thông tin đầy đủ gồm bàn, hình thức, số điện thoại, tên nhân viên tránh lạc mất thông tin, giao nhầm bàn khác"
-            android:textColor="@color/grey"
-            android:textSize="12sp"
-            android:textStyle="italic" />
-
-        <!-- Bàn -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="12dp"
-            android:gravity="center_vertical">
+            android:background="@drawable/app_card_background"
+            android:orientation="vertical"
+            android:padding="18dp">
+
+            <TextView
+                android:id="@+id/thongtin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Thong tin tao don"
+                android:textColor="@color/coffee_dark"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/luuy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="Nhap day du ban, hinh thuc, so dien thoai va nhan vien de don duoc luu chinh xac."
+                android:textColor="@color/coffee_muted"
+                android:textSize="13sp" />
 
             <TextView
                 android:id="@+id/tenban"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Bàn:"
-                android:textSize="16sp"
+                android:layout_marginTop="14dp"
+                android:text="Ban / khu vuc"
+                android:textColor="@color/coffee_dark"
                 android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/editban"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:minHeight="48dp"
-                android:padding="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rounded_background"
+                android:hint="Vi du: Ban 01"
                 android:inputType="text"
-                android:hint="vd: Số 1"
-                android:textSize="16sp"
-                android:background="@drawable/rounded_background" />
-
-        </LinearLayout>
-
-        <!-- Hình thức -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginBottom="12dp">
+                android:padding="12dp"
+                android:textColor="@color/coffee_dark"
+                android:textColorHint="@color/coffee_muted" />
 
             <TextView
                 android:id="@+id/tvhinh_thuc"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Hình thức:"
-                android:textSize="16sp"
+                android:layout_marginTop="14dp"
+                android:text="Hinh thuc"
+                android:textColor="@color/coffee_dark"
                 android:textStyle="bold" />
 
             <RadioGroup
                 android:id="@+id/rgHinhThuc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:orientation="horizontal">
 
                 <RadioButton
@@ -89,97 +80,75 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Tại chỗ"
-                    android:textSize="16sp"
-                    android:checked="true" />
+                    android:buttonTint="@color/coffee_primary"
+                    android:checked="true"
+                    android:text="Tai cho"
+                    android:textColor="@color/coffee_dark" />
 
                 <RadioButton
                     android:id="@+id/mang_ve"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Mang về"
-                    android:textSize="16sp" />
-
+                    android:buttonTint="@color/coffee_primary"
+                    android:text="Mang ve"
+                    android:textColor="@color/coffee_dark" />
             </RadioGroup>
-        </LinearLayout>
-
-        <!-- SĐT -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="12dp"
-            android:gravity="center_vertical">
 
             <TextView
                 android:id="@+id/sdt"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="SĐT:"
-                android:textSize="16sp"
+                android:layout_marginTop="14dp"
+                android:text="So dien thoai khach"
+                android:textColor="@color/coffee_dark"
                 android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/editSdt"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:minHeight="48dp"
-                android:padding="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rounded_background"
+                android:hint="Nhap so dien thoai"
                 android:inputType="phone"
-                android:hint="Điền sdt của khách hàng"
-                android:textSize="16sp"
-                android:background="@drawable/rounded_background" />
-
-        </LinearLayout>
-
-        <!-- Tên nhân viên -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="16dp"
-            android:gravity="center_vertical">
+                android:padding="12dp"
+                android:textColor="@color/coffee_dark"
+                android:textColorHint="@color/coffee_muted" />
 
             <TextView
                 android:id="@+id/tvtennv"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Tên nhân viên:"
-                android:textSize="16sp"
+                android:layout_marginTop="14dp"
+                android:text="Nhan vien phu trach"
+                android:textColor="@color/coffee_dark"
                 android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/edit_tennv"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:minHeight="48dp"
-                android:padding="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rounded_background"
+                android:hint="Nhap ten nhan vien"
                 android:inputType="textPersonName"
-                android:hint="vd: Nguyễn Văn A"
-                android:textSize="16sp"
-                android:background="@drawable/rounded_background" />
-
+                android:padding="12dp"
+                android:textColor="@color/coffee_dark"
+                android:textColorHint="@color/coffee_muted" />
         </LinearLayout>
 
-        <!-- Nút thêm vào giỏ -->
         <TextView
             android:id="@+id/tvthemgiohang"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="48dp"
-            android:paddingVertical="12dp"
-            android:background="@drawable/bg_color_2"
-            android:text="Thêm thông tin đặt bàn"
-            android:textAlignment="center"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_color"
+            android:gravity="center"
+            android:padding="15dp"
+            android:text="Luu vao don"
             android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:gravity="center" />
-
+            android:textSize="17sp"
+            android:textStyle="bold" />
     </LinearLayout>
 </ScrollView>

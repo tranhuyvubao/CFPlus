@@ -11,8 +11,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.example.do_an_hk1_androidstudio.cloud.CatalogCloudRepository;
+import com.example.do_an_hk1_androidstudio.local.model.LocalProduct;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,70 +22,48 @@ import java.util.Random;
 
 public class tabThree_Monngon extends Fragment {
 
-    RecyclerView recyclerViewMonNgon;
-    SanPhamAdapter adapter;
-    List<SanPham> productList;
-    FirebaseFirestore db;
-    List<SanPham> allProducts = new ArrayList<>();
+    private final List<SanPham> productList = new ArrayList<>();
+    private CatalogCloudRepository catalogRepository;
+    private SanPhamAdapter adapter;
+    private ListenerRegistration productsListener;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_tab_three__monngon, container, false);
 
-        recyclerViewMonNgon = view.findViewById(R.id.recyclerViewMonNgon);
-        productList = new ArrayList<>();
+        catalogRepository = new CatalogCloudRepository(requireContext());
+        RecyclerView recyclerViewMonNgon = view.findViewById(R.id.recyclerViewMonNgon);
         adapter = new SanPhamAdapter(getContext(), productList);
-        
-        // GridLayoutManager với 2 cột
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
-        recyclerViewMonNgon.setLayoutManager(gridLayoutManager);
+        recyclerViewMonNgon.setLayoutManager(new GridLayoutManager(getContext(), 2));
         recyclerViewMonNgon.setAdapter(adapter);
-        
-        db = FirebaseFirestore.getInstance();
-        loadRandomProducts();
 
+        productsListener = catalogRepository.listenProducts(this::loadRandomProducts);
         return view;
     }
 
-    private void loadRandomProducts() {
-        // Load tất cả sản phẩm từ các collection
-        String[] collections = {"CaFe", "Trà sữa", "Matcha", "Topping"};
-        String[] docNames = {"CaFe", "Trà sữa", "Matcha", "Topping"};
-        String[] collectionNames = {"Cafe", "trasua", "matcha", "topping"};
-
-        int[] completed = {0};
-        int totalCollections = collections.length;
-
-        for (int i = 0; i < collections.length; i++) {
-            final int index = i;
-            db.collection("SanPham")
-                    .document(docNames[index])
-                    .collection(collectionNames[index])
-                    .get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-                        for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
-                            String ten = snapshot.getString("Ten");
-                            String gia = snapshot.getString("Gia");
-                            String hinh = snapshot.getString("hinhAnh");
-                            if (ten != null && gia != null && hinh != null) {
-                                allProducts.add(new SanPham(ten, gia, hinh));
-                            }
-                        }
-
-                        completed[0]++;
-                        if (completed[0] == totalCollections) {
-                            // Xáo trộn danh sách và hiển thị ngẫu nhiên
-                            Collections.shuffle(allProducts, new Random());
-                            int maxProducts = Math.min(10, allProducts.size());
-                            productList.clear();
-                            for (int j = 0; j < maxProducts; j++) {
-                                productList.add(allProducts.get(j));
-                            }
-                            adapter.notifyDataSetChanged();
-                        }
-                    });
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (productsListener != null) {
+            productsListener.remove();
         }
+    }
+
+    private void loadRandomProducts(List<LocalProduct> products) {
+        List<LocalProduct> allProducts = new ArrayList<>();
+        for (LocalProduct product : products) {
+            if (product.isActive()) {
+                allProducts.add(product);
+            }
+        }
+        Collections.shuffle(allProducts, new Random());
+        int maxProducts = Math.min(10, allProducts.size());
+        productList.clear();
+        for (int i = 0; i < maxProducts; i++) {
+            LocalProduct product = allProducts.get(i);
+            productList.add(new SanPham(product.getName(), String.valueOf(product.getBasePrice()), product.getImageUrl()));
+        }
+        adapter.notifyDataSetChanged();
     }
 }
