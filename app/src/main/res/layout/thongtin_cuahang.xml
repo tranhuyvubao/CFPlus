@@ -11,19 +11,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="24dp"
-        android:paddingBottom="24dp"
         android:paddingStart="20dp"
-        android:paddingEnd="20dp">
+        android:paddingTop="24dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="24dp">
 
-        <!-- Header với background đẹp -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
+            app:cardBackgroundColor="#DD2C00"
             app:cardCornerRadius="16dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="#DD2C00">
+            app:cardElevation="4dp">
 
             <TextView
                 android:id="@+id/textView"
@@ -37,14 +36,13 @@
                 android:textStyle="bold" />
         </androidx.cardview.widget.CardView>
 
-        <!-- Card thông tin cửa hàng -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="@android:color/white"
             app:cardCornerRadius="12dp"
-            app:cardElevation="3dp"
-            app:cardBackgroundColor="@android:color/white">
+            app:cardElevation="3dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -72,7 +70,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:text="📍 Địa chỉ:"
+                    android:text="Địa chỉ:"
                     android:textColor="#666666"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -81,8 +79,8 @@
                     android:id="@+id/tvDiaChi"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
                     android:layout_marginStart="8dp"
+                    android:layout_marginBottom="16dp"
                     android:text="610 Đường 41, Phường Tân Phước Khánh, Tân Uyên, TP. Hồ Chí Minh"
                     android:textSize="16sp" />
 
@@ -90,7 +88,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:text="📞 Số điện thoại:"
+                    android:text="Số điện thoại:"
                     android:textColor="#666666"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -99,8 +97,8 @@
                     android:id="@+id/tvSoDienThoai"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
                     android:layout_marginStart="8dp"
+                    android:layout_marginBottom="16dp"
                     android:text="033 238 2711"
                     android:textSize="16sp" />
 
@@ -108,7 +106,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:text="✉️ Email:"
+                    android:text="Email:"
                     android:textColor="#666666"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -117,8 +115,8 @@
                     android:id="@+id/tvEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
                     android:layout_marginStart="8dp"
+                    android:layout_marginBottom="16dp"
                     android:text="info@cfplus.com"
                     android:textSize="16sp" />
 
@@ -126,7 +124,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:text="🕐 Giờ mở cửa:"
+                    android:text="Giờ mở cửa:"
                     android:textColor="#666666"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -136,19 +134,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="7:00 - 22:00 (Tất cả các ngày trong tuần)"
+                    android:text="7:00 - 22:00 (tất cả các ngày trong tuần)"
                     android:textSize="16sp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Card mô tả -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
+            app:cardBackgroundColor="@android:color/white"
             app:cardCornerRadius="12dp"
-            app:cardElevation="3dp"
-            app:cardBackgroundColor="@android:color/white">
+            app:cardElevation="3dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -160,7 +157,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    android:text="📝 Giới thiệu:"
+                    android:text="Giới thiệu:"
                     android:textColor="@color/brown"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -169,14 +166,13 @@
                     android:id="@+id/tvMoTa"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:lineSpacingExtra="6dp"
                     android:text="CFPLUS COFFEE SHOP là một không gian thư giãn lý tưởng với các loại cà phê chất lượng cao, trà sữa thơm ngon và các món matcha đặc biệt. Chúng tôi cam kết mang đến cho khách hàng những trải nghiệm tuyệt vời nhất."
                     android:textColor="#333333"
-                    android:textSize="16sp"
-                    android:lineSpacingExtra="6dp" />
+                    android:textSize="16sp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Nút trở về -->
         <Button
             android:id="@+id/btnTroVe"
             android:layout_width="match_parent"

@@ -10,7 +10,6 @@ import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -85,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
             if (elapsedTime < lockTime) {
                 isLocked = true;
                 tvDN.setEnabled(false);
-                testMkDn.setVisibility(View.VISIBLE);
+                testMkDn.setVisibility(TextView.VISIBLE);
                 startCountdown(lockTime - elapsedTime);
             } else {
                 resetLock();
@@ -109,19 +108,19 @@ public class MainActivity extends AppCompatActivity {
         String pass = edtmk.getText().toString().trim();
 
         if (TextUtils.isEmpty(email)) {
-            Toast.makeText(this, "Vui long nhap email!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Vui lòng nhập email!", Toast.LENGTH_LONG).show();
             return;
         }
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            Toast.makeText(this, "Email khong dung dinh dang!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Email không đúng định dạng!", Toast.LENGTH_LONG).show();
             return;
         }
         if (TextUtils.isEmpty(pass)) {
-            Toast.makeText(this, "Vui long nhap mat khau!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Vui lòng nhập mật khẩu!", Toast.LENGTH_LONG).show();
             return;
         }
         if (isLocked) {
-            Toast.makeText(this, "Tai khoan bi khoa tam thoi. Vui long doi...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Tài khoản bị khóa tạm thời. Vui lòng đợi...", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -139,14 +138,14 @@ public class MainActivity extends AppCompatActivity {
                     clearSavedCredentials();
                 }
 
-                Toast.makeText(this, "Dang nhap thanh cong! Vai tro: " + user.getRole(), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Đăng nhập thành công! Vai trò: " + user.getRole(), Toast.LENGTH_LONG).show();
                 openHomeAndFinish();
                 return;
             }
 
             failedAttempts++;
             editor.putInt("failedAttempts", failedAttempts).apply();
-            Toast.makeText(this, message == null ? ("Dang nhap that bai! Lan thu " + failedAttempts) : message, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, message == null ? ("Đăng nhập thất bại! Lần thử " + failedAttempts) : message, Toast.LENGTH_LONG).show();
             if (failedAttempts >= 3) {
                 lockLogin();
             }
@@ -156,8 +155,8 @@ public class MainActivity extends AppCompatActivity {
     private void lockLogin() {
         isLocked = true;
         tvDN.setEnabled(false);
-        testMkDn.setVisibility(View.VISIBLE);
-        testMkDn.setText("Ban da dang nhap sai 3 lan. Vui long doi 1 phut...");
+        testMkDn.setVisibility(TextView.VISIBLE);
+        testMkDn.setText("Bạn đã đăng nhập sai 3 lần. Vui lòng đợi 1 phút...");
 
         long lockStartTime = System.currentTimeMillis();
         editor.putLong("lockStartTime", lockStartTime).apply();
@@ -169,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTick(long millisUntilFinished) {
                 long seconds = millisUntilFinished / 1000;
-                testMkDn.setText("Ban da dang nhap sai 3 lan. Vui long doi " + seconds + " giay...");
+                testMkDn.setText("Bạn đã đăng nhập sai 3 lần. Vui lòng đợi " + seconds + " giây...");
             }
 
             @Override
@@ -186,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
         editor.putLong("lockStartTime", 0);
         editor.apply();
         tvDN.setEnabled(true);
-        testMkDn.setVisibility(View.GONE);
+        testMkDn.setVisibility(TextView.GONE);
     }
 
     private void saveCredentials(String email, String password) {
@@ -221,11 +220,11 @@ public class MainActivity extends AppCompatActivity {
     private void onClickForgotPassword() {
         String emailAddress = editemail.getText().toString().trim();
         if (TextUtils.isEmpty(emailAddress)) {
-            Toast.makeText(this, "Vui long nhap email!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Vui lòng nhập email!", Toast.LENGTH_LONG).show();
             return;
         }
         if (!Patterns.EMAIL_ADDRESS.matcher(emailAddress).matches()) {
-            Toast.makeText(this, "Email khong dung dinh dang!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Email không đúng định dạng!", Toast.LENGTH_LONG).show();
             return;
         }
         userRepository.emailExists(emailAddress, (exists, message) -> {
@@ -234,29 +233,29 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             if (!exists) {
-                Toast.makeText(this, "Email khong ton tai trong he thong.", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Email không tồn tại trong hệ thống.", Toast.LENGTH_LONG).show();
                 return;
             }
 
             EditText edtNewPassword = new EditText(this);
-            edtNewPassword.setHint("Nhap mat khau moi");
+            edtNewPassword.setHint("Nhập mật khẩu mới");
             edtNewPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
             AlertDialog dialog = new AlertDialog.Builder(this)
-                    .setTitle("Dat lai mat khau")
+                    .setTitle("Đặt lại mật khẩu")
                     .setView(edtNewPassword)
-                    .setPositiveButton("Luu", null)
-                    .setNegativeButton("Huy", null)
+                    .setPositiveButton("Lưu", null)
+                    .setNegativeButton("Hủy", null)
                     .create();
             dialog.setOnShowListener(listener -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
                 String newPassword = edtNewPassword.getText().toString().trim();
                 if (newPassword.length() < 6 || !newPassword.matches(".*[a-zA-Z].*") || !newPassword.matches(".*\\d.*")) {
-                    Toast.makeText(this, "Mat khau phai tu 6 ky tu, gom chu va so.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Mật khẩu phải từ 6 ký tự, gồm chữ và số.", Toast.LENGTH_LONG).show();
                     return;
                 }
                 userRepository.updatePasswordByEmail(emailAddress, newPassword, (success, updateMessage) -> {
                     Toast.makeText(this,
-                            success ? "Da cap nhat mat khau tren he thong." : (updateMessage == null ? "Khong cap nhat duoc mat khau." : updateMessage),
+                            success ? "Đã cập nhật mật khẩu trên hệ thống." : (updateMessage == null ? "Không cập nhật được mật khẩu." : updateMessage),
                             Toast.LENGTH_LONG).show();
                     if (success) {
                         dialog.dismiss();
@@ -283,7 +282,7 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Toast.makeText(MainActivity.this, "Tim kiem: " + query, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Tìm kiếm: " + query, Toast.LENGTH_SHORT).show();
                 return true;
             }
 

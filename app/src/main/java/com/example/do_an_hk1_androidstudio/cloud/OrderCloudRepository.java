@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.do_an_hk1_androidstudio.local.DataHelper;
+import com.example.do_an_hk1_androidstudio.local.model.CustomerCartItem;
 import com.example.do_an_hk1_androidstudio.local.model.LocalCustomerAddress;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrder;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrderItem;
@@ -30,6 +31,10 @@ public class OrderCloudRepository {
 
     public interface CompletionCallback {
         void onComplete(boolean success, @Nullable String message);
+    }
+
+    public interface OrderCreateCallback {
+        void onComplete(boolean success, @Nullable String orderId, @Nullable String message);
     }
 
     private final FirebaseFirestore firestore;
@@ -115,6 +120,84 @@ public class OrderCloudRepository {
                                      @Nullable LocalCustomerAddress deliveryAddress,
                                      @NonNull CompletionCallback callback) {
         createCustomerOrder("online", "customer_app", customerId, null, null, productId, productName, unitPrice, qty, variantName, note, imageUrl, deliveryAddress, callback);
+    }
+
+    public void createOnlineCartOrder(String customerId,
+                                      @NonNull List<CustomerCartItem> items,
+                                      @NonNull LocalCustomerAddress deliveryAddress,
+                                      @Nullable String note,
+                                      @Nullable String paymentPreference,
+                                      @NonNull OrderCreateCallback callback) {
+        if (items.isEmpty()) {
+            callback.onComplete(false, null, "Giỏ hàng đang trống.");
+            return;
+        }
+
+        FirebaseProvider.ensureAuthenticated(appContext, (authSuccess, authMessage) -> {
+            if (!authSuccess) {
+                callback.onComplete(false, null, authMessage == null ? "Firebase auth chưa sẵn sàng" : authMessage);
+                return;
+            }
+
+            long createdAt = System.currentTimeMillis();
+            String orderId = DataHelper.newId("online_order");
+            String orderCode = DataHelper.newOrderCode(createdAt);
+            int subtotal = 0;
+            List<Map<String, Object>> orderItems = new ArrayList<>();
+            for (CustomerCartItem item : items) {
+                subtotal += item.getLineTotal();
+                Map<String, Object> itemData = new HashMap<>();
+                itemData.put("productId", item.getProductId());
+                itemData.put("productName", item.getProductName());
+                itemData.put("variantName", item.buildVariantLabel());
+                itemData.put("qty", item.getQuantity());
+                itemData.put("unitPrice", item.getUnitPrice());
+                itemData.put("note", nullableTrim(item.getNote()));
+                itemData.put("lineTotal", item.getLineTotal());
+                itemData.put("imageUrl", nullableTrim(item.getImageUrl()));
+                orderItems.add(itemData);
+            }
+
+            CustomerCartItem firstItem = items.get(0);
+            Map<String, Object> data = new HashMap<>();
+            data.put("orderId", orderId);
+            data.put("orderCode", orderCode);
+            data.put("orderType", "online");
+            data.put("orderChannel", "customer_app");
+            data.put("tableId", null);
+            data.put("tableName", null);
+            data.put("customerId", customerId);
+            data.put("staffId", null);
+            data.put("status", "created");
+            data.put("subtotal", subtotal);
+            data.put("discountAmount", 0);
+            data.put("total", subtotal);
+            data.put("createdAt", createdAt);
+            data.put("updatedAt", createdAt);
+            data.put("productId", firstItem.getProductId());
+            data.put("productName", firstItem.getProductName());
+            data.put("unitPrice", firstItem.getUnitPrice());
+            data.put("qty", firstItem.getQuantity());
+            data.put("variantName", firstItem.buildVariantLabel());
+            data.put("note", nullableTrim(note));
+            data.put("imageUrl", nullableTrim(firstItem.getImageUrl()));
+            data.put("paymentPreference", nullableTrim(paymentPreference));
+            data.put("deliveryAddressId", deliveryAddress.getAddressId());
+            data.put("deliveryRecipientName", nullableTrim(deliveryAddress.getRecipientName()));
+            data.put("deliveryPhone", nullableTrim(deliveryAddress.getPhone()));
+            data.put("deliveryCountry", nullableTrim(deliveryAddress.getCountry()));
+            data.put("deliveryProvince", nullableTrim(deliveryAddress.getProvince()));
+            data.put("deliveryDistrict", nullableTrim(deliveryAddress.getDistrict()));
+            data.put("deliveryWard", nullableTrim(deliveryAddress.getWard()));
+            data.put("deliveryDetailAddress", nullableTrim(deliveryAddress.getDetailAddress()));
+            data.put("items", orderItems);
+
+            firestore.collection("orders")
+                    .document(orderId)
+                    .set(data)
+                    .addOnSuccessListener(unused -> callback.onComplete(true, orderId, null))
+                    .addOnFailureListener(e -> callback.onComplete(false, null, e.getMessage()));
+        });
     }
 
     public void createTableQrOrder(String customerId,

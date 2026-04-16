@@ -11,7 +11,7 @@
         android:id="@+id/tvIngName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Nguyen lieu"
+        android:text="Nguyên liệu"
         android:textColor="@color/coffee_dark"
         android:textSize="18sp"
         android:textStyle="bold" />
@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Don vi"
+        android:text="Đơn vị"
         android:textColor="@color/coffee_muted"
         android:textSize="14sp" />
 
@@ -30,7 +30,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="Ton"
+        android:text="Tồn"
         android:textColor="@color/coffee_muted"
         android:textSize="14sp" />
 
@@ -39,7 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="Toi thieu"
+        android:text="Tối thiểu"
         android:textColor="@color/coffee_muted"
         android:textSize="14sp" />
 
@@ -48,7 +48,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Trang thai"
+        android:text="Trạng thái"
         android:textColor="@color/coffee_primary"
         android:textSize="14sp"
         android:textStyle="bold" />
@@ -68,7 +68,7 @@
             android:paddingTop="8dp"
             android:paddingRight="14dp"
             android:paddingBottom="8dp"
-            android:text="Sua"
+            android:text="Sửa"
             android:textColor="@color/coffee_dark"
             android:textStyle="bold" />
 
@@ -82,7 +82,7 @@
             android:paddingTop="8dp"
             android:paddingRight="14dp"
             android:paddingBottom="8dp"
-            android:text="Xoa"
+            android:text="Xóa"
             android:textColor="@color/coffee_danger"
             android:textStyle="bold" />
     </LinearLayout>

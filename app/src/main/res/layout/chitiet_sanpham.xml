@@ -11,24 +11,82 @@
         android:orientation="vertical"
         android:padding="18dp">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/btnBackTop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/app_chip_accent"
+                android:paddingLeft="14dp"
+                android:paddingTop="10dp"
+                android:paddingRight="14dp"
+                android:paddingBottom="10dp"
+                android:text="← Trở về"
+                android:textColor="@color/coffee_primary_dark"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/btnOpenCart"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/app_chip_accent"
+                    android:drawablePadding="8dp"
+                    android:drawableStart="@drawable/baseline_shopping_cart_24"
+                    android:paddingLeft="14dp"
+                    android:paddingTop="10dp"
+                    android:paddingRight="14dp"
+                    android:paddingBottom="10dp"
+                    android:text="Giỏ hàng"
+                    android:textColor="@color/coffee_primary_dark"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvCartCount"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_gravity="end|top"
+                    android:background="@drawable/app_button_primary"
+                    android:gravity="center"
+                    android:textColor="@android:color/white"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </FrameLayout>
+        </LinearLayout>
+
         <ImageButton
             android:id="@+id/imageButton1"
             android:layout_width="match_parent"
             android:layout_height="240dp"
+            android:layout_marginTop="14dp"
             android:adjustViewBounds="true"
             android:background="@drawable/app_card_background"
             android:clickable="false"
             android:contentDescription="@string/anh_san_pham"
             android:focusable="false"
-            android:padding="6dp"
-            android:scaleType="centerCrop" />
+            android:padding="10dp"
+            android:scaleType="fitCenter" />
 
         <TextView
             android:id="@+id/tvTen"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Ten san pham"
+            android:text="Tên sản phẩm"
             android:textAlignment="center"
             android:textColor="@color/coffee_dark"
             android:textSize="26sp"
@@ -39,7 +97,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Lua chon:"
+            android:text="Lựa chọn:"
             android:textAlignment="center"
             android:textColor="@color/coffee_muted"
             android:textSize="14sp" />
@@ -56,7 +114,7 @@
                 android:id="@+id/tvSize"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Chon size"
+                android:text="Chọn size"
                 android:textColor="@color/coffee_dark"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -108,7 +166,7 @@
                 android:id="@+id/tvmucda"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Chon muc da"
+                android:text="Chọn mức đá"
                 android:textColor="@color/coffee_dark"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -118,28 +176,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Da binh thuong"
+                android:text="Đá bình thường"
                 android:textColor="@color/coffee_dark" />
 
             <CheckBox
                 android:id="@+id/check_it_da"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="It da"
+                android:text="Ít đá"
                 android:textColor="@color/coffee_dark" />
 
             <CheckBox
                 android:id="@+id/check_da_rieng"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Da rieng"
+                android:text="Đá riêng"
                 android:textColor="@color/coffee_dark" />
 
             <CheckBox
                 android:id="@+id/check_khong_da"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Khong da"
+                android:text="Không đá"
                 android:textColor="@color/coffee_dark" />
         </LinearLayout>
 
@@ -162,7 +220,7 @@
                     android:id="@+id/tvslsp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="So luong"
+                    android:text="Số lượng"
                     android:textColor="@color/coffee_muted"
                     android:textSize="14sp" />
 
@@ -171,7 +229,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:text="Tong tien: 0d"
+                    android:text="Tổng tiền: 0đ"
                     android:textColor="@color/coffee_primary"
                     android:textSize="22sp"
                     android:textStyle="bold" />
@@ -190,7 +248,7 @@
                     android:layout_width="44dp"
                     android:layout_height="44dp"
                     android:background="@null"
-                    android:contentDescription="Giam"
+                    android:contentDescription="Giảm"
                     android:src="@drawable/baseline_keyboard_arrow_left_24" />
 
                 <TextView
@@ -208,7 +266,7 @@
                     android:layout_width="44dp"
                     android:layout_height="44dp"
                     android:background="@null"
-                    android:contentDescription="Tang"
+                    android:contentDescription="Tăng"
                     android:src="@drawable/baseline_keyboard_arrow_right_24" />
             </LinearLayout>
         </LinearLayout>
@@ -221,7 +279,7 @@
             android:background="@drawable/bg_color"
             android:gravity="center"
             android:padding="16dp"
-            android:text="Them vao don"
+            android:text="Thêm vào giỏ hàng"
             android:textColor="@android:color/white"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -234,7 +292,7 @@
             android:background="@drawable/rounded_background"
             android:gravity="center"
             android:padding="16dp"
-            android:text="Tro ve trang chu"
+            android:text="Tiếp tục chọn món"
             android:textColor="@color/coffee_dark"
             android:textSize="17sp"
             android:textStyle="bold" />

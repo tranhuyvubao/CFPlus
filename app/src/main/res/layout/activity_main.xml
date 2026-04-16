@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Dang nhap"
+            android:text="Đăng nhập"
             android:textColor="@color/coffee_dark"
             android:textSize="30sp"
             android:textStyle="bold" />
@@ -65,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/rounded_background"
-                android:hint="Nhap email cua ban"
+                android:hint="Nhập email của bạn"
                 android:inputType="textEmailAddress"
                 android:minHeight="52dp"
                 android:paddingHorizontal="14dp"
@@ -78,7 +78,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
-                android:text="Mat khau"
+                android:text="Mật khẩu"
                 android:textColor="@color/coffee_text"
                 android:textSize="15sp"
                 android:textStyle="bold" />
@@ -89,7 +89,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/rounded_background"
-                android:hint="Nhap mat khau cua ban"
+                android:hint="Nhập mật khẩu của bạn"
                 android:inputType="textPassword"
                 android:minHeight="52dp"
                 android:paddingHorizontal="14dp"
@@ -114,7 +114,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Nho mat khau"
+                android:text="Nhớ mật khẩu"
                 android:textColor="@color/coffee_text"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -127,7 +127,7 @@
                 android:background="@drawable/bg_color"
                 android:gravity="center"
                 android:padding="14dp"
-                android:text="Dang nhap"
+                android:text="Đăng nhập"
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -138,7 +138,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="14dp"
-                android:text="Quen mat khau?"
+                android:text="Quên mật khẩu?"
                 android:textColor="@color/coffee_primary"
                 android:textSize="15sp"
                 android:textStyle="bold" />
@@ -165,7 +165,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="Dang ky"
+                android:text="Đăng ký"
                 android:textColor="@color/coffee_primary"
                 android:textSize="15sp"
                 android:textStyle="bold" />

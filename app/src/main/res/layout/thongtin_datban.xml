@@ -23,7 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Thong tin tao don"
+                android:text="Thông tin tạo đơn"
                 android:textColor="@color/coffee_dark"
                 android:textSize="22sp"
                 android:textStyle="bold" />
@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:gravity="center"
-                android:text="Nhap day du ban, hinh thuc, so dien thoai va nhan vien de don duoc luu chinh xac."
+                android:text="Nhập đầy đủ bàn, hình thức, số điện thoại và nhân viên để đơn được lưu chính xác."
                 android:textColor="@color/coffee_muted"
                 android:textSize="13sp" />
 
@@ -43,7 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
-                android:text="Ban / khu vuc"
+                android:text="Bàn / khu vực"
                 android:textColor="@color/coffee_dark"
                 android:textStyle="bold" />
 
@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/rounded_background"
-                android:hint="Vi du: Ban 01"
+                android:hint="Ví dụ: Bàn 01"
                 android:inputType="text"
                 android:padding="12dp"
                 android:textColor="@color/coffee_dark"
@@ -64,7 +64,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
-                android:text="Hinh thuc"
+                android:text="Hình thức"
                 android:textColor="@color/coffee_dark"
                 android:textStyle="bold" />
 
@@ -82,7 +82,7 @@
                     android:layout_weight="1"
                     android:buttonTint="@color/coffee_primary"
                     android:checked="true"
-                    android:text="Tai cho"
+                    android:text="Tại chỗ"
                     android:textColor="@color/coffee_dark" />
 
                 <RadioButton
@@ -91,7 +91,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:buttonTint="@color/coffee_primary"
-                    android:text="Mang ve"
+                    android:text="Mang về"
                     android:textColor="@color/coffee_dark" />
             </RadioGroup>
 
@@ -100,7 +100,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
-                android:text="So dien thoai khach"
+                android:text="Số điện thoại khách"
                 android:textColor="@color/coffee_dark"
                 android:textStyle="bold" />
 
@@ -110,7 +110,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/rounded_background"
-                android:hint="Nhap so dien thoai"
+                android:hint="Nhập số điện thoại"
                 android:inputType="phone"
                 android:padding="12dp"
                 android:textColor="@color/coffee_dark"
@@ -121,7 +121,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
-                android:text="Nhan vien phu trach"
+                android:text="Nhân viên phụ trách"
                 android:textColor="@color/coffee_dark"
                 android:textStyle="bold" />
 
@@ -131,7 +131,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/rounded_background"
-                android:hint="Nhap ten nhan vien"
+                android:hint="Nhập tên nhân viên"
                 android:inputType="textPersonName"
                 android:padding="12dp"
                 android:textColor="@color/coffee_dark"
@@ -146,7 +146,7 @@
             android:background="@drawable/bg_color"
             android:gravity="center"
             android:padding="15dp"
-            android:text="Luu vao don"
+            android:text="Lưu vào đơn"
             android:textColor="@android:color/white"
             android:textSize="17sp"
             android:textStyle="bold" />

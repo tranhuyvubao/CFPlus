@@ -18,7 +18,7 @@
             android:id="@+id/tvStaffName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Ho ten:"
+            android:text="Họ tên:"
             android:textColor="@color/coffee_dark"
             android:textSize="17sp"
             android:textStyle="bold" />
@@ -36,7 +36,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Vai tro:"
+            android:text="Vai trò:"
             android:textColor="@color/coffee_muted" />
 
         <LinearLayout
@@ -53,7 +53,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Trang thai"
+                android:text="Trạng thái"
                 android:textColor="@color/coffee_text"
                 android:textStyle="bold" />
 
@@ -61,8 +61,8 @@
                 android:id="@+id/swStaffStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textOn="Active"
-                android:textOff="Locked" />
+                android:textOn="Hoạt động"
+                android:textOff="Khóa" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

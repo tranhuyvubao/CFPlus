@@ -22,9 +22,9 @@ import com.example.do_an_hk1_androidstudio.cloud.OrderCloudRepository;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrder;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrderItem;
 import com.example.do_an_hk1_androidstudio.ui.InsetsHelper;
+import com.example.do_an_hk1_androidstudio.ui.MoneyFormatter;
 import com.google.firebase.firestore.ListenerRegistration;
 
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -451,8 +451,7 @@ public class ThongKeTongHopActivity extends AppCompatActivity {
     }
 
     private String formatMoney(int amount) {
-        NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
-        return formatter.format(amount) + "đ";
+        return MoneyFormatter.format(amount);
     }
 
     private String shortMoney(int amount) {

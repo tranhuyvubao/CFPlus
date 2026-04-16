@@ -40,6 +40,10 @@ public class TableCloudRepository {
         void onResult(@NonNull List<LocalCafeTable> tables, @Nullable String message);
     }
 
+    public interface ReservationsCallback {
+        void onChanged(@NonNull List<LocalTableReservation> reservations);
+    }
+
     private final FirebaseFirestore firestore;
     private final Context appContext;
 
@@ -252,6 +256,41 @@ public class TableCloudRepository {
         });
     }
 
+    public ListenerRegistration listenReservations(@NonNull ReservationsCallback callback) {
+        ListenerRegistrationHolder holder = new ListenerRegistrationHolder();
+        FirebaseProvider.ensureAuthenticated(appContext, (success, message) -> {
+            if (!success) {
+                callback.onChanged(new ArrayList<>());
+                return;
+            }
+            holder.setDelegate(firestore.collection("table_reservations")
+                    .addSnapshotListener((value, error) -> {
+                        List<LocalTableReservation> reservations = new ArrayList<>();
+                        if (value != null) {
+                            for (DocumentSnapshot doc : value.getDocuments()) {
+                                reservations.add(mapReservation(doc));
+                            }
+                        }
+                        reservations.sort((first, second) ->
+                                Long.compare(second.getReservationTimeMillis(), first.getReservationTimeMillis()));
+                        callback.onChanged(reservations);
+                    }));
+        });
+        return holder;
+    }
+
+    public void confirmReservation(String reservationId, @Nullable String tableId, @NonNull CompletionCallback callback) {
+        updateReservationStatus(reservationId, "seated", tableId, "occupied", callback);
+    }
+
+    public void cancelReservation(String reservationId, @Nullable String tableId, @NonNull CompletionCallback callback) {
+        updateReservationStatus(reservationId, "cancelled", tableId, "free", callback);
+    }
+
+    public void completeReservation(String reservationId, @Nullable String tableId, @NonNull CompletionCallback callback) {
+        updateReservationStatus(reservationId, "completed", tableId, "free", callback);
+    }
+
     private LocalCafeTable mapTable(DocumentSnapshot doc) {
         return new LocalCafeTable(
                 valueOf(doc.getString("tableId")),
@@ -261,6 +300,56 @@ public class TableCloudRepository {
                 valueOf(doc.getString("status")),
                 Boolean.TRUE.equals(doc.getBoolean("active"))
         );
+    }
+
+    private LocalTableReservation mapReservation(DocumentSnapshot doc) {
+        Object reservationTime = doc.get("reservation_time");
+        return new LocalTableReservation(
+                valueOf(doc.getString("reservation_id")),
+                valueOf(doc.getString("table_id")),
+                valueOf(doc.getString("table_name")),
+                valueOf(doc.getString("customer_id")),
+                valueOf(doc.getString("customer_name")),
+                valueOf(doc.getString("customer_phone")),
+                reservationTime instanceof Number ? ((Number) reservationTime).longValue() : 0L,
+                intValue(doc.get("guest_count")),
+                valueOf(doc.getString("note")),
+                valueOf(doc.getString("status"))
+        );
+    }
+
+    private void updateReservationStatus(String reservationId,
+                                         String reservationStatus,
+                                         @Nullable String tableId,
+                                         @Nullable String tableStatus,
+                                         @NonNull CompletionCallback callback) {
+        FirebaseProvider.ensureAuthenticated(appContext, (authSuccess, authMessage) -> {
+            if (!authSuccess) {
+                callback.onComplete(false, authMessage == null ? "Firebase auth chua san sang" : authMessage);
+                return;
+            }
+
+            Map<String, Object> reservationValues = new HashMap<>();
+            reservationValues.put("status", reservationStatus);
+            reservationValues.put("updated_at", FieldValue.serverTimestamp());
+
+            firestore.collection("table_reservations")
+                    .document(reservationId)
+                    .update(reservationValues)
+                    .continueWithTask(task -> {
+                        if (TextUtils.isEmpty(tableId) || TextUtils.isEmpty(tableStatus)) {
+                            return com.google.android.gms.tasks.Tasks.forResult(null);
+                        }
+                        Map<String, Object> tableValues = new HashMap<>();
+                        tableValues.put("status", tableStatus);
+                        tableValues.put("updatedAt", System.currentTimeMillis());
+                        return firestore.collection("tables")
+                                .document(tableId)
+                                .update(tableValues);
+                    })
+                    .addOnSuccessListener(unused -> callback.onComplete(true, null))
+                    .addOnFailureListener(e -> callback.onComplete(false, e.getMessage()));
+        });
     }
 
     private String normalizeCode(@Nullable String value, String name) {
@@ -325,6 +414,13 @@ public class TableCloudRepository {
 
     private String valueOf(@Nullable String value) {
         return value == null ? "" : value;
+    }
+
+    private int intValue(@Nullable Object value) {
+        if (value instanceof Number) {
+            return ((Number) value).intValue();
+        }
+        return 0;
     }
 
     private static class TablePayload {

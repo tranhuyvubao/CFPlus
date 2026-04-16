@@ -19,6 +19,7 @@ import com.example.do_an_hk1_androidstudio.cloud.UserCloudRepository;
 import com.example.do_an_hk1_androidstudio.local.model.LocalCafeTable;
 import com.example.do_an_hk1_androidstudio.local.model.LocalIngredient;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrder;
+import com.example.do_an_hk1_androidstudio.ui.MoneyFormatter;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
@@ -99,9 +100,11 @@ public class FragmentManagerDashboard extends Fragment {
             return;
         }
         int paidToday = countPaidToday(allOrders);
+        int revenueToday = sumRevenueToday(allOrders);
         int lowStockCount = countLowStockIngredients(allIngredients);
 
-        ((TextView) rootView.findViewById(R.id.tvManagerMetricRevenue)).setText(String.valueOf(paidToday));
+        ((TextView) rootView.findViewById(R.id.tvManagerMetricRevenue)).setText(MoneyFormatter.format(revenueToday));
+        ((TextView) rootView.findViewById(R.id.tvManagerMetricPaidOrders)).setText(String.valueOf(paidToday));
         ((TextView) rootView.findViewById(R.id.tvManagerMetricTables)).setText(String.valueOf(activeTables));
         ((TextView) rootView.findViewById(R.id.tvManagerMetricStaff)).setText(String.valueOf(staffCount));
         ((TextView) rootView.findViewById(R.id.tvManagerMetricPromo)).setText(String.valueOf(promotionCount));
@@ -125,6 +128,23 @@ public class FragmentManagerDashboard extends Fragment {
         return count;
     }
 
+    private int sumRevenueToday(List<LocalOrder> orders) {
+        Calendar startOfDay = Calendar.getInstance();
+        startOfDay.set(Calendar.HOUR_OF_DAY, 0);
+        startOfDay.set(Calendar.MINUTE, 0);
+        startOfDay.set(Calendar.SECOND, 0);
+        startOfDay.set(Calendar.MILLISECOND, 0);
+        long from = startOfDay.getTimeInMillis();
+
+        int revenue = 0;
+        for (LocalOrder order : orders) {
+            if ("paid".equals(order.getStatus()) && order.getCreatedAtMillis() >= from) {
+                revenue += order.getTotal();
+            }
+        }
+        return revenue;
+    }
+
     private int countLowStockIngredients(List<LocalIngredient> ingredients) {
         int count = 0;
         for (LocalIngredient ingredient : ingredients) {
@@ -145,6 +165,7 @@ public class FragmentManagerDashboard extends Fragment {
         setAction(view, R.id.cardQuanLyKhuyenMai, QuanLyKhuyenMaiActivity.class);
         setAction(view, R.id.cardQuanLyNhanVien, QuanLyNhanVienActivity.class);
         setAction(view, R.id.cardQuanLyKhachHang, QuanLyKhachHangActivity.class);
+        setAction(view, R.id.cardVnpaySandbox, VnpaySandboxConfigActivity.class);
         setAction(view, R.id.cardSeedDuLieu, FirebaseSeederActivity.class);
     }
 

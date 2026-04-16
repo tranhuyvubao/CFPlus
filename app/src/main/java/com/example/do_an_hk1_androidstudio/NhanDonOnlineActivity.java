@@ -18,6 +18,7 @@ import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrder;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrderItem;
 import com.example.do_an_hk1_androidstudio.ui.InsetsHelper;
+import com.example.do_an_hk1_androidstudio.ui.MoneyFormatter;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.text.SimpleDateFormat;
@@ -215,7 +216,7 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
                 tvTrangThai.setText("Trạng thái: " + mapOrderStatus(status));
             }
 
-            tvTongTien.setText("Tổng tiền: " + order.getTotal() + "đ");
+            tvTongTien.setText("Tổng tiền: " + MoneyFormatter.format(order.getTotal()));
             tvChiTietMon.setText(buildOrderDetails(order));
             tvThoiGian.setText("Thời gian: " + new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date(order.getCreatedAtMillis())));
             if ("online".equals(orderType) && order.getDeliveryAddressText() != null && !order.getDeliveryAddressText().trim().isEmpty()) {
@@ -312,8 +313,7 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
                     .append(" x")
                     .append(item.getQty())
                     .append(" - ")
-                    .append(item.getLineTotal())
-                    .append("đ");
+                    .append(MoneyFormatter.format(item.getLineTotal()));
             if (item.getVariantName() != null && !item.getVariantName().trim().isEmpty()) {
                 builder.append(" (").append(item.getVariantName()).append(")");
             }
@@ -343,10 +343,10 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
                     .append(" x")
                     .append(item.getQty())
                     .append(": ")
-                    .append(item.getLineTotal())
-                    .append("đ\n");
+                    .append(MoneyFormatter.format(item.getLineTotal()))
+                    .append("\n");
         }
-        bill.append("\nTổng cộng: ").append(order.getTotal()).append("đ");
+        bill.append("\nTổng cộng: ").append(MoneyFormatter.format(order.getTotal()));
 
         new AlertDialog.Builder(this)
                 .setTitle("In bill demo")

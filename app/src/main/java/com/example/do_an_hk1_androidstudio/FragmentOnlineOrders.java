@@ -1,6 +1,7 @@
 package com.example.do_an_hk1_androidstudio;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.example.do_an_hk1_androidstudio.cloud.OrderCloudRepository;
 import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrder;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrderItem;
+import com.example.do_an_hk1_androidstudio.ui.MoneyFormatter;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.text.SimpleDateFormat;
@@ -139,7 +141,7 @@ public class FragmentOnlineOrders extends Fragment {
             tvMaDon.setText("Mã đơn: " + order.getDisplayOrderCode());
             tvBan.setText("Loại: Qua app | Kênh: " + mapOrderChannel(order.getOrderChannel()));
             tvTrangThai.setText("Trạng thái: " + mapOrderStatus(status));
-            tvTongTien.setText("Tổng tiền: " + formatMoney(order.getTotal()));
+            tvTongTien.setText("Tổng tiền: " + MoneyFormatter.format(order.getTotal()));
             tvChiTietMon.setText(buildOrderDetails(order));
             tvThoiGian.setText("Thời gian: " + new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date(order.getCreatedAtMillis())));
 
@@ -155,7 +157,7 @@ public class FragmentOnlineOrders extends Fragment {
                 tvHanhDong.setText("Xác nhận");
             } else if ("confirmed".equals(status)) {
                 tvHanhDong.setEnabled(true);
-                tvHanhDong.setText("Đã làm xong");
+                tvHanhDong.setText("Thanh toán");
             } else {
                 tvHanhDong.setEnabled(false);
                 tvHanhDong.setText("-");
@@ -165,26 +167,43 @@ public class FragmentOnlineOrders extends Fragment {
             tvInBill.setAlpha(1f);
 
             tvHanhDong.setOnClickListener(v -> {
-                String nextStatus = "created".equals(status) ? "confirmed" : "paid";
-                orderRepository.updateOrderStatus(
-                        order.getOrderId(),
-                        nextStatus,
-                        sessionManager.getCurrentUserId(),
-                        (success, message) -> {
-                            if (!isAdded()) {
-                                return;
-                            }
-                            requireActivity().runOnUiThread(() -> {
-                                if (!success) {
-                                    tvHanhDong.setText("Thử lại");
-                                }
-                            });
-                        }
-                );
+                if ("created".equals(status)) {
+                    confirmOrder(order);
+                } else if ("confirmed".equals(status)) {
+                    openPayment(order);
+                }
             });
 
             tvInBill.setOnClickListener(v -> showDemoBill(order));
         }
+    }
+
+    private void confirmOrder(LocalOrder order) {
+        orderRepository.updateOrderStatus(
+                order.getOrderId(),
+                "confirmed",
+                sessionManager.getCurrentUserId(),
+                (success, message) -> {
+                    if (!isAdded()) {
+                        return;
+                    }
+                    requireActivity().runOnUiThread(() -> {
+                        if (!success) {
+                            TextView root = getView() == null ? null : getView().findViewById(R.id.tvEmptyOnlineOrders);
+                            if (root != null) {
+                                root.setText("Không thể cập nhật đơn. Hãy thử lại.");
+                            }
+                        }
+                    });
+                }
+        );
+    }
+
+    private void openPayment(LocalOrder order) {
+        Intent intent = new Intent(requireContext(), ThanhToanKhachActivity.class);
+        intent.putExtra(ThanhToanKhachActivity.EXTRA_ORDER_ID, order.getOrderId());
+        intent.putExtra(ThanhToanKhachActivity.EXTRA_AMOUNT, order.getSubtotal());
+        startActivity(intent);
     }
 
     private String mapOrderChannel(String orderChannel) {
@@ -205,7 +224,7 @@ public class FragmentOnlineOrders extends Fragment {
             return "Chờ xác nhận";
         }
         if ("confirmed".equals(status)) {
-            return "Đang làm";
+            return "Đang chuẩn bị";
         }
         if ("paid".equals(status)) {
             return "Đã thanh toán";
@@ -229,7 +248,7 @@ public class FragmentOnlineOrders extends Fragment {
                     .append(" x")
                     .append(item.getQty())
                     .append(" - ")
-                    .append(formatMoney(item.getLineTotal()));
+                    .append(MoneyFormatter.format(item.getLineTotal()));
             if (item.getVariantName() != null && !item.getVariantName().trim().isEmpty()) {
                 builder.append(" (").append(item.getVariantName()).append(")");
             }
@@ -259,20 +278,16 @@ public class FragmentOnlineOrders extends Fragment {
                     .append(" x")
                     .append(item.getQty())
                     .append(": ")
-                    .append(formatMoney(item.getLineTotal()))
+                    .append(MoneyFormatter.format(item.getLineTotal()))
                     .append("\n");
         }
 
-        bill.append("\nTổng cộng: ").append(formatMoney(order.getTotal()));
+        bill.append("\nTổng cộng: ").append(MoneyFormatter.format(order.getTotal()));
 
         new AlertDialog.Builder(requireContext())
                 .setTitle("In bill demo")
                 .setMessage(bill.toString())
                 .setPositiveButton("Đóng", null)
                 .show();
-    }
-
-    private String formatMoney(int amount) {
-        return String.format(Locale.getDefault(), "%,dđ", amount).replace(',', '.');
     }
 }

@@ -1,10 +1,12 @@
 package com.example.do_an_hk1_androidstudio;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Patterns;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,36 +15,35 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.do_an_hk1_androidstudio.cloud.CatalogCloudRepository;
+import com.bumptech.glide.Glide;
 import com.example.do_an_hk1_androidstudio.cloud.OrderCloudRepository;
 import com.example.do_an_hk1_androidstudio.cloud.UserCloudRepository;
+import com.example.do_an_hk1_androidstudio.local.CustomerCartStore;
 import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
+import com.example.do_an_hk1_androidstudio.local.model.CustomerCartItem;
 import com.example.do_an_hk1_androidstudio.local.model.LocalCustomerAddress;
-import com.example.do_an_hk1_androidstudio.local.model.LocalProduct;
 import com.example.do_an_hk1_androidstudio.ui.InsetsHelper;
-import com.google.firebase.firestore.ListenerRegistration;
+import com.example.do_an_hk1_androidstudio.ui.MoneyFormatter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DatMonOnlineActivity extends AppCompatActivity {
 
-    private EditText edtTenMon;
-    private EditText edtGia;
-    private EditText edtSoLuong;
-    private EditText edtSize;
-    private EditText edtGhiChu;
-    private EditText edtImageUrl;
+    private LinearLayout cartItemsContainer;
     private TextView tvSelectedAddress;
-    private String selectedProductId;
-    private final List<LocalProduct> activeProducts = new ArrayList<>();
-    private CatalogCloudRepository catalogRepository;
+    private TextView tvCartSummary;
+    private TextView tvEmptyCart;
+    private TextView edtOrderNote;
+    private RadioGroup rgPaymentMethod;
+    private View btnPlaceOnlineOrder;
+
+    private final List<LocalCustomerAddress> currentAddresses = new ArrayList<>();
+    private CustomerCartStore cartStore;
     private OrderCloudRepository orderRepository;
     private LocalSessionManager sessionManager;
     private UserCloudRepository userRepository;
     private LocalCustomerAddress selectedAddress;
-    private List<LocalCustomerAddress> currentAddresses = new ArrayList<>();
-    private ListenerRegistration productsListener;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,55 +52,39 @@ public class DatMonOnlineActivity extends AppCompatActivity {
         setContentView(R.layout.activity_dat_mon_online);
         InsetsHelper.applySystemBarsPadding(findViewById(R.id.scrollContent));
 
-        catalogRepository = new CatalogCloudRepository(this);
+        cartStore = new CustomerCartStore(this);
         orderRepository = new OrderCloudRepository(this);
-        userRepository = new UserCloudRepository(this);
         sessionManager = new LocalSessionManager(this);
+        userRepository = new UserCloudRepository(this);
 
         View tvBack = findViewById(R.id.tvBack);
         if (tvBack != null) {
             tvBack.setOnClickListener(v -> finish());
         }
 
+        cartItemsContainer = findViewById(R.id.cartItemsContainer);
         tvSelectedAddress = findViewById(R.id.tvSelectedAddress);
-        TextView btnChooseAddress = findViewById(R.id.btnChooseAddress);
-        edtTenMon = findViewById(R.id.edtTenMon);
-        TextView btnChonMonTuMenu = findViewById(R.id.btnChonMonTuMenu);
-        edtGia = findViewById(R.id.edtGiaMon);
-        edtSoLuong = findViewById(R.id.edtSoLuongMon);
-        edtSize = findViewById(R.id.edtSizeMon);
-        edtGhiChu = findViewById(R.id.edtGhiChuMon);
-        edtImageUrl = findViewById(R.id.edtImageUrlMon);
-        TextView btnDatMon = findViewById(R.id.btnDatMonOnline);
+        tvCartSummary = findViewById(R.id.tvCartSummary);
+        tvEmptyCart = findViewById(R.id.tvEmptyCart);
+        edtOrderNote = findViewById(R.id.edtOrderNote);
+        rgPaymentMethod = findViewById(R.id.rgPaymentMethod);
+        btnPlaceOnlineOrder = findViewById(R.id.btnPlaceOnlineOrder);
 
-        btnChooseAddress.setOnClickListener(v -> showAddressChooser());
-        btnChonMonTuMenu.setOnClickListener(v -> showPickProductDialog());
-        btnDatMon.setOnClickListener(v -> submitOnlineOrder());
+        findViewById(R.id.btnChooseAddress).setOnClickListener(v -> showAddressChooser());
+        findViewById(R.id.btnAddAddress).setOnClickListener(v ->
+                startActivity(new Intent(this, HoSoKhachHangActivity.class)));
+        btnPlaceOnlineOrder.setOnClickListener(v -> submitOrder());
 
-        listenProducts();
-        loadAddresses();
+        if (rgPaymentMethod != null) {
+            rgPaymentMethod.check(R.id.rbPaymentCod);
+        }
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (productsListener != null) {
-            productsListener.remove();
-        }
-    }
-
-    private void listenProducts() {
-        if (productsListener != null) {
-            productsListener.remove();
-        }
-        productsListener = catalogRepository.listenProducts(products -> {
-            activeProducts.clear();
-            for (LocalProduct product : products) {
-                if (product.isActive()) {
-                    activeProducts.add(product);
-                }
-            }
-        });
+    protected void onResume() {
+        super.onResume();
+        loadAddresses();
+        renderCart();
     }
 
     private void loadAddresses() {
@@ -108,16 +93,28 @@ public class DatMonOnlineActivity extends AppCompatActivity {
             return;
         }
         userRepository.getCustomerAddresses(customerId, (addresses, message) -> runOnUiThread(() -> {
-            currentAddresses = new ArrayList<>(addresses);
+            currentAddresses.clear();
+            currentAddresses.addAll(addresses);
+            LocalCustomerAddress previousSelection = selectedAddress;
             selectedAddress = null;
-            for (LocalCustomerAddress address : addresses) {
-                if (address.isDefault()) {
-                    selectedAddress = address;
-                    break;
+            if (previousSelection != null) {
+                for (LocalCustomerAddress address : currentAddresses) {
+                    if (address.getAddressId().equals(previousSelection.getAddressId())) {
+                        selectedAddress = address;
+                        break;
+                    }
                 }
             }
-            if (selectedAddress == null && !addresses.isEmpty()) {
-                selectedAddress = addresses.get(0);
+            if (selectedAddress == null) {
+                for (LocalCustomerAddress address : currentAddresses) {
+                    if (address.isDefault()) {
+                        selectedAddress = address;
+                        break;
+                    }
+                }
+            }
+            if (selectedAddress == null && !currentAddresses.isEmpty()) {
+                selectedAddress = currentAddresses.get(0);
             }
             bindSelectedAddress();
         }));
@@ -125,26 +122,18 @@ public class DatMonOnlineActivity extends AppCompatActivity {
 
     private void bindSelectedAddress() {
         if (selectedAddress == null) {
-            tvSelectedAddress.setText("Chưa có địa chỉ. Vui lòng thêm địa chỉ trong hồ sơ khách hàng.");
+            tvSelectedAddress.setText("Bạn chưa có địa chỉ giao hàng. Hãy thêm địa chỉ để tiếp tục.");
             return;
         }
-        tvSelectedAddress.setText(
-                selectedAddress.getLabel()
-                        + "\n"
-                        + selectedAddress.getRecipientName()
-                        + " • "
-                        + selectedAddress.getPhone()
-                        + "\n"
-                        + selectedAddress.buildDisplayAddress()
-        );
+        tvSelectedAddress.setText(selectedAddress.getLabel() + "\n" + selectedAddress.buildDisplayAddress());
     }
 
     private void showAddressChooser() {
         if (currentAddresses.isEmpty()) {
-            Toast.makeText(this, "Bạn chưa có địa chỉ nào. Hãy cập nhật hồ sơ khách hàng trước.", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(this, HoSoKhachHangActivity.class));
+            Toast.makeText(this, "Hãy thêm địa chỉ giao hàng trước khi đặt online.", Toast.LENGTH_SHORT).show();
             return;
         }
-
         List<String> labels = new ArrayList<>();
         for (LocalCustomerAddress address : currentAddresses) {
             labels.add(address.getLabel() + " - " + address.buildDisplayAddress());
@@ -156,38 +145,65 @@ public class DatMonOnlineActivity extends AppCompatActivity {
                     selectedAddress = currentAddresses.get(which);
                     bindSelectedAddress();
                 })
-                .setNegativeButton("Hủy", null)
+                .setNegativeButton("Đóng", null)
                 .show();
     }
 
-    private void showPickProductDialog() {
-        if (activeProducts.isEmpty()) {
-            Toast.makeText(this, "Chưa có món trong menu.", Toast.LENGTH_SHORT).show();
+    private void renderCart() {
+        List<CustomerCartItem> items = cartStore.getItems();
+        cartItemsContainer.removeAllViews();
+        tvEmptyCart.setVisibility(items.isEmpty() ? View.VISIBLE : View.GONE);
+        for (CustomerCartItem item : items) {
+            View itemView = LayoutInflater.from(this).inflate(R.layout.item_cart_checkout, cartItemsContainer, false);
+            android.widget.ImageView imgCartItem = itemView.findViewById(R.id.imgCartItem);
+            TextView tvCartItemName = itemView.findViewById(R.id.tvCartItemName);
+            TextView tvCartItemVariant = itemView.findViewById(R.id.tvCartItemVariant);
+            TextView tvCartItemNote = itemView.findViewById(R.id.tvCartItemNote);
+            TextView tvCartItemLineTotal = itemView.findViewById(R.id.tvCartItemLineTotal);
+            TextView tvCartItemQty = itemView.findViewById(R.id.tvCartItemQty);
+            TextView btnDecreaseQty = itemView.findViewById(R.id.btnDecreaseQty);
+            TextView btnIncreaseQty = itemView.findViewById(R.id.btnIncreaseQty);
+
+            tvCartItemName.setText(item.getProductName());
+            String variantLabel = item.buildVariantLabel();
+            tvCartItemVariant.setVisibility(TextUtils.isEmpty(variantLabel) ? View.GONE : View.VISIBLE);
+            tvCartItemVariant.setText(variantLabel);
+            tvCartItemNote.setVisibility(TextUtils.isEmpty(item.getNote()) ? View.GONE : View.VISIBLE);
+            tvCartItemNote.setText(item.getNote());
+            tvCartItemLineTotal.setText(MoneyFormatter.format(item.getLineTotal()));
+            tvCartItemQty.setText(String.valueOf(item.getQuantity()));
+
+            Glide.with(this)
+                    .load(item.getImageUrl())
+                    .placeholder(R.drawable.cfplus)
+                    .error(R.drawable.cfplus)
+                    .into(imgCartItem);
+
+            btnDecreaseQty.setOnClickListener(v -> {
+                cartStore.updateQuantity(item.getCartItemId(), item.getQuantity() - 1);
+                renderCart();
+            });
+            btnIncreaseQty.setOnClickListener(v -> {
+                cartStore.updateQuantity(item.getCartItemId(), item.getQuantity() + 1);
+                renderCart();
+            });
+
+            cartItemsContainer.addView(itemView);
+        }
+
+        tvCartSummary.setText(cartStore.getItemCount() + " món • " + MoneyFormatter.format(cartStore.getSubtotal()));
+    }
+
+    private void submitOrder() {
+        String customerId = sessionManager.getCurrentUserId();
+        if (customerId == null) {
+            Toast.makeText(this, "Vui lòng đăng nhập để đặt món online.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        List<String> labels = new ArrayList<>();
-        for (LocalProduct product : activeProducts) {
-            labels.add(product.getName() + " - " + product.getBasePrice() + "đ");
-        }
-
-        new AlertDialog.Builder(this)
-                .setTitle("Chọn món")
-                .setItems(labels.toArray(new String[0]), (dialog, which) -> {
-                    LocalProduct product = activeProducts.get(which);
-                    selectedProductId = product.getProductId();
-                    edtTenMon.setText(product.getName());
-                    edtGia.setText(String.valueOf(product.getBasePrice()));
-                    edtImageUrl.setText(product.getImageUrl() != null ? product.getImageUrl() : "");
-                })
-                .setNegativeButton("Hủy", null)
-                .show();
-    }
-
-    private void submitOnlineOrder() {
-        String userId = sessionManager.getCurrentUserId();
-        if (userId == null) {
-            Toast.makeText(this, "Vui lòng đăng nhập.", Toast.LENGTH_SHORT).show();
+        List<CustomerCartItem> items = cartStore.getItems();
+        if (items.isEmpty()) {
+            Toast.makeText(this, "Giỏ hàng đang trống.", Toast.LENGTH_SHORT).show();
             return;
         }
         if (selectedAddress == null) {
@@ -195,59 +211,55 @@ public class DatMonOnlineActivity extends AppCompatActivity {
             return;
         }
 
-        String tenMon = edtTenMon.getText().toString().trim();
-        String giaStr = edtGia.getText().toString().trim();
-        String soLuongStr = edtSoLuong.getText().toString().trim();
-        String size = edtSize.getText().toString().trim();
-        String ghiChu = edtGhiChu.getText().toString().trim();
-        String imageUrl = edtImageUrl.getText().toString().trim();
+        String paymentPreference = rgPaymentMethod.getCheckedRadioButtonId() == R.id.rbPaymentVnpay
+                ? "vnpay"
+                : "cod";
 
-        if (TextUtils.isEmpty(tenMon) || TextUtils.isEmpty(giaStr) || TextUtils.isEmpty(soLuongStr)) {
-            Toast.makeText(this, "Vui lòng nhập tên món, giá và số lượng.", Toast.LENGTH_SHORT).show();
-            return;
+        String note = edtOrderNote.getText().toString().trim();
+        if (btnPlaceOnlineOrder != null) {
+            btnPlaceOnlineOrder.setEnabled(false);
         }
 
-        int gia;
-        int soLuong;
-        try {
-            gia = Integer.parseInt(giaStr);
-            soLuong = Integer.parseInt(soLuongStr);
-        } catch (Exception e) {
-            Toast.makeText(this, "Giá hoặc số lượng không hợp lệ.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (gia < 0 || soLuong <= 0) {
-            Toast.makeText(this, "Giá phải lớn hơn hoặc bằng 0 và số lượng phải lớn hơn 0.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (!TextUtils.isEmpty(size) && !size.matches("(?i)[sml]")) {
-            Toast.makeText(this, "Size chỉ nhận S, M hoặc L.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (!TextUtils.isEmpty(imageUrl) && !Patterns.WEB_URL.matcher(imageUrl).matches()) {
-            Toast.makeText(this, "Đường dẫn ảnh không hợp lệ.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        orderRepository.createOnlineAppOrder(
-                userId,
-                selectedProductId,
-                tenMon,
-                gia,
-                soLuong,
-                TextUtils.isEmpty(size) ? null : size.toUpperCase(),
-                TextUtils.isEmpty(ghiChu) ? null : ghiChu,
-                TextUtils.isEmpty(imageUrl) ? null : imageUrl,
+        orderRepository.createOnlineCartOrder(
+                customerId,
+                items,
                 selectedAddress,
-                (success, message) -> runOnUiThread(() -> {
-                    if (!success) {
-                        Toast.makeText(this, message == null ? "Không gửi được đơn lên hệ thống." : message, Toast.LENGTH_SHORT).show();
+                TextUtils.isEmpty(note) ? null : note,
+                paymentPreference,
+                (success, orderId, message) -> runOnUiThread(() -> {
+                    if (!success || TextUtils.isEmpty(orderId)) {
+                        if (btnPlaceOnlineOrder != null) {
+                            btnPlaceOnlineOrder.setEnabled(true);
+                        }
+                        Toast.makeText(this, message == null ? "Không thể tạo đơn online." : message, Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    Toast.makeText(this, "Đặt món online thành công.", Toast.LENGTH_SHORT).show();
+
+                    cartStore.clear();
+                    edtOrderNote.setText("");
+                    renderCart();
+
+                    if ("vnpay".equals(paymentPreference)) {
+                        Intent intent = new Intent(this, ThanhToanKhachActivity.class);
+                        intent.putExtra(ThanhToanKhachActivity.EXTRA_ORDER_ID, orderId);
+                        intent.putExtra(ThanhToanKhachActivity.EXTRA_AMOUNT, itemsTotal(items));
+                        intent.putExtra(ThanhToanKhachActivity.EXTRA_CUSTOMER_ONLINE_ONLY, true);
+                        startActivity(intent);
+                        finish();
+                        return;
+                    }
+
+                    Toast.makeText(this, "Đơn online đã được tạo. Bạn sẽ thanh toán khi nhận hàng.", Toast.LENGTH_LONG).show();
                     finish();
                 })
         );
+    }
+
+    private int itemsTotal(List<CustomerCartItem> items) {
+        int total = 0;
+        for (CustomerCartItem item : items) {
+            total += item.getLineTotal();
+        }
+        return total;
     }
 }

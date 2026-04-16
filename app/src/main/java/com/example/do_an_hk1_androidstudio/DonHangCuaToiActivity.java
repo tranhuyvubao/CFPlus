@@ -18,6 +18,7 @@ import com.example.do_an_hk1_androidstudio.cloud.OrderCloudRepository;
 import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrder;
 import com.example.do_an_hk1_androidstudio.ui.InsetsHelper;
+import com.example.do_an_hk1_androidstudio.ui.MoneyFormatter;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.text.SimpleDateFormat;
@@ -43,7 +44,7 @@ public class DonHangCuaToiActivity extends AppCompatActivity {
 
         currentUserId = new LocalSessionManager(this).getCurrentUserId();
         if (currentUserId == null) {
-            Toast.makeText(this, "Vui long dang nhap", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Vui lòng đăng nhập", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
@@ -140,14 +141,14 @@ public class DonHangCuaToiActivity extends AppCompatActivity {
 
         void bind(LocalOrder order) {
             String status = order.getStatus();
-            tvOrderId.setText("Don: " + order.getOrderId());
-            tvStatus.setText("Trang thai: " + mapStatus(status));
-            tvTotal.setText("Tong: " + order.getTotal() + "d");
-            tvTime.setText("Tao luc: " + fmtTime(order.getCreatedAtMillis()));
-            String preview = "Loai don: " + mapOrderType(order.getOrderType());
-            preview += " | Kenh: " + mapOrderChannel(order.getOrderChannel());
+            tvOrderId.setText("Đơn: " + order.getOrderId());
+            tvStatus.setText("Trạng thái: " + mapStatus(status));
+            tvTotal.setText("Tổng: " + MoneyFormatter.format(order.getTotal()));
+            tvTime.setText("Tạo lúc: " + fmtTime(order.getCreatedAtMillis()));
+            String preview = "Loại đơn: " + mapOrderType(order.getOrderType());
+            preview += " | Kênh: " + mapOrderChannel(order.getOrderChannel());
             if ("dine_in".equals(order.getOrderType())) {
-                preview += " | Ban: " + safe(order.getTableName(), "-");
+                preview += " | Bàn: " + safe(order.getTableName(), "-");
             }
             tvItemsPreview.setText(preview);
 
@@ -167,37 +168,37 @@ public class DonHangCuaToiActivity extends AppCompatActivity {
     }
 
     private String mapStatus(String status) {
-        if ("paid".equals(status)) return "Da thanh toan";
-        if ("confirmed".equals(status)) return "Da xac nhan";
-        if ("completed".equals(status)) return "Hoan tat";
-        if ("cancelled".equals(status)) return "Da huy";
-        return "Cho xu ly";
+        if ("paid".equals(status)) return "Đã thanh toán";
+        if ("confirmed".equals(status)) return "Đã xác nhận";
+        if ("completed".equals(status)) return "Hoàn tất";
+        if ("cancelled".equals(status)) return "Đã hủy";
+        return "Chờ xử lý";
     }
 
     private String mapOrderType(String orderType) {
         if ("dine_in".equals(orderType)) {
-            return "Tai cho";
+            return "Tại chỗ";
         }
         if ("takeaway".equals(orderType)) {
-            return "Mang ve";
+            return "Mang về";
         }
         if ("online".equals(orderType)) {
             return "Qua app";
         }
-        return "Khac";
+        return "Khác";
     }
 
     private String mapOrderChannel(String orderChannel) {
         if ("customer_qr".equals(orderChannel)) {
-            return "Khach quet QR";
+            return "Khách quét QR";
         }
         if ("customer_app".equals(orderChannel)) {
-            return "Khach dat app";
+            return "Khách đặt app";
         }
         if ("staff_pos".equals(orderChannel)) {
-            return "Nhan vien tao";
+            return "Nhân viên tạo";
         }
-        return "Khac";
+        return "Khác";
     }
 
     private String safe(String value, String fallback) {

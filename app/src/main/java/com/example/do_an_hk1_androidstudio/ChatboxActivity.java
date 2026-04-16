@@ -33,11 +33,13 @@ public class ChatboxActivity extends AppCompatActivity {
         edtMessage = findViewById(R.id.edtChatMessage);
         btnSend = findViewById(R.id.btnChatSend);
 
-        appendBot("Xin chào! Tôi là Chatbox AI (demo). Bạn muốn hỏi gì về quán?");
+        appendBot("Xin chào! Tôi là Chatbox AI bản demo. Bạn muốn hỏi gì về quán?");
 
         btnSend.setOnClickListener(v -> {
             String msg = edtMessage.getText().toString().trim();
-            if (TextUtils.isEmpty(msg)) return;
+            if (TextUtils.isEmpty(msg)) {
+                return;
+            }
             appendUser(msg);
             edtMessage.setText("");
             appendBot(fakeAiReply(msg));
@@ -61,12 +63,11 @@ public class ChatboxActivity extends AppCompatActivity {
             return "Bạn có thể xem mã giảm giá ở mục Khuyến mãi (demo).";
         }
         if (q.contains("best") || q.contains("ngon") || q.contains("gợi ý")) {
-            return "Gợi ý: Matcha Latte size M, ít đá. Hoặc Cafe sữa đá (demo).";
+            return "Gợi ý: Matcha Latte size M, ít đá. Hoặc cà phê sữa đá (demo).";
         }
         if (q.contains("địa chỉ") || q.contains("ở đâu")) {
-            return "Địa chỉ quán: (bạn điền theo thông tin cửa hàng của bạn) (demo).";
+            return "Địa chỉ quán: bạn có thể xem ở mục Thông tin cửa hàng (demo).";
         }
-        return "Mình đã ghi nhận. Bạn có thể hỏi về giờ mở cửa, khuyến mãi, gợi ý món, địa chỉ (demo).";
+        return "Mình đã ghi nhận. Bạn có thể hỏi về giờ mở cửa, khuyến mãi, gợi ý món hoặc địa chỉ quán (demo).";
     }
 }
-

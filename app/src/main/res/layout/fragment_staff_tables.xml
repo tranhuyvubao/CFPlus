@@ -28,6 +28,21 @@
             android:text="Nhân viên theo dõi khách tại quán ngay tại đây. Bấm vào từng bàn để mở hóa đơn, xem món đã gọi và thanh toán."
             android:textColor="@color/coffee_muted"
             android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/btnStaffReservations"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/app_button_secondary"
+            android:paddingLeft="18dp"
+            android:paddingTop="10dp"
+            android:paddingRight="18dp"
+            android:paddingBottom="10dp"
+            android:text="Xử lý đặt bàn"
+            android:textColor="@color/coffee_primary_dark"
+            android:textSize="14sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <TextView

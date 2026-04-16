@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.do_an_hk1_androidstudio.cloud.OrderCloudRepository;
+import com.example.do_an_hk1_androidstudio.ui.MoneyFormatter;
 
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.DonHangV
         holder.tvSize.setText("Size: " + safe(donHang.size, "-"));
         holder.tvDa.setText("Mức đá/Ghi chú: " + safe(donHang.mucDa, "-"));
         holder.tvSoLuong.setText("Số lượng: " + donHang.soLuong);
-        holder.tvGia.setText("Tổng tiền: " + donHang.tongTien + "đ");
+        holder.tvGia.setText("Tổng tiền: " + MoneyFormatter.format(donHang.tongTien));
         holder.tvHinhThuc.setText("Hình thức: " + safe(donHang.hinhThuc, "-"));
         holder.tvTrangThai.setText("Trạng thái: " + safe(donHang.trangThai, "Chưa thanh toán"));
 

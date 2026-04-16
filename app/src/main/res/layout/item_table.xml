@@ -11,7 +11,7 @@
         android:id="@+id/tvTableName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Ban"
+        android:text="Bàn"
         android:textColor="@color/coffee_dark"
         android:textSize="18sp"
         android:textStyle="bold" />
@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="Ma ban"
+        android:text="Mã bàn"
         android:textColor="@color/coffee_primary"
         android:textStyle="bold" />
 
@@ -30,7 +30,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="Khu vuc"
+        android:text="Khu vực"
         android:textColor="@color/coffee_muted" />
 
     <TextView
@@ -38,7 +38,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="Trang thai"
+        android:text="Trạng thái"
         android:textColor="@color/coffee_muted" />
 
     <TextView
@@ -46,7 +46,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="Dang su dung"
+        android:text="Đang sử dụng"
         android:textColor="@color/coffee_muted" />
 
     <LinearLayout
@@ -78,7 +78,7 @@
             android:paddingTop="8dp"
             android:paddingRight="12dp"
             android:paddingBottom="8dp"
-            android:text="Sua"
+            android:text="Sửa"
             android:textColor="@color/coffee_warning"
             android:textStyle="bold" />
 
@@ -92,7 +92,7 @@
             android:paddingTop="8dp"
             android:paddingRight="12dp"
             android:paddingBottom="8dp"
-            android:text="Xoa"
+            android:text="Xóa"
             android:textColor="@color/coffee_danger"
             android:textStyle="bold" />
     </LinearLayout>

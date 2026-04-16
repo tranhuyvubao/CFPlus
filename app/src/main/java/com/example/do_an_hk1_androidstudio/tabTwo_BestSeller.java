@@ -73,7 +73,13 @@ public class tabTwo_BestSeller extends Fragment {
                 String key = item.getProductId() != null ? item.getProductId() : item.getProductName();
                 ProductCount current = productCountMap.get(key);
                 if (current == null) {
-                    productCountMap.put(key, new ProductCount(item.getProductName(), item.getUnitPrice(), item.getImageUrl(), item.getQty()));
+                    productCountMap.put(key, new ProductCount(
+                            item.getProductId(),
+                            item.getProductName(),
+                            item.getUnitPrice(),
+                            item.getImageUrl(),
+                            item.getQty()
+                    ));
                 } else {
                     current.count += item.getQty();
                 }
@@ -87,14 +93,14 @@ public class tabTwo_BestSeller extends Fragment {
         int maxProducts = Math.min(10, sortedProducts.size());
         for (int i = 0; i < maxProducts; i++) {
             ProductCount product = sortedProducts.get(i);
-            productList.add(new SanPham(product.ten, String.valueOf(product.gia), product.hinhAnh));
+            productList.add(new SanPham(product.productId, product.ten, String.valueOf(product.gia), product.hinhAnh));
         }
 
         if (productList.isEmpty()) {
             int maxFallback = Math.min(10, allProducts.size());
             for (int i = 0; i < maxFallback; i++) {
                 LocalProduct product = allProducts.get(i);
-                productList.add(new SanPham(product.getName(), String.valueOf(product.getBasePrice()), product.getImageUrl()));
+                productList.add(new SanPham(product.getProductId(), product.getName(), String.valueOf(product.getBasePrice()), product.getImageUrl()));
             }
         }
         if (adapter != null) {
@@ -103,12 +109,14 @@ public class tabTwo_BestSeller extends Fragment {
     }
 
     private static class ProductCount {
+        String productId;
         String ten;
         int gia;
         String hinhAnh;
         int count;
 
-        ProductCount(String ten, int gia, String hinhAnh, int count) {
+        ProductCount(String productId, String ten, int gia, String hinhAnh, int count) {
+            this.productId = productId;
             this.ten = ten;
             this.gia = gia;
             this.hinhAnh = hinhAnh;

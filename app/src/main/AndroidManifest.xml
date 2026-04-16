@@ -31,6 +31,7 @@
         <activity android:name=".ThongKeActivity" />
         <activity android:name=".NhanDonOnlineActivity" />
         <activity android:name=".NhanDonTaiBanActivity" />
+        <activity android:name=".XuLyDatBanActivity" />
         <activity android:name=".HoaDonBanActivity" />
         <activity android:name=".QuanLyNhanVienActivity" />
         <activity android:name=".QuanLyMonActivity" />
@@ -44,6 +45,21 @@
         <activity android:name=".DatMonOnlineActivity" />
         <activity android:name=".DatMonTaiBanActivity" />
         <activity android:name=".ThanhToanKhachActivity" />
+        <activity android:name=".VnpaySandboxConfigActivity" />
+        <activity
+            android:name=".VnpayReturnActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="vnpay-return"
+                    android:scheme="cfplus" />
+            </intent-filter>
+        </activity>
         <activity android:name=".ChatboxActivity" />
         <activity android:name=".QuanLyKhachHangActivity" />
         <activity android:name=".ThongKeTongHopActivity" />

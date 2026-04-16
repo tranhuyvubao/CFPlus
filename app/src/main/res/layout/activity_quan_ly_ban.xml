@@ -8,32 +8,32 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:gravity="center"
         android:text="Quản lý bàn"
         android:textSize="24sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:layout_marginBottom="12dp" />
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tvBack"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="4dp"
         android:text="← Trở về"
-        android:textSize="16sp"
-        android:textStyle="bold"
         android:textColor="#304FFE"
-        android:padding="4dp" />
+        android:textSize="16sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/btnAddTable"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Thêm bàn"
-        android:textStyle="bold"
-        android:textColor="#304FFE"
-        android:padding="10dp"
         android:layout_gravity="end"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="8dp"
+        android:padding="10dp"
+        android:text="Thêm bàn"
+        android:textColor="#304FFE"
+        android:textStyle="bold" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvTables"
@@ -42,4 +42,3 @@
         android:layout_weight="1" />
 
 </LinearLayout>
-

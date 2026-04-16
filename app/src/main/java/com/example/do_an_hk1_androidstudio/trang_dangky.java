@@ -68,7 +68,7 @@ public class trang_dangky extends AppCompatActivity {
             boolean isValid = true;
 
             if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                testEmail.setText("Email khong dung dinh dang!");
+                testEmail.setText("Email không đúng định dạng!");
                 testEmail.setVisibility(View.VISIBLE);
                 isValid = false;
             } else {
@@ -76,7 +76,7 @@ public class trang_dangky extends AppCompatActivity {
             }
 
             if (password.length() < 6 || !password.matches(".*[a-zA-Z].*") || !password.matches(".*\\d.*")) {
-                testMk.setText("Mat khau phai tu 6 ky tu, bao gom chu va so!");
+                testMk.setText("Mật khẩu phải từ 6 ký tự, bao gồm chữ và số!");
                 testMk.setVisibility(View.VISIBLE);
                 isValid = false;
             } else {
@@ -84,7 +84,7 @@ public class trang_dangky extends AppCompatActivity {
             }
 
             if (!password.equals(passwordAgain)) {
-                testMklai.setText("Mat khau nhap lai khong khop!");
+                testMklai.setText("Mật khẩu nhập lại không khớp!");
                 testMklai.setVisibility(View.VISIBLE);
                 isValid = false;
             } else {
@@ -100,7 +100,7 @@ public class trang_dangky extends AppCompatActivity {
                     return;
                 }
                 if (exists) {
-                    testEmail.setText("Email da ton tai!");
+                    testEmail.setText("Email đã tồn tại!");
                     testEmail.setVisibility(View.VISIBLE);
                     return;
                 }
@@ -126,12 +126,12 @@ public class trang_dangky extends AppCompatActivity {
             @Override
             public void onTick(long millisUntilFinished) {
                 long seconds = millisUntilFinished / 1000;
-                tvDemGiay.setText("Ma OTP se het han sau: " + seconds + " giay");
+                tvDemGiay.setText("Mã OTP sẽ hết hạn sau: " + seconds + " giây");
             }
 
             @Override
             public void onFinish() {
-                tvDemGiay.setText("Ma OTP da het han. Vui long nhan lai ma moi.");
+                tvDemGiay.setText("Mã OTP đã hết hạn. Vui lòng nhận lại mã mới.");
                 tvXacNhan.setEnabled(false);
             }
         }.start();
@@ -141,11 +141,11 @@ public class trang_dangky extends AppCompatActivity {
         tvXacNhan.setOnClickListener(v -> {
             String userOtp = edtotp.getText().toString().trim();
             if (userOtp.equals(otp)) {
-                Toast.makeText(this, "Xac thuc thanh cong!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Xác thực thành công!", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
                 registerLocalAccount(email, valueOf(edtmk));
             } else {
-                edtotp.setError("Ma OTP khong chinh xac!");
+                edtotp.setError("Mã OTP không chính xác!");
             }
         });
     }
@@ -155,18 +155,18 @@ public class trang_dangky extends AppCompatActivity {
             try {
                 String appPassword = "rqbo wmyi bkso qctq".replaceAll("\\s+", "");
                 GmailSender sender = new GmailSender("dangkhoasny@gmail.com", appPassword);
-                String subject = "Xac thuc OTP cho CFPLUS cafe";
-                String message = "Xin chao,\n\nMa OTP cua ban la: " + otp + "\nMa nay se het han sau 2 phut.";
+                String subject = "Xác thực OTP cho CFPLUS cafe";
+                String message = "Xin chào,\n\nMã OTP của bạn là: " + otp + "\nMã này sẽ hết hạn sau 2 phút.";
                 sender.sendEmail(email, subject, message);
 
-                Log.d("OTP", "Gui email thanh cong");
-                runOnUiThread(() -> Toast.makeText(this, "Da gui ma OTP den email cua ban!", Toast.LENGTH_SHORT).show());
+                Log.d("OTP", "Gửi email thành công");
+                runOnUiThread(() -> Toast.makeText(this, "Đã gửi mã OTP đến email của bạn!", Toast.LENGTH_SHORT).show());
             } catch (MessagingException e) {
-                Log.e("OTP", "Gui email that bai: " + e.getMessage());
-                runOnUiThread(() -> Toast.makeText(this, "Khong the gui email: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                Log.e("OTP", "Gửi email thất bại: " + e.getMessage());
+                runOnUiThread(() -> Toast.makeText(this, "Không thể gửi email: " + e.getMessage(), Toast.LENGTH_LONG).show());
             } catch (Exception e) {
-                Log.e("OTP", "Gui email that bai: " + e.getMessage());
-                runOnUiThread(() -> Toast.makeText(this, "Loi: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                Log.e("OTP", "Gửi email thất bại: " + e.getMessage());
+                runOnUiThread(() -> Toast.makeText(this, "Lỗi: " + e.getMessage(), Toast.LENGTH_LONG).show());
             }
         }).start();
     }
@@ -174,14 +174,14 @@ public class trang_dangky extends AppCompatActivity {
     private void registerLocalAccount(String email, String password) {
         userCloudRepository.registerCustomer(email, password, (user, message) -> {
             if (user != null) {
-                Toast.makeText(this, "Dang ky thanh cong! Vui long dang nhap.", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Đăng ký thành công! Vui lòng đăng nhập.", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(trang_dangky.this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();
                 return;
             }
-            Toast.makeText(this, message == null ? "Dang ky that bai." : message, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, message == null ? "Đăng ký thất bại." : message, Toast.LENGTH_SHORT).show();
         });
     }
 

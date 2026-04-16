@@ -60,21 +60,21 @@ public class Fragment_Setting extends Fragment {
         tvNhanDonOnline.setOnClickListener(v -> startActivity(new Intent(getActivity(), NhanDonOnlineActivity.class)));
         tvNhanDonTaiBan.setOnClickListener(v -> startActivity(new Intent(getActivity(), NhanDonTaiBanActivity.class)));
 
-        tvQuanLyNhanVien.setOnClickListener(v -> openForRole("manager", QuanLyNhanVienActivity.class, "Chá»‰ quáº£n lÃ½ má»›i truy cáº­p Ä‘Æ°á»£c chá»©c nÄƒng nÃ y"));
-        tvQuanLyMon.setOnClickListener(v -> openForRole("manager", QuanLyMonActivity.class, "Chá»‰ quáº£n lÃ½ má»›i truy cáº­p Ä‘Æ°á»£c chá»©c nÄƒng nÃ y"));
-        tvQuanLyDanhMuc.setOnClickListener(v -> openForRole("manager", QuanLyDanhMucActivity.class, "Chá»‰ quáº£n lÃ½ má»›i truy cáº­p Ä‘Æ°á»£c chá»©c nÄƒng nÃ y"));
-        tvQuanLyBan.setOnClickListener(v -> openForRole("manager", QuanLyBanActivity.class, "Chá»‰ quáº£n lÃ½ má»›i truy cáº­p Ä‘Æ°á»£c chá»©c nÄƒng nÃ y"));
-        tvQuanLyKho.setOnClickListener(v -> openForRole("manager", QuanLyKhoActivity.class, "Chá»‰ quáº£n lÃ½ má»›i truy cáº­p Ä‘Æ°á»£c chá»©c nÄƒng nÃ y"));
-        tvQuanLyKhuyenMai.setOnClickListener(v -> openForRole("manager", QuanLyKhuyenMaiActivity.class, "Chá»‰ quáº£n lÃ½ má»›i truy cáº­p Ä‘Æ°á»£c chá»©c nÄƒng nÃ y"));
-        tvSeedFirebase.setOnClickListener(v -> openForRole("manager", FirebaseSeederActivity.class, "Chá»‰ quáº£n lÃ½ má»›i dÃ¹ng Ä‘Æ°á»£c chá»©c nÄƒng nÃ y"));
-        tvQuanLyKhachHang.setOnClickListener(v -> openForRole("manager", QuanLyKhachHangActivity.class, "Chá»‰ quáº£n lÃ½ má»›i truy cáº­p Ä‘Æ°á»£c chá»©c nÄƒng nÃ y"));
-        tvThongKeTongHop.setOnClickListener(v -> openForRole("manager", ThongKeTongHopActivity.class, "Chá»‰ quáº£n lÃ½ má»›i truy cáº­p Ä‘Æ°á»£c chá»©c nÄƒng nÃ y"));
+        tvQuanLyNhanVien.setOnClickListener(v -> openForRole("manager", QuanLyNhanVienActivity.class, "Chỉ quản lý mới truy cập được chức năng này"));
+        tvQuanLyMon.setOnClickListener(v -> openForRole("manager", QuanLyMonActivity.class, "Chỉ quản lý mới truy cập được chức năng này"));
+        tvQuanLyDanhMuc.setOnClickListener(v -> openForRole("manager", QuanLyDanhMucActivity.class, "Chỉ quản lý mới truy cập được chức năng này"));
+        tvQuanLyBan.setOnClickListener(v -> openForRole("manager", QuanLyBanActivity.class, "Chỉ quản lý mới truy cập được chức năng này"));
+        tvQuanLyKho.setOnClickListener(v -> openForRole("manager", QuanLyKhoActivity.class, "Chỉ quản lý mới truy cập được chức năng này"));
+        tvQuanLyKhuyenMai.setOnClickListener(v -> openForRole("manager", QuanLyKhuyenMaiActivity.class, "Chỉ quản lý mới truy cập được chức năng này"));
+        tvSeedFirebase.setOnClickListener(v -> openForRole("manager", FirebaseSeederActivity.class, "Chỉ quản lý mới dùng được chức năng này"));
+        tvQuanLyKhachHang.setOnClickListener(v -> openForRole("manager", QuanLyKhachHangActivity.class, "Chỉ quản lý mới truy cập được chức năng này"));
+        tvThongKeTongHop.setOnClickListener(v -> openForRole("manager", ThongKeTongHopActivity.class, "Chỉ quản lý mới truy cập được chức năng này"));
 
-        tvDatBan.setOnClickListener(v -> openForRole("customer", DatBanActivity.class, "Chá»©c nÄƒng nÃ y dÃ nh cho khÃ¡ch hÃ ng"));
-        tvDonHangCuaToi.setOnClickListener(v -> openForRole("customer", DonHangCuaToiActivity.class, "Chá»©c nÄƒng nÃ y dÃ nh cho khÃ¡ch hÃ ng"));
-        tvDatMonOnline.setOnClickListener(v -> openForRole("customer", DatMonOnlineActivity.class, "Chá»©c nÄƒng nÃ y dÃ nh cho khÃ¡ch hÃ ng"));
-        tvHoSoKhachHang.setOnClickListener(v -> openForRole("customer", HoSoKhachHangActivity.class, "Chá»©c nÄƒng nÃ y dÃ nh cho khÃ¡ch hÃ ng"));
-        tvChatboxAI.setOnClickListener(v -> openForRole("customer", ChatboxActivity.class, "Chá»©c nÄƒng nÃ y dÃ nh cho khÃ¡ch hÃ ng"));
+        tvDatBan.setOnClickListener(v -> openForRole("customer", DatBanActivity.class, "Chức năng này dành cho khách hàng"));
+        tvDonHangCuaToi.setOnClickListener(v -> openForRole("customer", DonHangCuaToiActivity.class, "Chức năng này dành cho khách hàng"));
+        tvDatMonOnline.setOnClickListener(v -> openForRole("customer", DatMonOnlineActivity.class, "Chức năng này dành cho khách hàng"));
+        tvHoSoKhachHang.setOnClickListener(v -> openForRole("customer", HoSoKhachHangActivity.class, "Chức năng này dành cho khách hàng"));
+        tvChatboxAI.setOnClickListener(v -> openForRole("customer", ChatboxActivity.class, "Chức năng này dành cho khách hàng"));
 
         tvDangXuat.setOnClickListener(v -> {
             sessionManager.clear();
@@ -110,7 +110,7 @@ public class Fragment_Setting extends Fragment {
 
     private void openForRole(String role, Class<?> activityClass, String deniedMessage) {
         if (!sessionManager.isLoggedIn()) {
-            Toast.makeText(getActivity(), "Vui lÃ²ng Ä‘Äƒng nháº­p láº¡i", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Vui lòng đăng nhập lại", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -141,7 +141,6 @@ public class Fragment_Setting extends Fragment {
                                      TextView tvChatboxAI,
                                      TextView tvQuanLyKhachHang,
                                      TextView tvThongKeTongHop) {
-        boolean isManager = "manager".equals(role);
         boolean isCustomer = "customer".equals(role);
 
         tvThongKeHomNay.setVisibility(View.GONE);
@@ -165,4 +164,3 @@ public class Fragment_Setting extends Fragment {
         tvChatboxAI.setVisibility(isCustomer ? View.VISIBLE : View.GONE);
     }
 }
-

@@ -40,7 +40,7 @@ public class QuanLyDanhMucActivity extends AppCompatActivity {
     private CatalogCloudRepository catalogRepository;
     private TextView tvEmpty;
     private ListenerRegistration categoriesListener;
-    private ActivityResultLauncher<String> pickImageLauncher;
+    private ActivityResultLauncher<String[]> pickImageLauncher;
     private Uri pendingImageUri;
     private ImageView pendingPickImageView;
 
@@ -57,10 +57,11 @@ public class QuanLyDanhMucActivity extends AppCompatActivity {
         }
 
         catalogRepository = new CatalogCloudRepository(this);
-        pickImageLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+        pickImageLauncher = registerForActivityResult(new ActivityResultContracts.OpenDocument(), uri -> {
             if (uri == null) {
                 return;
             }
+            getContentResolver().takePersistableUriPermission(uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION);
             pendingImageUri = uri;
             if (pendingPickImageView != null) {
                 pendingPickImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
@@ -133,7 +134,7 @@ public class QuanLyDanhMucActivity extends AppCompatActivity {
 
         pendingImageUri = null;
         pendingPickImageView = imgPick;
-        imgPick.setOnClickListener(v -> pickImageLauncher.launch("image/*"));
+        imgPick.setOnClickListener(v -> pickImageLauncher.launch(new String[]{"image/*"}));
 
         new AlertDialog.Builder(this)
                 .setTitle("Thêm danh mục")
@@ -165,7 +166,7 @@ public class QuanLyDanhMucActivity extends AppCompatActivity {
         swActive.setChecked(category.isActive());
         pendingImageUri = null;
         pendingPickImageView = imgPick;
-        imgPick.setOnClickListener(v -> pickImageLauncher.launch("image/*"));
+        imgPick.setOnClickListener(v -> pickImageLauncher.launch(new String[]{"image/*"}));
         if (!TextUtils.isEmpty(category.getImageUrl())) {
             imgPick.setScaleType(ImageView.ScaleType.FIT_CENTER);
             Glide.with(this).load(category.getImageUrl()).into(imgPick);

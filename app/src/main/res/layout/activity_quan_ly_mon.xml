@@ -13,7 +13,7 @@
         android:background="@drawable/round_background_3"
         android:paddingHorizontal="12dp"
         android:paddingVertical="8dp"
-        android:text="← Tro ve"
+        android:text="← Trở về"
         android:textColor="@color/coffee_primary_dark"
         android:textStyle="bold" />
 
@@ -28,7 +28,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Quan ly mon"
+            android:text="Quản lý món"
             android:textColor="@color/coffee_dark"
             android:textSize="24sp"
             android:textStyle="bold" />
@@ -37,7 +37,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="Cap nhat hinh anh, gia va danh muc de menu luon moi."
+            android:text="Cập nhật hình ảnh, giá và danh mục để menu luôn mới."
             android:textColor="@color/coffee_muted"
             android:textSize="14sp" />
 
@@ -50,7 +50,7 @@
             android:background="@drawable/round_background_3"
             android:paddingHorizontal="14dp"
             android:paddingVertical="10dp"
-            android:text="Them mon"
+            android:text="Thêm món"
             android:textColor="@color/coffee_primary_dark"
             android:textStyle="bold" />
 
@@ -60,7 +60,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:background="@drawable/rounded_background"
-            android:hint="Tim mon theo ten hoac danh muc"
+            android:hint="Tìm món theo tên hoặc danh mục"
             android:padding="12dp"
             android:textColor="@color/coffee_dark"
             android:textColorHint="@color/coffee_muted" />
@@ -73,7 +73,7 @@
             android:background="@drawable/round_background_3"
             android:gravity="center"
             android:padding="16dp"
-            android:text="Chua co mon nao trong menu."
+            android:text="Chưa có món nào trong menu."
             android:textColor="@color/coffee_muted"
             android:visibility="gone" />
     </LinearLayout>

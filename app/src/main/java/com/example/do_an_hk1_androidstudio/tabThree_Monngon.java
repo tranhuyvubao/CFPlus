@@ -62,7 +62,7 @@ public class tabThree_Monngon extends Fragment {
         productList.clear();
         for (int i = 0; i < maxProducts; i++) {
             LocalProduct product = allProducts.get(i);
-            productList.add(new SanPham(product.getName(), String.valueOf(product.getBasePrice()), product.getImageUrl()));
+            productList.add(new SanPham(product.getProductId(), product.getName(), String.valueOf(product.getBasePrice()), product.getImageUrl()));
         }
         adapter.notifyDataSetChanged();
     }

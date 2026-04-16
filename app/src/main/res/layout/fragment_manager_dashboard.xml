@@ -53,7 +53,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Đơn đã thanh toán hôm nay"
+                    android:text="Doanh thu hôm nay"
                     android:textColor="@color/coffee_muted"
                     android:textSize="13sp" />
 
@@ -62,9 +62,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="0"
+                    android:text="0đ"
                     android:textColor="@color/coffee_primary_dark"
-                    android:textSize="28sp"
+                    android:textSize="24sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -114,6 +114,33 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="Đơn đã thanh toán"
+                    android:textColor="@color/coffee_muted"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvManagerMetricPaidOrders"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="0"
+                    android:textColor="@color/coffee_primary_dark"
+                    android:textSize="28sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:layout_weight="1"
+                android:background="@drawable/app_card_background"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="Nhân viên"
                     android:textColor="@color/coffee_muted"
                     android:textSize="13sp" />
@@ -128,11 +155,18 @@
                     android:textSize="28sp"
                     android:textStyle="bold" />
             </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="7dp"
+                android:layout_marginEnd="7dp"
                 android:layout_weight="1"
                 android:background="@drawable/app_card_background"
                 android:orientation="vertical"
@@ -155,32 +189,33 @@
                     android:textSize="28sp"
                     android:textStyle="bold" />
             </LinearLayout>
-        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:background="@drawable/app_card_background"
-            android:orientation="horizontal"
-            android:padding="16dp">
-
-            <TextView
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
                 android:layout_weight="1"
-                android:text="Nguyên liệu sắp xuống mức tối thiểu"
-                android:textColor="@color/coffee_muted"
-                android:textSize="13sp" />
+                android:background="@drawable/app_card_background"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-            <TextView
-                android:id="@+id/tvManagerMetricStock"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textColor="@color/coffee_warning"
-                android:textSize="28sp"
-                android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nguyên liệu sắp chạm ngưỡng"
+                    android:textColor="@color/coffee_muted"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvManagerMetricStock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="0"
+                    android:textColor="@color/coffee_warning"
+                    android:textSize="28sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
         </LinearLayout>
 
         <TextView
@@ -456,6 +491,34 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:text="Theo dõi hồ sơ và lịch sử mua."
+                    android:textColor="@color/coffee_muted"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cardVnpaySandbox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:background="@drawable/app_card_background"
+                android:clickable="true"
+                android:focusable="true"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="VNPAY sandbox"
+                    android:textColor="@color/coffee_dark"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Cấu hình TMN code và hash secret để test thanh toán."
                     android:textColor="@color/coffee_muted"
                     android:textSize="13sp" />
             </LinearLayout>

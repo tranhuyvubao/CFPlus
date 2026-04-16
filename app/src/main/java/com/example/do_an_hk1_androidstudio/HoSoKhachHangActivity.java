@@ -162,6 +162,8 @@ public class HoSoKhachHangActivity extends AppCompatActivity {
                     Toast.LENGTH_SHORT).show();
             if (success) {
                 loadProfile();
+                setResult(RESULT_OK);
+                finish();
             }
         });
     }
@@ -301,6 +303,8 @@ public class HoSoKhachHangActivity extends AppCompatActivity {
                             Toast.makeText(this, "Đã lưu địa chỉ.", Toast.LENGTH_SHORT).show();
                             renderAddresses();
                             dialog.dismiss();
+                            setResult(RESULT_OK);
+                            finish();
                         }
                 );
             }));

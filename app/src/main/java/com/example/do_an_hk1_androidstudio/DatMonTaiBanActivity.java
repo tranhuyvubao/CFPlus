@@ -55,7 +55,7 @@ public class DatMonTaiBanActivity extends AppCompatActivity {
                 if (Boolean.TRUE.equals(granted)) {
                     startQrScanner();
                 } else {
-                    Toast.makeText(this, "Báº¡n cáº§n cáº¥p quyá»n camera Ä‘á»ƒ quÃ©t QR bÃ n", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Bạn cần cấp quyền camera để quét QR bàn", Toast.LENGTH_SHORT).show();
                 }
             });
     private final ActivityResultLauncher<ScanOptions> qrScanLauncher =
@@ -78,7 +78,7 @@ public class DatMonTaiBanActivity extends AppCompatActivity {
             tvBack.setOnClickListener(v -> finish());
         }
 
-        Toast.makeText(this, "Goi mon tai ban chi dung qua web/QR. Vui long quet ma tren ban.", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Gọi món tại bàn chỉ dùng qua web/QR. Vui lòng quét mã trên bàn.", Toast.LENGTH_LONG).show();
         finish();
 
         edtTableCode = findViewById(R.id.edtTableCode);
@@ -133,7 +133,7 @@ public class DatMonTaiBanActivity extends AppCompatActivity {
     private void startQrScanner() {
         ScanOptions options = new ScanOptions();
         options.setDesiredBarcodeFormats(ScanOptions.QR_CODE);
-        options.setPrompt("ÄÆ°a camera vÃ o mÃ£ QR trÃªn bÃ n");
+        options.setPrompt("Đưa camera vào mã QR trên bàn");
         options.setBeepEnabled(true);
         options.setOrientationLocked(false);
         options.addExtra(Intents.Scan.MISSING_CAMERA_PERMISSION, true);
@@ -146,11 +146,11 @@ public class DatMonTaiBanActivity extends AppCompatActivity {
         }
         String tableCode = parseTableCode(result.getContents());
         if (tableCode == null) {
-            Toast.makeText(this, "QR nÃ y khÃ´ng pháº£i mÃ£ bÃ n cá»§a quÃ¡n", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "QR này không phải mã bàn của quán", Toast.LENGTH_SHORT).show();
             return;
         }
         edtTableCode.setText(tableCode);
-        Toast.makeText(this, "ÄÃ£ nháº­n mÃ£ bÃ n: " + tableCode, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Đã nhận mã bàn: " + tableCode, Toast.LENGTH_SHORT).show();
     }
 
     private String parseTableCode(String rawValue) {
@@ -175,17 +175,17 @@ public class DatMonTaiBanActivity extends AppCompatActivity {
 
     private void showPickProductDialog() {
         if (activeProducts.isEmpty()) {
-            Toast.makeText(this, "ChÆ°a cÃ³ mÃ³n trong menu", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Chưa có món trong menu", Toast.LENGTH_SHORT).show();
             return;
         }
 
         List<String> labels = new ArrayList<>();
         for (LocalProduct product : activeProducts) {
-            labels.add(product.getName() + " - " + product.getBasePrice() + "Ä‘");
+            labels.add(product.getName() + " - " + product.getBasePrice() + "đ");
         }
 
         new AlertDialog.Builder(this)
-                .setTitle("Chá»n mÃ³n")
+                .setTitle("Chọn món")
                 .setItems(labels.toArray(new String[0]), (dialog, which) -> {
                     LocalProduct product = activeProducts.get(which);
                     selectedProductId = product.getProductId();
@@ -193,14 +193,14 @@ public class DatMonTaiBanActivity extends AppCompatActivity {
                     edtGia.setText(String.valueOf(product.getBasePrice()));
                     edtImageUrl.setText(product.getImageUrl() != null ? product.getImageUrl() : "");
                 })
-                .setNegativeButton("Há»§y", null)
+                .setNegativeButton("Hủy", null)
                 .show();
     }
 
     private void submitTableOrder() {
         String userId = sessionManager.getCurrentUserId();
         if (userId == null) {
-            Toast.makeText(this, "Vui lÃ²ng Ä‘Äƒng nháº­p", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Vui lòng đăng nhập", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -213,7 +213,7 @@ public class DatMonTaiBanActivity extends AppCompatActivity {
         String imageUrl = edtImageUrl.getText().toString().trim();
 
         if (TextUtils.isEmpty(tableCode) || TextUtils.isEmpty(tenMon) || TextUtils.isEmpty(giaStr) || TextUtils.isEmpty(soLuongStr)) {
-            Toast.makeText(this, "Vui lÃ²ng nháº­p mÃ£ bÃ n, tÃªn mÃ³n, giÃ¡ vÃ  sá»‘ lÆ°á»£ng", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Vui lòng nhập mã bàn, tên món, giá và số lượng", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -223,26 +223,26 @@ public class DatMonTaiBanActivity extends AppCompatActivity {
             gia = Integer.parseInt(giaStr);
             soLuong = Integer.parseInt(soLuongStr);
         } catch (Exception e) {
-            Toast.makeText(this, "GiÃ¡ hoáº·c sá»‘ lÆ°á»£ng khÃ´ng há»£p lá»‡", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Giá hoặc số lượng không hợp lệ", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (gia < 0 || soLuong <= 0) {
-            Toast.makeText(this, "GiÃ¡ pháº£i lá»›n hÆ¡n hoáº·c báº±ng 0 vÃ  sá»‘ lÆ°á»£ng pháº£i lá»›n hÆ¡n 0", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Giá phải lớn hơn hoặc bằng 0 và số lượng phải lớn hơn 0", Toast.LENGTH_SHORT).show();
             return;
         }
         if (!TextUtils.isEmpty(size) && !size.matches("(?i)[sml]")) {
-            Toast.makeText(this, "Size chá»‰ nháº­n S, M hoáº·c L", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Size chỉ nhận S, M hoặc L", Toast.LENGTH_SHORT).show();
             return;
         }
         if (!TextUtils.isEmpty(imageUrl) && !Patterns.WEB_URL.matcher(imageUrl).matches()) {
-            Toast.makeText(this, "ÄÆ°á»ng dáº«n áº£nh khÃ´ng há»£p lá»‡", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Đường dẫn ảnh không hợp lệ", Toast.LENGTH_SHORT).show();
             return;
         }
 
         tableRepository.findTableByCode(tableCode, table -> runOnUiThread(() -> {
             if (table == null || !table.isActive()) {
-                Toast.makeText(this, "MÃ£ bÃ n khÃ´ng há»£p lá»‡", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Mã bàn không hợp lệ", Toast.LENGTH_SHORT).show();
                 return;
             }
             orderRepository.createTableQrOrder(
@@ -258,14 +258,13 @@ public class DatMonTaiBanActivity extends AppCompatActivity {
                     TextUtils.isEmpty(imageUrl) ? null : imageUrl,
                     (success, message) -> runOnUiThread(() -> {
                         if (!success) {
-                            Toast.makeText(this, message == null ? "KhÃ´ng gá»­i Ä‘Æ°á»£c Ä‘Æ¡n lÃªn há»‡ thá»‘ng" : message, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, message == null ? "Không gửi được đơn lên hệ thống" : message, Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        Toast.makeText(this, "Gá»­i mÃ³n táº¡i " + table.getName() + " thÃ nh cÃ´ng!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Gửi món tại " + table.getName() + " thành công!", Toast.LENGTH_SHORT).show();
                         finish();
                     })
             );
         }));
     }
 }
-

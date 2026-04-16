@@ -25,9 +25,6 @@ public class FragmentSearchResult extends Fragment {
     private TimKiemAdapter adapter;
     private ListenerRegistration productsListener;
 
-    public FragmentSearchResult() {
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -72,6 +69,7 @@ public class FragmentSearchResult extends Fragment {
                 continue;
             }
             sanPhamList.add(new SanPham(
+                    product.getProductId(),
                     name,
                     String.valueOf(product.getBasePrice()),
                     product.getImageUrl()

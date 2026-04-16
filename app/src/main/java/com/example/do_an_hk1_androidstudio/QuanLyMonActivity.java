@@ -30,6 +30,7 @@ import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
 import com.example.do_an_hk1_androidstudio.local.model.LocalCategory;
 import com.example.do_an_hk1_androidstudio.local.model.LocalProduct;
 import com.example.do_an_hk1_androidstudio.ui.InsetsHelper;
+import com.example.do_an_hk1_androidstudio.ui.MoneyFormatter;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public class QuanLyMonActivity extends AppCompatActivity {
     private final List<String> categoryLabels = new ArrayList<>();
     private ProductAdapter productAdapter;
     private CatalogCloudRepository catalogRepository;
-    private ActivityResultLauncher<String> pickImageLauncher;
+    private ActivityResultLauncher<String[]> pickImageLauncher;
     private Uri pendingImageUri = null;
     private ImageView pendingPickImageView = null;
     private TextView tvEmpty;
@@ -84,8 +85,9 @@ public class QuanLyMonActivity extends AppCompatActivity {
             }
         });
 
-        pickImageLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+        pickImageLauncher = registerForActivityResult(new ActivityResultContracts.OpenDocument(), uri -> {
             if (uri == null) return;
+            getContentResolver().takePersistableUriPermission(uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION);
             pendingImageUri = uri;
             if (pendingPickImageView != null) {
                 pendingPickImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
@@ -164,7 +166,7 @@ public class QuanLyMonActivity extends AppCompatActivity {
 
         pendingImageUri = null;
         pendingPickImageView = imgPick;
-        imgPick.setOnClickListener(v -> pickImageLauncher.launch("image/*"));
+        imgPick.setOnClickListener(v -> pickImageLauncher.launch(new String[]{"image/*"}));
         loadCategoriesForSpinner(spCategory, null);
 
         new AlertDialog.Builder(this)
@@ -188,7 +190,7 @@ public class QuanLyMonActivity extends AppCompatActivity {
         swActive.setChecked(product.isActive());
         pendingImageUri = null;
         pendingPickImageView = imgPick;
-        imgPick.setOnClickListener(v -> pickImageLauncher.launch("image/*"));
+        imgPick.setOnClickListener(v -> pickImageLauncher.launch(new String[]{"image/*"}));
         if (!TextUtils.isEmpty(product.getImageUrl())) {
             Glide.with(this).load(product.getImageUrl()).into(imgPick);
             imgPick.setScaleType(ImageView.ScaleType.FIT_CENTER);
@@ -299,7 +301,7 @@ public class QuanLyMonActivity extends AppCompatActivity {
 
         void bind(LocalProduct product) {
             tvName.setText(product.getName());
-            tvPrice.setText("Giá: " + product.getBasePrice() + "đ");
+            tvPrice.setText("Giá: " + MoneyFormatter.format(product.getBasePrice()));
             tvCategory.setText("Danh mục: " + findCategoryLabel(product.getCategoryId()));
             tvActive.setText(product.isActive() ? "Đang kinh doanh" : "Tạm ẩn");
 

@@ -1,43 +1,41 @@
 package com.example.do_an_hk1_androidstudio;
 
 public class SanPham {
-    private String Ten;
-    private String Gia;
-    private String GiamGia;
-    private String hinhAnh;
+    private final String productId;
+    private final String ten;
+    private final String gia;
+    private final String giamGia;
+    private final String hinhAnh;
 
-    public SanPham() {}
-
-    // Constructor KHÔNG có giảm giá
-    public SanPham(String ten, String gia, String hinhAnh) {
-        this.Ten = ten;
-        this.Gia = gia;
-        this.hinhAnh = hinhAnh;
-        this.GiamGia = ""; // hoặc null
+    public SanPham(String productId, String ten, String gia, String hinhAnh) {
+        this(productId, ten, gia, hinhAnh, "");
     }
 
-    // Constructor CÓ giảm giá nếu bạn cần dùng
-    public SanPham(String ten, String gia, String hinhAnh, String giamGia) {
-        this.Ten = ten;
-        this.Gia = gia;
+    public SanPham(String productId, String ten, String gia, String hinhAnh, String giamGia) {
+        this.productId = productId;
+        this.ten = ten;
+        this.gia = gia;
         this.hinhAnh = hinhAnh;
-        this.GiamGia = giamGia;
+        this.giamGia = giamGia == null ? "" : giamGia;
+    }
+
+    public String getProductId() {
+        return productId;
     }
 
     public String getTen() {
-        return Ten;
+        return ten;
     }
 
     public String getGia() {
-        return Gia;
+        return gia;
     }
 
     public String getGiamGia() {
-        return GiamGia;
+        return giamGia;
     }
 
     public String getHinhAnh() {
         return hinhAnh;
     }
 }
-

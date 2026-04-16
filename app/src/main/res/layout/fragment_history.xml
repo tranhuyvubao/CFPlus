@@ -16,7 +16,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Lich su don hang"
+            android:text="Lịch sử đơn hàng"
             android:textColor="@color/coffee_dark"
             android:textSize="24sp"
             android:textStyle="bold" />
@@ -25,7 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="Xem lai nhung mon da phuc vu va them nhanh don moi khi can."
+            android:text="Xem lại những món đã phục vụ và thêm nhanh đơn mới khi cần."
             android:textColor="@color/coffee_muted"
             android:textSize="14sp" />
     </LinearLayout>
@@ -37,7 +37,7 @@
         android:layout_gravity="end"
         android:layout_marginTop="16dp"
         android:backgroundTint="@color/coffee_primary"
-        android:text="Them hang"
+        android:text="Thêm hàng"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:textStyle="bold" />
@@ -50,7 +50,7 @@
         android:background="@drawable/app_card_background"
         android:gravity="center"
         android:padding="24dp"
-        android:text="Chua co lich su don nao."
+        android:text="Chưa có lịch sử đơn nào."
         android:textColor="@color/coffee_muted"
         android:textSize="15sp"
         android:visibility="gone" />

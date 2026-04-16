@@ -1,13 +1,16 @@
 package com.example.do_an_hk1_androidstudio;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,10 +28,10 @@ import com.example.do_an_hk1_androidstudio.local.model.LocalOrder;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrderItem;
 import com.example.do_an_hk1_androidstudio.local.model.LocalPromotion;
 import com.example.do_an_hk1_androidstudio.ui.InsetsHelper;
+import com.example.do_an_hk1_androidstudio.ui.MoneyFormatter;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.squareup.picasso.Picasso;
 
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -64,9 +67,6 @@ public class HoaDonBanActivity extends AppCompatActivity {
     private TextView tvDiscount;
     private TextView tvTotal;
     private EditText edtPromotionCode;
-    private TextView btnApplyPromotion;
-    private TextView btnPrintBill;
-    private TextView btnPay;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -96,9 +96,6 @@ public class HoaDonBanActivity extends AppCompatActivity {
         tvDiscount = findViewById(R.id.tvDiscountValue);
         tvTotal = findViewById(R.id.tvTotalValue);
         edtPromotionCode = findViewById(R.id.edtPromotionCode);
-        btnApplyPromotion = findViewById(R.id.btnApplyPromotion);
-        btnPrintBill = findViewById(R.id.btnPrintBill);
-        btnPay = findViewById(R.id.btnPayBill);
 
         RecyclerView rvItems = findViewById(R.id.rvBillItems);
         rvItems.setLayoutManager(new LinearLayoutManager(this));
@@ -113,15 +110,15 @@ public class HoaDonBanActivity extends AppCompatActivity {
         tvTitle.setText("Hóa đơn " + (TextUtils.isEmpty(tableName) ? "bàn" : tableName));
         tvEmpty.setText((TextUtils.isEmpty(tableName) ? "Bàn này" : tableName) + " đang trống.");
 
-        btnApplyPromotion.setOnClickListener(v -> applyPromotionCode());
-        btnPrintBill.setOnClickListener(v -> {
+        findViewById(R.id.btnApplyPromotion).setOnClickListener(v -> applyPromotionCode());
+        findViewById(R.id.btnPrintBill).setOnClickListener(v -> {
             if (currentOrder == null) {
                 Toast.makeText(this, "Bàn này chưa có hóa đơn.", Toast.LENGTH_SHORT).show();
                 return;
             }
             showDemoBill();
         });
-        btnPay.setOnClickListener(v -> payCurrentOrder());
+        findViewById(R.id.btnPayBill).setOnClickListener(v -> openPaymentScreen());
 
         renderOrder(null);
         listenPromotions();
@@ -194,9 +191,9 @@ public class HoaDonBanActivity extends AppCompatActivity {
             tvOrderCode.setText("Mã hóa đơn: -");
             tvOrderTime.setText("Thời gian: -");
             tvTableStatus.setText("Bàn trống");
-            tvSubtotal.setText("0đ");
-            tvDiscount.setText("0đ");
-            tvTotal.setText("0đ");
+            tvSubtotal.setText(MoneyFormatter.format(0));
+            tvDiscount.setText(MoneyFormatter.format(0));
+            tvTotal.setText(MoneyFormatter.format(0));
             return;
         }
 
@@ -258,9 +255,9 @@ public class HoaDonBanActivity extends AppCompatActivity {
             appliedDiscountAmount = 0;
         }
         int total = Math.max(0, subtotal - appliedDiscountAmount);
-        tvSubtotal.setText(formatMoney(subtotal));
-        tvDiscount.setText(formatMoney(appliedDiscountAmount));
-        tvTotal.setText(formatMoney(total));
+        tvSubtotal.setText(MoneyFormatter.format(subtotal));
+        tvDiscount.setText(MoneyFormatter.format(appliedDiscountAmount));
+        tvTotal.setText(MoneyFormatter.format(total));
     }
 
     private int calculateDiscount(int subtotal, LocalPromotion promotion) {
@@ -276,68 +273,91 @@ public class HoaDonBanActivity extends AppCompatActivity {
         return Math.max(0, discount);
     }
 
-    private void payCurrentOrder() {
+    private void openPaymentScreen() {
         if (currentOrder == null) {
             Toast.makeText(this, "Bàn này chưa có hóa đơn.", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        btnPay.setEnabled(false);
-        orderRepository.payOrder(
-                currentOrder.getOrderId(),
-                currentOrder.getSubtotal(),
-                "cash",
-                null,
-                appliedDiscountAmount,
-                appliedPromotion == null ? null : appliedPromotion.getCode(),
-                (success, message) -> runOnUiThread(() -> {
-                    btnPay.setEnabled(true);
-                    if (!success) {
-                        Toast.makeText(this, message == null ? "Không thể thanh toán." : message, Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    Toast.makeText(this, "Thanh toán thành công.", Toast.LENGTH_SHORT).show();
-                    finish();
-                })
-        );
+        Intent intent = new Intent(this, ThanhToanKhachActivity.class);
+        intent.putExtra(ThanhToanKhachActivity.EXTRA_ORDER_ID, currentOrder.getOrderId());
+        intent.putExtra(ThanhToanKhachActivity.EXTRA_AMOUNT, currentOrder.getSubtotal());
+        startActivity(intent);
     }
 
     private void showDemoBill() {
         if (currentOrder == null) {
             return;
         }
-        StringBuilder bill = new StringBuilder();
-        bill.append("CFPLUS\n")
-                .append("Hóa đơn bàn: ").append(safe(tableName, "-")).append("\n")
-                .append("Mã: ").append(currentOrder.getDisplayOrderCode()).append("\n")
-                .append("Thời gian: ")
-                .append(new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date(currentOrder.getCreatedAtMillis())))
-                .append("\n\n");
 
-        for (LocalOrderItem item : currentOrder.getItems()) {
-            bill.append("- ")
-                    .append(item.getProductName())
-                    .append(" x")
-                    .append(item.getQty())
-                    .append(": ")
-                    .append(formatMoney(item.getLineTotal()))
-                    .append("\n");
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_demo_bill, null, false);
+        bindDemoBill(dialogView);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
         }
 
-        bill.append("\nTạm tính: ").append(formatMoney(currentOrder.getSubtotal())).append("\n")
-                .append("Giảm giá: ").append(formatMoney(appliedDiscountAmount)).append("\n")
-                .append("Tổng tiền: ").append(tvTotal.getText());
+        dialogView.findViewById(R.id.btnDemoClose).setOnClickListener(v -> dialog.dismiss());
+        dialogView.findViewById(R.id.btnDemoPrint).setOnClickListener(v -> {
+            Toast.makeText(this, "Đây là bản in demo, chưa kết nối máy in thật.", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        });
 
-        new AlertDialog.Builder(this)
-                .setTitle("In bill demo")
-                .setMessage(bill.toString())
-                .setPositiveButton("Đóng", null)
-                .show();
+        dialog.show();
     }
 
-    private String formatMoney(int amount) {
-        NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
-        return formatter.format(amount) + "đ";
+    private void bindDemoBill(@NonNull View dialogView) {
+        TextView tvBillTableName = dialogView.findViewById(R.id.tvBillTableName);
+        TextView tvBillDate = dialogView.findViewById(R.id.tvBillDate);
+        TextView tvBillNumber = dialogView.findViewById(R.id.tvBillNumber);
+        TextView tvBillCashier = dialogView.findViewById(R.id.tvBillCashier);
+        TextView tvBillPrintedAt = dialogView.findViewById(R.id.tvBillPrintedAt);
+        TextView tvBillTimeIn = dialogView.findViewById(R.id.tvBillTimeIn);
+        TextView tvBillTimeOut = dialogView.findViewById(R.id.tvBillTimeOut);
+        TextView tvBillSubtotal = dialogView.findViewById(R.id.tvBillSubtotal);
+        TextView tvBillDiscount = dialogView.findViewById(R.id.tvBillDiscount);
+        TextView tvBillGrandTotal = dialogView.findViewById(R.id.tvBillGrandTotal);
+        LinearLayout layoutLines = dialogView.findViewById(R.id.layoutDemoBillLines);
+
+        long createdMillis = currentOrder.getCreatedAtMillis();
+        long printedMillis = System.currentTimeMillis();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+
+        tvBillTableName.setText("Bàn " + safe(tableName, "--"));
+        tvBillDate.setText("Ngày: " + dateFormat.format(new Date(createdMillis)));
+        tvBillNumber.setText("Số: " + currentOrder.getDisplayOrderCode());
+        tvBillCashier.setText("Thu ngân: " + safe(sessionManager.getCurrentUserFullName(), "Nhân viên"));
+        tvBillPrintedAt.setText("In lúc: " + timeFormat.format(new Date(printedMillis)));
+        tvBillTimeIn.setText("Giờ vào: " + timeFormat.format(new Date(createdMillis)));
+        tvBillTimeOut.setText("Giờ ra: " + timeFormat.format(new Date(printedMillis)));
+        tvBillSubtotal.setText(MoneyFormatter.format(currentOrder.getSubtotal()));
+        tvBillDiscount.setText(MoneyFormatter.format(appliedDiscountAmount));
+        tvBillGrandTotal.setText(tvTotal.getText());
+
+        layoutLines.removeAllViews();
+        LayoutInflater inflater = LayoutInflater.from(this);
+        for (LocalOrderItem item : currentOrder.getItems()) {
+            View lineView = inflater.inflate(R.layout.item_demo_bill_line, layoutLines, false);
+            TextView tvName = lineView.findViewById(R.id.tvDemoBillItemName);
+            TextView tvQty = lineView.findViewById(R.id.tvDemoBillItemQty);
+            TextView tvPrice = lineView.findViewById(R.id.tvDemoBillItemPrice);
+            TextView tvLineTotal = lineView.findViewById(R.id.tvDemoBillItemTotal);
+
+            String itemTitle = item.getProductName();
+            if (!TextUtils.isEmpty(item.getVariantName())) {
+                itemTitle = itemTitle + " (" + item.getVariantName() + ")";
+            }
+            tvName.setText(itemTitle);
+            tvQty.setText(String.valueOf(item.getQty()));
+            tvPrice.setText(MoneyFormatter.format(item.getUnitPrice()));
+            tvLineTotal.setText(MoneyFormatter.format(item.getLineTotal()));
+            layoutLines.addView(lineView);
+        }
     }
 
     private String safe(@Nullable String primary, @Nullable String fallback) {
@@ -385,10 +405,15 @@ public class HoaDonBanActivity extends AppCompatActivity {
         }
 
         void bind(LocalOrderItem item) {
-            tvName.setText(item.getProductName());
+            String itemTitle = item.getProductName();
+            if (!TextUtils.isEmpty(item.getVariantName())) {
+                itemTitle = itemTitle + " (" + item.getVariantName() + ")";
+            }
+            tvName.setText(itemTitle);
             tvQty.setText(String.valueOf(item.getQty()));
-            tvUnitPrice.setText(formatMoney(item.getUnitPrice()));
-            tvLineTotal.setText(formatMoney(item.getLineTotal()));
+            tvUnitPrice.setText(MoneyFormatter.format(item.getUnitPrice()));
+            tvLineTotal.setText(MoneyFormatter.format(item.getLineTotal()));
+
             if (TextUtils.isEmpty(item.getNote())) {
                 tvNote.setVisibility(View.GONE);
             } else {

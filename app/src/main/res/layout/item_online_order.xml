@@ -11,7 +11,7 @@
         android:id="@+id/tvMaDon"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Ma don"
+        android:text="Mã đơn"
         android:textColor="@color/coffee_dark"
         android:textSize="17sp"
         android:textStyle="bold" />
@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="Ban"
+        android:text="Bàn"
         android:textColor="@color/coffee_primary"
         android:textStyle="bold" />
 
@@ -30,7 +30,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="Trang thai"
+        android:text="Trạng thái"
         android:textColor="@color/coffee_muted" />
 
     <TextView
@@ -38,7 +38,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="Tong tien"
+        android:text="Tổng tiền"
         android:textColor="@color/coffee_muted" />
 
     <TextView
@@ -46,7 +46,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Chi tiet mon"
+        android:text="Chi tiết món"
         android:textColor="@color/coffee_dark"
         android:textSize="14sp" />
 
@@ -55,7 +55,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="Thoi gian"
+        android:text="Thời gian"
         android:textColor="@color/coffee_muted" />
 
     <TextView
@@ -77,7 +77,7 @@
         android:paddingTop="8dp"
         android:paddingRight="12dp"
         android:paddingBottom="8dp"
-        android:text="Xac nhan"
+        android:text="Xác nhận"
         android:textColor="@color/coffee_primary"
         android:textStyle="bold" />
 

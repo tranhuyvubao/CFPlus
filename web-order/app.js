@@ -41,8 +41,6 @@ const subtotalValue = document.getElementById("subtotalValue");
 const grandTotalValue = document.getElementById("grandTotalValue");
 const submitOrderBtn = document.getElementById("submitOrderBtn");
 const messageBox = document.getElementById("messageBox");
-const customerNameInput = document.getElementById("customerName");
-const customerPhoneInput = document.getElementById("customerPhone");
 const commonNoteInput = document.getElementById("commonNote");
 const mobileCartBar = document.getElementById("mobileCartBar");
 const mobileCartSummary = document.getElementById("mobileCartSummary");
@@ -54,7 +52,7 @@ const tableCode = (params.get("table") || "").trim().toUpperCase();
 
 const FALLBACK_CATEGORY = {
   categoryId: "all",
-  name: "Tat ca mon",
+  name: "Tất cả món",
   imageUrl: "",
   active: true
 };
@@ -72,13 +70,13 @@ boot();
 
 async function boot() {
   if (!tableCode) {
-    tableDisplay.textContent = "Khong hop le";
-    authStatus.textContent = "Loi";
+    tableDisplay.textContent = "Không hợp lệ";
+    authStatus.textContent = "Lỗi";
     submitOrderBtn.disabled = true;
     renderCategories();
     renderMenu();
     renderCart();
-    showError("QR nay chua co ma ban. Vui long quet lai ma tren ban.");
+    showError("QR này chưa có mã bàn. Vui lòng quét lại mã trên bàn.");
     return;
   }
 
@@ -89,21 +87,20 @@ async function boot() {
 
   try {
     await signInAnonymously(auth);
-    authStatus.textContent = "Da ket noi";
+    authStatus.textContent = "Đã kết nối";
     currentTable = await fetchTableByCode(tableCode);
     if (!currentTable) {
-      showError("Khong tim thay ban tuong ung. Vui long bao nhan vien ho tro.");
+      showError("Không tìm thấy bàn tương ứng. Vui lòng báo nhân viên hỗ trợ.");
       submitOrderBtn.disabled = true;
       return;
     }
 
+    tableDisplay.textContent = formatTableDisplay(currentTable);
     await refreshCatalogFromServer();
     startCatalogRefresh();
-
-    tableDisplay.textContent = `${currentTable.name} • ${currentTable.code}`;
     submitOrderBtn.disabled = false;
   } catch (error) {
-    authStatus.textContent = "Loi ket noi";
+    authStatus.textContent = "Lỗi kết nối";
     submitOrderBtn.disabled = true;
     showError(normalizeError(error));
   }
@@ -140,7 +137,7 @@ function startCatalogRefresh() {
   }
   catalogRefreshHandle = window.setInterval(() => {
     refreshCatalogFromServer().catch(() => {
-      // Keep current UI while retrying.
+      // Giữ UI hiện tại, lần sau thử lại.
     });
   }, 5000);
 }
@@ -150,8 +147,8 @@ function mapCategoryDocument(snapshot) {
   const legacyActiveValue = snapshot.get("active");
   return {
     categoryId: snapshot.get("category_id") || snapshot.get("categoryId") || snapshot.id,
-    name: snapshot.get("name") || "Chua dat ten",
-    imageUrl: snapshot.get("image_url") || snapshot.get("imageUrl") || "",
+    name: snapshot.get("name") || "Chưa đặt tên",
+    imageUrl: normalizeAssetUrl(snapshot.get("image_url") || snapshot.get("imageUrl")),
     active: (activeValue !== undefined ? activeValue : legacyActiveValue) !== false
   };
 }
@@ -163,11 +160,11 @@ function mapProductDocument(snapshot) {
   const legacyPrice = snapshot.get("price");
   return {
     productId: snapshot.get("product_id") || snapshot.get("productId") || snapshot.id,
-    name: snapshot.get("name") || snapshot.get("product_name") || snapshot.get("productName") || "Chua dat ten",
+    name: snapshot.get("name") || snapshot.get("product_name") || snapshot.get("productName") || "Chưa đặt tên",
     price: Number(basePrice ?? legacyPrice ?? 0),
     categoryId: snapshot.get("category_id") || snapshot.get("categoryId") || "",
-    imageUrl: snapshot.get("image_url") || snapshot.get("imageUrl") || "",
-    description: snapshot.get("description") || "Mon duoc chuan bi ngay sau khi quay nhan don.",
+    imageUrl: normalizeAssetUrl(snapshot.get("image_url") || snapshot.get("imageUrl")),
+    description: snapshot.get("description") || "Món được chuẩn bị ngay sau khi quầy nhận đơn.",
     active: (activeValue !== undefined ? activeValue : legacyActiveValue) !== false
   };
 }
@@ -186,9 +183,9 @@ function rebuildCatalogState() {
       const category = categoryMap.get(item.categoryId);
       return {
         ...item,
-        category: category?.name || "Khac",
-        categoryImageUrl: category?.imageUrl || "",
-        accentLabel: category?.name || "Mon moi"
+        category: category?.name || "Khác",
+        categoryImageUrl: normalizeAssetUrl(category?.imageUrl),
+        accentLabel: category?.name || "Món mới"
       };
     })
     .filter((item) => item.active && item.price > 0)
@@ -199,12 +196,13 @@ function rebuildCatalogState() {
   if (!categories.some((item) => item.categoryId === activeCategory)) {
     activeCategory = FALLBACK_CATEGORY.categoryId;
   }
+
   renderCategories();
   renderMenu();
   if (fetchedProducts.length > 0) {
-    showInfo(`Da tai ${fetchedProducts.length} mon va ${fetchedCategories.length} danh muc.`);
+    showInfo(`Đã tải ${fetchedProducts.length} món và ${fetchedCategories.length} danh mục.`);
   } else {
-    showInfo(`Hien co ${fetchedCategories.length} danh muc, nhung chua co mon hop le de hien thi.`);
+    showInfo("Hiện chưa có món hợp lệ để hiển thị.");
   }
 }
 
@@ -213,7 +211,7 @@ function renderCategories() {
   categories.forEach((category) => {
     const visual = getCategoryVisual(category);
     const thumbStyle = category.imageUrl
-      ? `background-image:url('${category.imageUrl}');`
+      ? `background-image:url('${escapeAttribute(category.imageUrl)}');`
       : `background:${visual.image};`;
     const card = document.createElement("button");
     card.type = "button";
@@ -247,21 +245,20 @@ function getFilteredMenuItems() {
 function renderMenu() {
   const filteredItems = getFilteredMenuItems();
   const activeCategoryName =
-    categories.find((item) => item.categoryId === activeCategory)?.name || "Tat ca mon";
+    categories.find((item) => item.categoryId === activeCategory)?.name || "Tất cả món";
   menuHeading.textContent = activeCategoryName;
   menuGrid.innerHTML = "";
   menuEmpty.classList.toggle("hidden", filteredItems.length > 0);
 
   filteredItems.forEach((item) => {
     const visual = getProductVisual(item);
-    const cardBackground = item.imageUrl
-      ? `background-image:url('${item.imageUrl}');`
+    const productVisualUrl = normalizeAssetUrl(item.imageUrl) || normalizeAssetUrl(item.categoryImageUrl);
+    const cardBackground = productVisualUrl
+      ? `background-image:url('${escapeAttribute(productVisualUrl)}');`
       : `background:${visual.image};`;
-    const plateBackground = item.imageUrl
-      ? `background-image:url('${item.imageUrl}');`
-      : item.categoryImageUrl
-        ? `background-image:url('${item.categoryImageUrl}');`
-        : `background:${visual.plate};`;
+    const plateBackground = productVisualUrl
+      ? `background-image:url('${escapeAttribute(productVisualUrl)}');`
+      : `background:${visual.plate};`;
 
     const card = document.createElement("article");
     card.className = "product-card";
@@ -274,7 +271,7 @@ function renderMenu() {
       <div class="product-body">
         <div>
           <h3>${escapeHtml(item.name)}</h3>
-          <p>${escapeHtml(item.description || "Mon duoc chuan bi ngay sau khi quay nhan don.")}</p>
+          <p>${escapeHtml(item.description || "Món được chuẩn bị ngay sau khi quầy nhận đơn.")}</p>
         </div>
         <div class="product-spacer"></div>
         <div class="product-price">${formatMoney(item.price)}</div>
@@ -282,9 +279,9 @@ function renderMenu() {
         <div class="product-footer">
           <div class="qty-box">
             <span>SL</span>
-            <input class="qty-input" type="number" min="1" value="1" aria-label="So luong ${escapeHtml(item.name)}">
+            <input class="qty-input" type="number" min="1" value="1" aria-label="Số lượng ${escapeHtml(item.name)}">
           </div>
-          <button class="add-btn" type="button" aria-label="Them ${escapeHtml(item.name)}">+</button>
+          <button class="add-btn" type="button" aria-label="Thêm ${escapeHtml(item.name)}">+</button>
         </div>
       </div>
     `;
@@ -313,11 +310,11 @@ function addToCart(item, qty) {
       note: "",
       categoryId: item.categoryId,
       category: item.category,
-      imageUrl: item.imageUrl || item.categoryImageUrl || ""
+      imageUrl: normalizeAssetUrl(item.imageUrl) || normalizeAssetUrl(item.categoryImageUrl)
     });
   }
   renderCart();
-  showInfo(`Da them ${qty} ${item.name}.`);
+  showInfo(`Đã thêm ${qty} ${item.name}.`);
   if (window.innerWidth <= 1040) {
     openMobileCart();
   }
@@ -327,14 +324,14 @@ function renderCart() {
   cartList.innerHTML = "";
   emptyState.style.display = cart.length === 0 ? "block" : "none";
   const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
-  cartCount.textContent = `${totalCount} mon`;
+  cartCount.textContent = `${totalCount} món`;
 
   let subtotal = 0;
   cart.forEach((item, index) => {
     subtotal += item.unitPrice * item.qty;
     const visual = getProductVisual(item);
     const thumbStyle = item.imageUrl
-      ? `background-image:url('${item.imageUrl}');`
+      ? `background-image:url('${escapeAttribute(item.imageUrl)}');`
       : `background:${visual.plate};`;
     const node = document.createElement("article");
     node.className = "cart-item";
@@ -351,13 +348,13 @@ function renderCart() {
       <div class="cart-controls">
         <div class="cart-controls-left">
           <span>SL</span>
-          <input type="number" min="1" value="${item.qty}" aria-label="Cap nhat so luong ${escapeHtml(item.name)}">
+          <input type="number" min="1" value="${item.qty}" aria-label="Cập nhật số lượng ${escapeHtml(item.name)}">
         </div>
-        <button class="inline-btn" type="button">Xoa</button>
+        <button class="inline-btn" type="button">Xóa</button>
       </div>
 
       <div class="cart-note">
-        <input type="text" value="${escapeHtml(item.note)}" placeholder="Ghi chu rieng cho mon nay">
+        <input type="text" value="${escapeAttribute(item.note)}" placeholder="Ghi chú riêng cho món này">
       </div>
     `;
 
@@ -382,26 +379,24 @@ function renderCart() {
 
   subtotalValue.textContent = formatMoney(subtotal);
   grandTotalValue.textContent = formatMoney(subtotal);
-  mobileCartSummary.textContent = `${totalCount} mon • ${formatMoney(subtotal)}`;
+  mobileCartSummary.textContent = `${totalCount} món - ${formatMoney(subtotal)}`;
   mobileCartBar.classList.toggle("hidden", totalCount === 0);
 }
 
 submitOrderBtn.addEventListener("click", async () => {
   if (!currentTable) {
-    showError("Chua xac dinh duoc ban. Vui long quet lai QR.");
+    showError("Chưa xác định được bàn. Vui lòng quét lại QR.");
     return;
   }
   if (cart.length === 0) {
-    showError("Hay chon it nhat 1 mon truoc khi gui don.");
+    showError("Hãy chọn ít nhất 1 món trước khi gửi đơn.");
     return;
   }
 
   submitOrderBtn.disabled = true;
-  authStatus.textContent = "Dang gui don";
+  authStatus.textContent = "Đang gửi đơn";
 
   try {
-    const customerName = customerNameInput.value.trim();
-    const customerPhone = customerPhoneInput.value.trim();
     const commonNote = commonNoteInput.value.trim();
     const incomingItems = cart.map((item) => ({
       productId: item.productId,
@@ -425,8 +420,8 @@ submitOrderBtn.addEventListener("click", async () => {
         total: subtotal,
         updatedAt: serverTimestamp(),
         note: commonNote || existingOrder.note || null,
-        customerName: customerName || existingOrder.customerName || null,
-        customerPhone: customerPhone || existingOrder.customerPhone || null,
+        customerName: existingOrder.customerName || null,
+        customerPhone: existingOrder.customerPhone || null,
         items: mergedItems,
         productId: primaryItem?.productId || null,
         productName: primaryItem?.productName || null,
@@ -435,7 +430,7 @@ submitOrderBtn.addEventListener("click", async () => {
         variantName: null,
         imageUrl: primaryItem?.imageUrl || null
       });
-      showSuccess(`Da cong them mon vao don dang mo cua ${currentTable.name}.`);
+      showSuccess(`Đã cộng thêm món vào đơn đang mở của ${currentTable.name}.`);
     } else {
       const subtotal = incomingItems.reduce((sum, item) => sum + item.lineTotal, 0);
       const orderId = `web_order_${crypto.randomUUID().replace(/-/g, "")}`;
@@ -451,8 +446,8 @@ submitOrderBtn.addEventListener("click", async () => {
         tableName: currentTable.name,
         tableCode: currentTable.code,
         customerId: auth.currentUser?.uid || null,
-        customerName: customerName || null,
-        customerPhone: customerPhone || null,
+        customerName: null,
+        customerPhone: null,
         staffId: null,
         status: "created",
         subtotal,
@@ -469,18 +464,16 @@ submitOrderBtn.addEventListener("click", async () => {
         variantName: null,
         imageUrl: primaryItem.imageUrl || null
       });
-      showSuccess(`Da gui don cho ${currentTable.name}. Nhan vien se nhan duoc ngay.`);
+      showSuccess(`Đã gửi đơn cho ${currentTable.name}. Nhân viên sẽ nhận được ngay.`);
     }
 
     cart = [];
     renderCart();
-    customerNameInput.value = "";
-    customerPhoneInput.value = "";
     commonNoteInput.value = "";
-    authStatus.textContent = "Da gui don";
+    authStatus.textContent = "Đã gửi đơn";
     closeMobileCart();
   } catch (error) {
-    authStatus.textContent = "Loi gui don";
+    authStatus.textContent = "Lỗi gửi đơn";
     showError(normalizeError(error));
   } finally {
     submitOrderBtn.disabled = false;
@@ -510,7 +503,7 @@ window.addEventListener("resize", () => {
 });
 
 function formatMoney(value) {
-  return `${new Intl.NumberFormat("vi-VN").format(value)} VND`;
+  return `${new Intl.NumberFormat("en-US").format(Number(value) || 0)}đ`;
 }
 
 function buildOrderCode(date = new Date()) {
@@ -574,6 +567,26 @@ function getProductVisual(item) {
   };
 }
 
+function normalizeAssetUrl(value) {
+  if (value === null || value === undefined) {
+    return "";
+  }
+  const normalized = String(value).trim();
+  if (!normalized || normalized.toLowerCase() === "null" || normalized.toLowerCase() === "undefined") {
+    return "";
+  }
+  return normalized;
+}
+
+function formatTableDisplay(table) {
+  const name = table.name || "";
+  const code = table.code || "";
+  if (name && code) {
+    return `${name} | ${code}`;
+  }
+  return name || code || tableCode;
+}
+
 function paletteFromText(value) {
   const palettes = [
     ["#4c2a17", "#9a6124", "#f3d279"],
@@ -592,12 +605,12 @@ function paletteFromText(value) {
 
 function normalizeError(error) {
   if (!error) {
-    return "Co loi xay ra khi ket noi he thong.";
+    return "Có lỗi xảy ra khi kết nối hệ thống.";
   }
   if (typeof error === "string") {
     return error;
   }
-  return error.message || "Co loi xay ra khi ket noi he thong.";
+  return error.message || "Có lỗi xảy ra khi kết nối hệ thống.";
 }
 
 function showSuccess(message) {
@@ -616,9 +629,14 @@ function showInfo(message) {
 }
 
 function escapeHtml(value) {
-  return (value || "")
+  return String(value ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
-    .replaceAll("\"", "&quot;");
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function escapeAttribute(value) {
+  return escapeHtml(value).replaceAll("`", "&#96;");
 }

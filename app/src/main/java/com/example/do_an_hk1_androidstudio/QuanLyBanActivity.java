@@ -48,7 +48,7 @@ public class QuanLyBanActivity extends AppCompatActivity {
         tableRepository = new TableCloudRepository(this);
 
         if (!"manager".equals(localSessionManager.getCurrentUserRole())) {
-            Toast.makeText(this, "Chi quan ly moi truy cap duoc", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Chỉ quản lý mới truy cập được", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
@@ -109,7 +109,7 @@ public class QuanLyBanActivity extends AppCompatActivity {
         ArrayAdapter<String> statusAdapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_item,
-                new String[]{"Trong", "Dang dung", "Da dat"}
+                new String[]{"Trống", "Đang dùng", "Đã đặt"}
         );
         statusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spStatus.setAdapter(statusAdapter);
@@ -127,7 +127,7 @@ public class QuanLyBanActivity extends AppCompatActivity {
             spStatus.setSelection(idx);
             swActive.setChecked(table.isActive());
         } else {
-            edtCode.setText("Tu dong sinh khi luu");
+            edtCode.setText("Tự động sinh khi lưu");
             swActive.setChecked(true);
             spStatus.setSelection(0);
         }
@@ -150,12 +150,12 @@ public class QuanLyBanActivity extends AppCompatActivity {
             swActive.setEnabled(false);
         }
 
-        String title = isEditMode ? "Sua ban" : "Them ban";
+        String title = isEditMode ? "Sửa bàn" : "Thêm bàn";
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(title)
                 .setView(view)
-                .setPositiveButton("Luu", null)
-                .setNegativeButton("Huy", null)
+                .setPositiveButton("Lưu", null)
+                .setNegativeButton("Hủy", null)
                 .create();
         dialog.setOnShowListener(ignored -> {
             Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
@@ -172,7 +172,7 @@ public class QuanLyBanActivity extends AppCompatActivity {
                 String status = mapStatusValue(spStatus.getSelectedItemPosition());
 
                 if (TextUtils.isEmpty(name)) {
-                    Toast.makeText(this, "Ten ban khong duoc trong", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Tên bàn không được trống", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -185,7 +185,7 @@ public class QuanLyBanActivity extends AppCompatActivity {
                         !isEditMode || swActive.isChecked(),
                         (success, message) -> runOnUiThread(() -> {
                             if (!success) {
-                                Toast.makeText(this, message == null ? "Khong the luu ban" : message, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, message == null ? "Không thể lưu bàn" : message, Toast.LENGTH_SHORT).show();
                                 return;
                             }
                             dialog.dismiss();
@@ -208,12 +208,12 @@ public class QuanLyBanActivity extends AppCompatActivity {
 
     private String mapStatusLabel(String status) {
         if ("occupied".equals(status)) {
-            return "Dang dung";
+            return "Đang dùng";
         }
         if ("reserved".equals(status)) {
-            return "Da dat";
+            return "Đã đặt";
         }
-        return "Trong";
+        return "Trống";
     }
 
     private class TableAdapter extends RecyclerView.Adapter<TableVH> {
@@ -259,10 +259,10 @@ public class QuanLyBanActivity extends AppCompatActivity {
 
         void bind(LocalCafeTable table) {
             tvName.setText(table.getName());
-            tvCode.setText("Ma ban: " + table.getCode());
-            tvArea.setText("Khu vuc: " + (TextUtils.isEmpty(table.getArea()) ? "-" : table.getArea()));
-            tvStatus.setText("Trang thai: " + mapStatusLabel(table.getStatus()));
-            tvActive.setText(table.isActive() ? "Dang su dung" : "Tam an");
+            tvCode.setText("Mã bàn: " + table.getCode());
+            tvArea.setText("Khu vực: " + (TextUtils.isEmpty(table.getArea()) ? "-" : table.getArea()));
+            tvStatus.setText("Trạng thái: " + mapStatusLabel(table.getStatus()));
+            tvActive.setText(table.isActive() ? "Đang sử dụng" : "Tạm ẩn");
             boolean isTakeawayTable = TableCloudRepository.TAKEAWAY_TABLE_ID.equals(table.getTableId());
 
             btnQr.setOnClickListener(v -> {
@@ -277,21 +277,21 @@ public class QuanLyBanActivity extends AppCompatActivity {
             btnDelete.setAlpha(isTakeawayTable ? 0.4f : 1f);
             btnEdit.setOnClickListener(v -> {
                 if (isTakeawayTable) {
-                    Toast.makeText(QuanLyBanActivity.this, "Ban Take away khong duoc sua", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(QuanLyBanActivity.this, "Bàn Take away không được sửa", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 showAddOrEditDialog(table);
             });
             btnDelete.setOnClickListener(v -> {
                 if (isTakeawayTable) {
-                    Toast.makeText(QuanLyBanActivity.this, "Ban Take away khong duoc xoa", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(QuanLyBanActivity.this, "Bàn Take away không được xóa", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 tableRepository.deleteTable(
                         table.getTableId(),
                         (success, message) -> runOnUiThread(() -> {
                             if (!success) {
-                                Toast.makeText(QuanLyBanActivity.this, message == null ? "Loi xoa ban" : message, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(QuanLyBanActivity.this, message == null ? "Lỗi xóa bàn" : message, Toast.LENGTH_SHORT).show();
                             }
                         })
                 );

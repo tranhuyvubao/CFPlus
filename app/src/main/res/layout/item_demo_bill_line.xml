@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
+
+    <TextView
+        android:id="@+id/tvDemoBillItemName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2.4"
+        android:paddingStart="8dp"
+        android:text="Cà phê sữa đá"
+        android:textColor="#222222"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tvDemoBillItemQty"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.7"
+        android:gravity="center"
+        android:text="1"
+        android:textColor="#222222"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tvDemoBillItemPrice"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="10,000đ"
+        android:textColor="#222222"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tvDemoBillItemTotal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.1"
+        android:gravity="end"
+        android:paddingEnd="8dp"
+        android:text="10,000đ"
+        android:textColor="#222222"
+        android:textSize="14sp" />
+
+</LinearLayout>

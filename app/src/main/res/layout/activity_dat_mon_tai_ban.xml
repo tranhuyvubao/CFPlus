@@ -19,7 +19,7 @@
             android:background="@drawable/round_background_3"
             android:paddingHorizontal="12dp"
             android:paddingVertical="8dp"
-        android:text="Trở về"
+            android:text="Trở về"
             android:textColor="@color/coffee_primary_dark"
             android:textStyle="bold" />
 
@@ -34,7 +34,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-        android:text="Gọi món tại bàn"
+                android:text="Gọi món tại bàn"
                 android:textColor="@color/coffee_dark"
                 android:textSize="24sp"
                 android:textStyle="bold" />
@@ -43,7 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="Luong nay danh rieng cho khach dang ngoi tai quan. Khach nhap ma ban da quet tu QR de gui mon ve dung ban."
+                android:text="Luồng này dành riêng cho khách đang ngồi tại quán. Khách nhập mã bàn đã quét từ QR để gửi món về đúng bàn."
                 android:textColor="@color/coffee_muted"
                 android:textSize="14sp" />
 
@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/rounded_background"
-                android:hint="Ma ban (vi du: BAN01)"
+                android:hint="Mã bàn (ví dụ: BAN01)"
                 android:paddingHorizontal="14dp"
                 android:textColor="@color/coffee_text"
                 android:textColorHint="@color/coffee_muted" />
@@ -66,7 +66,7 @@
                 android:background="@drawable/round_background_3"
                 android:gravity="center"
                 android:padding="12dp"
-                android:text="Quet QR ban"
+                android:text="Quét QR bàn"
                 android:textColor="@color/coffee_primary_dark"
                 android:textStyle="bold" />
 
@@ -76,7 +76,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:background="@drawable/rounded_background"
-                android:hint="Ten mon"
+                android:hint="Tên món"
                 android:paddingHorizontal="14dp"
                 android:textColor="@color/coffee_text"
                 android:textColorHint="@color/coffee_muted" />
@@ -89,7 +89,7 @@
                 android:background="@drawable/round_background_3"
                 android:gravity="center"
                 android:padding="12dp"
-                android:text="Chon mon tu menu"
+                android:text="Chọn món từ menu"
                 android:textColor="@color/coffee_primary_dark"
                 android:textStyle="bold" />
 
@@ -99,7 +99,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:background="@drawable/rounded_background"
-                android:hint="Gia (VND)"
+                android:hint="Giá (VND)"
                 android:inputType="number"
                 android:paddingHorizontal="14dp"
                 android:textColor="@color/coffee_text"
@@ -111,7 +111,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:background="@drawable/rounded_background"
-                android:hint="So luong"
+                android:hint="Số lượng"
                 android:inputType="number"
                 android:paddingHorizontal="14dp"
                 android:textColor="@color/coffee_text"
@@ -123,7 +123,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:background="@drawable/rounded_background"
-                android:hint="Size (S/M/L - tuy chon)"
+                android:hint="Size (S/M/L - tùy chọn)"
                 android:paddingHorizontal="14dp"
                 android:textColor="@color/coffee_text"
                 android:textColorHint="@color/coffee_muted" />
@@ -134,7 +134,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:background="@drawable/rounded_background"
-                android:hint="Ghi chu (it da, it duong...)"
+                android:hint="Ghi chú (ít đá, ít đường...)"
                 android:minLines="2"
                 android:paddingHorizontal="14dp"
                 android:paddingVertical="12dp"
@@ -147,7 +147,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:background="@drawable/rounded_background"
-                android:hint="Duong dan anh (tuy chon)"
+                android:hint="Đường dẫn ảnh (tùy chọn)"
                 android:paddingHorizontal="14dp"
                 android:textColor="@color/coffee_text"
                 android:textColorHint="@color/coffee_muted" />
@@ -160,7 +160,7 @@
                 android:background="@drawable/bg_color"
                 android:gravity="center"
                 android:padding="14dp"
-                android:text="Gui mon ve ban nay"
+                android:text="Gửi món về bàn này"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold" />

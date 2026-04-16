@@ -563,6 +563,23 @@ body.cart-open {
   background: rgba(255, 255, 255, 0.58);
 }
 
+.cart-panel .compact-field input,
+.cart-panel .note-field textarea {
+  border: 1px solid rgba(143, 101, 47, 0.18);
+  background: rgba(255, 255, 255, 0.72);
+  color: #3d3123;
+}
+
+.cart-panel .compact-field span,
+.cart-panel .note-field span {
+  color: #3d3123;
+}
+
+.cart-panel .compact-field input::placeholder,
+.cart-panel .note-field textarea::placeholder {
+  color: #8b7a63;
+}
+
 .totals-card {
   margin-top: 16px;
   padding: 16px 18px;
@@ -699,17 +716,18 @@ body.cart-open {
 
   .cart-panel {
     position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    top: auto;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    top: 78px;
     z-index: 30;
     min-height: unset;
-    max-height: 86vh;
-    border-radius: 26px 26px 0 0;
-    transform: translateY(calc(100% + 16px));
+    max-height: calc(100vh - 88px);
+    border-radius: 26px;
+    transform: translateY(calc(100% + 30px));
     transition: transform 0.26s ease;
-    box-shadow: 0 -18px 40px rgba(35, 21, 10, 0.25);
+    box-shadow: 0 18px 40px rgba(35, 21, 10, 0.25);
+    overflow: auto;
   }
 
   body.cart-open .cart-panel {
@@ -720,6 +738,11 @@ body.cart-open {
     display: block;
   }
 
+  body.cart-open .menu-stage,
+  body.cart-open .category-rail {
+    filter: blur(1px);
+  }
+
   .close-cart-btn {
     display: inline-grid;
     place-items: center;
@@ -727,6 +750,10 @@ body.cart-open {
 
   .mobile-cart-bar {
     display: flex;
+  }
+
+  body.cart-open .mobile-cart-bar {
+    display: none;
   }
 
   .cart-list {
@@ -759,6 +786,15 @@ body.cart-open {
   .menu-stage,
   .category-rail {
     border-radius: 24px;
+  }
+
+  .cart-panel {
+    left: 8px;
+    right: 8px;
+    top: 92px;
+    bottom: 8px;
+    max-height: calc(100vh - 100px);
+    padding: 18px;
   }
 
   .stage-head {

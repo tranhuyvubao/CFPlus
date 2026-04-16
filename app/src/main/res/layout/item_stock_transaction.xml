@@ -11,7 +11,7 @@
         android:id="@+id/tvTxnType"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Loai"
+        android:text="Loại"
         android:textColor="@color/coffee_dark"
         android:textSize="18sp"
         android:textStyle="bold" />
@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Nguyen lieu"
+        android:text="Nguyên liệu"
         android:textColor="@color/coffee_muted"
         android:textSize="14sp" />
 
@@ -30,7 +30,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="So luong"
+        android:text="Số lượng"
         android:textColor="@color/coffee_muted"
         android:textSize="14sp" />
 
@@ -39,7 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="Thoi gian"
+        android:text="Thời gian"
         android:textColor="@color/coffee_muted"
         android:textSize="14sp" />
 
@@ -48,7 +48,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Ghi chu"
+        android:text="Ghi chú"
         android:textColor="@color/coffee_primary"
         android:textSize="14sp" />
 

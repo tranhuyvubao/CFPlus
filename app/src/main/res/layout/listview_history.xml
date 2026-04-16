@@ -29,7 +29,7 @@
             android:id="@+id/tenban"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Ten ban"
+            android:text="Tên bàn"
             android:textColor="@color/coffee_dark"
             android:textSize="17sp"
             android:textStyle="bold" />
@@ -39,7 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="Ten san pham"
+            android:text="Tên sản phẩm"
             android:textColor="@color/coffee_primary"
             android:textStyle="bold" />
 
@@ -62,7 +62,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:text="Muc da"
+            android:text="Mức đá"
             android:textColor="@color/coffee_muted" />
 
         <TextView
@@ -70,7 +70,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:text="So luong"
+            android:text="Số lượng"
             android:textColor="@color/coffee_muted" />
 
         <TextView
@@ -78,7 +78,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="Tong tien"
+            android:text="Tổng tiền"
             android:textColor="@color/coffee_primary"
             android:textStyle="bold" />
 
@@ -87,7 +87,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Hinh thuc"
+            android:text="Hình thức"
             android:textColor="@color/coffee_muted" />
 
         <TextView
@@ -95,7 +95,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="Trang thai"
+            android:text="Trạng thái"
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -114,7 +114,7 @@
             android:paddingTop="8dp"
             android:paddingRight="12dp"
             android:paddingBottom="8dp"
-            android:text="Thanh toan"
+            android:text="Thanh toán"
             android:textColor="@color/coffee_warning"
             android:textStyle="bold" />
 
@@ -128,7 +128,7 @@
             android:paddingTop="8dp"
             android:paddingRight="12dp"
             android:paddingBottom="8dp"
-            android:text="Chuyen ban"
+            android:text="Chuyển bàn"
             android:textColor="@color/coffee_primary"
             android:textStyle="bold" />
 
@@ -142,7 +142,7 @@
             android:paddingTop="8dp"
             android:paddingRight="12dp"
             android:paddingBottom="8dp"
-            android:text="Huy don"
+            android:text="Hủy đơn"
             android:textColor="@color/coffee_danger"
             android:textStyle="bold" />
     </LinearLayout>

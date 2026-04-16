@@ -1,6 +1,7 @@
 package com.example.do_an_hk1_androidstudio;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,6 +22,7 @@ import com.example.do_an_hk1_androidstudio.local.model.LocalCafeTable;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,13 +30,14 @@ import java.util.Set;
 public class FragmentStaffTables extends Fragment {
 
     private final List<LocalCafeTable> tables = new ArrayList<>();
+    private final Set<String> tablesWithOpenOrders = new HashSet<>();
+
     private ListenerRegistration tableListener;
     private ListenerRegistration orderListener;
     private TableCloudRepository tableRepository;
     private OrderCloudRepository orderRepository;
     private TableGridAdapter adapter;
     private TextView tvEmpty;
-    private final Set<String> tablesWithOpenOrders = new HashSet<>();
 
     @Nullable
     @Override
@@ -44,10 +48,13 @@ public class FragmentStaffTables extends Fragment {
 
         RecyclerView rvTables = view.findViewById(R.id.rvStaffTables);
         tvEmpty = view.findViewById(R.id.tvStaffTablesEmpty);
+        View btnReservations = view.findViewById(R.id.btnStaffReservations);
 
         rvTables.setLayoutManager(new GridLayoutManager(requireContext(), 3));
         adapter = new TableGridAdapter();
         rvTables.setAdapter(adapter);
+        btnReservations.setOnClickListener(v ->
+                startActivity(new Intent(requireContext(), XuLyDatBanActivity.class)));
         return view;
     }
 
@@ -86,6 +93,7 @@ public class FragmentStaffTables extends Fragment {
                         tables.add(table);
                     }
                 }
+                sortTables();
                 adapter.notifyDataSetChanged();
                 tvEmpty.setVisibility(tables.isEmpty() ? View.VISIBLE : View.GONE);
             });
@@ -108,11 +116,29 @@ public class FragmentStaffTables extends Fragment {
                         tablesWithOpenOrders.add(order.getTableId());
                     }
                 });
-                if (adapter != null) {
-                    adapter.notifyDataSetChanged();
-                }
+                sortTables();
+                adapter.notifyDataSetChanged();
             });
         });
+    }
+
+    private void sortTables() {
+        tables.sort(Comparator
+                .comparingInt(this::getPriority)
+                .thenComparing(LocalCafeTable::getName, String.CASE_INSENSITIVE_ORDER));
+    }
+
+    private int getPriority(LocalCafeTable table) {
+        if (tablesWithOpenOrders.contains(table.getTableId())) {
+            return 0;
+        }
+        if ("occupied".equals(table.getStatus())) {
+            return 1;
+        }
+        if ("reserved".equals(table.getStatus())) {
+            return 2;
+        }
+        return 3;
     }
 
     private String mapStatus(String status) {
@@ -123,6 +149,30 @@ public class FragmentStaffTables extends Fragment {
             return "Đã đặt";
         }
         return "Trống";
+    }
+
+    private int getStatusBackgroundRes(String displayStatus) {
+        switch (displayStatus) {
+            case "Có khách":
+            case "Đang dùng":
+                return R.drawable.app_chip_status_occupied;
+            case "Đã đặt":
+                return R.drawable.app_chip_status_reserved;
+            default:
+                return R.drawable.app_chip_status_empty;
+        }
+    }
+
+    private int getStatusTextColor(String displayStatus) {
+        switch (displayStatus) {
+            case "Có khách":
+            case "Đang dùng":
+                return R.color.coffee_success;
+            case "Đã đặt":
+                return R.color.coffee_warning;
+            default:
+                return R.color.coffee_primary_dark;
+        }
     }
 
     private class TableGridAdapter extends RecyclerView.Adapter<TableGridViewHolder> {
@@ -157,12 +207,13 @@ public class FragmentStaffTables extends Fragment {
         }
 
         void bind(LocalCafeTable table) {
+            String displayStatus = tablesWithOpenOrders.contains(table.getTableId()) ? "Có khách" : mapStatus(table.getStatus());
+            Drawable background = ContextCompat.getDrawable(requireContext(), getStatusBackgroundRes(displayStatus));
+
             tvName.setText(table.getName());
-            if (tablesWithOpenOrders.contains(table.getTableId())) {
-                tvStatus.setText("Có khách");
-            } else {
-                tvStatus.setText(mapStatus(table.getStatus()));
-            }
+            tvStatus.setText(displayStatus);
+            tvStatus.setBackground(background);
+            tvStatus.setTextColor(ContextCompat.getColor(requireContext(), getStatusTextColor(displayStatus)));
             tvArea.setText(TextUtils.isEmpty(table.getArea()) ? table.getCode() : table.getArea());
 
             itemView.setOnClickListener(v -> {

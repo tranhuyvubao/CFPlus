@@ -1,5 +1,6 @@
 package com.example.do_an_hk1_androidstudio;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.do_an_hk1_androidstudio.cloud.CatalogCloudRepository;
+import com.example.do_an_hk1_androidstudio.local.CustomerCartStore;
 import com.example.do_an_hk1_androidstudio.local.model.LocalProduct;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -30,22 +33,34 @@ public class FragmentHome extends Fragment {
     private SearchView searchView;
     private ListView lvSearch;
     private View tvSearchEmpty;
+    private TextView tvCartCount;
     private TimKiemAdapter searchAdapter;
+
     private final List<SanPham> searchList = new ArrayList<>();
     private final List<LocalProduct> allProducts = new ArrayList<>();
+
     private CatalogCloudRepository catalogRepository;
     private ListenerRegistration productsListener;
+    private CustomerCartStore cartStore;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         catalogRepository = new CatalogCloudRepository(requireContext());
+        cartStore = new CustomerCartStore(requireContext());
         tabLayout = view.findViewById(R.id.tabLayout);
         viewPager2 = view.findViewById(R.id.viewPager2);
         searchView = view.findViewById(R.id.action_search);
         lvSearch = view.findViewById(R.id.lvSearch);
         tvSearchEmpty = view.findViewById(R.id.tvSearchEmpty);
+        tvCartCount = view.findViewById(R.id.tvHomeCartCount);
+        View btnOpenCart = view.findViewById(R.id.btnOpenCart);
+
+        if (btnOpenCart != null) {
+            btnOpenCart.setOnClickListener(v ->
+                    startActivity(new Intent(requireContext(), DatMonOnlineActivity.class)));
+        }
 
         tabLayout.setVisibility(View.VISIBLE);
         viewPager2.setVisibility(View.VISIBLE);
@@ -57,9 +72,13 @@ public class FragmentHome extends Fragment {
         viewPager2.setCurrentItem(0, false);
 
         new TabLayoutMediator(tabLayout, viewPager2, (tab, pos) -> {
-            if (pos == 0) tab.setText("Tất cả");
-            else if (pos == 1) tab.setText("Best Seller");
-            else tab.setText("Món ngon phải thử");
+            if (pos == 0) {
+                tab.setText("Tất cả");
+            } else if (pos == 1) {
+                tab.setText("Best Seller");
+            } else {
+                tab.setText("Món ngon phải thử");
+            }
         }).attach();
 
         searchAdapter = new TimKiemAdapter(requireContext(), searchList);
@@ -92,11 +111,26 @@ public class FragmentHome extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        bindCartCount();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         if (productsListener != null) {
             productsListener.remove();
         }
+    }
+
+    private void bindCartCount() {
+        if (tvCartCount == null) {
+            return;
+        }
+        int count = cartStore.getItemCount();
+        tvCartCount.setVisibility(count > 0 ? View.VISIBLE : View.GONE);
+        tvCartCount.setText(String.valueOf(count));
     }
 
     private void listenProducts() {
@@ -118,7 +152,7 @@ public class FragmentHome extends Fragment {
             searchList.clear();
             searchAdapter.notifyDataSetChanged();
             tvSearchEmpty.setVisibility(View.VISIBLE);
-            Toast.makeText(getContext(), "Từ khóa không hợp lệ!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Từ khóa không hợp lệ.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -141,7 +175,12 @@ public class FragmentHome extends Fragment {
             String normalizedName = normalizeProductName(product.getName());
             if (normalizedName.contains(keywordLower)) {
                 productsWithScore.add(new SanPhamWithScore(
-                        new SanPham(product.getName(), String.valueOf(product.getBasePrice()), product.getImageUrl()),
+                        new SanPham(
+                                product.getProductId(),
+                                product.getName(),
+                                String.valueOf(product.getBasePrice()),
+                                product.getImageUrl()
+                        ),
                         calculateSimilarityScore(normalizedName, keywordLower)
                 ));
             }
@@ -159,19 +198,19 @@ public class FragmentHome extends Fragment {
         return keyword != null && keyword.matches("[\\p{L}\\p{N} ]{1,50}");
     }
 
-    private String removeAccent(String s) {
-        String tmp = Normalizer.normalize(s.toLowerCase().trim(), Normalizer.Form.NFD);
-        tmp = tmp.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
-        return tmp.replace("đ", "d").replace("Đ", "D");
+    private String removeAccent(String value) {
+        String normalized = Normalizer.normalize(value.toLowerCase().trim(), Normalizer.Form.NFD);
+        normalized = normalized.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+        return normalized.replace("đ", "d").replace("Đ", "D");
     }
 
     private String normalizeProductName(String name) {
-        if (name == null || name.isEmpty()) return "";
-        String normalized = name.trim().toLowerCase();
-        normalized = removeAccent(normalized);
+        if (name == null || name.isEmpty()) {
+            return "";
+        }
+        String normalized = removeAccent(name.trim().toLowerCase());
         normalized = normalized.replaceAll("\\s+", "");
-        normalized = normalized.replaceAll("[^a-z0-9]", "");
-        return normalized;
+        return normalized.replaceAll("[^a-z0-9]", "");
     }
 
     private int calculateSimilarityScore(String productName, String keyword) {
@@ -189,8 +228,8 @@ public class FragmentHome extends Fragment {
     }
 
     private static class SanPhamWithScore {
-        SanPham sanPham;
-        int score;
+        private final SanPham sanPham;
+        private final int score;
 
         SanPhamWithScore(SanPham sanPham, int score) {
             this.sanPham = sanPham;
