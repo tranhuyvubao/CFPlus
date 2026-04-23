@@ -4,9 +4,9 @@ import {
   collection,
   doc,
   getDocs,
-  getDocsFromServer,
   getFirestore,
   limit,
+  onSnapshot,
   query,
   serverTimestamp,
   setDoc,
@@ -64,7 +64,9 @@ let currentTable = null;
 let cart = [];
 let rawCategories = [];
 let rawProducts = [];
-let catalogRefreshHandle = null;
+let tableUnsubscribe = null;
+let categoryUnsubscribe = null;
+let productUnsubscribe = null;
 
 boot();
 
@@ -96,8 +98,9 @@ async function boot() {
     }
 
     tableDisplay.textContent = formatTableDisplay(currentTable);
-    await refreshCatalogFromServer();
-    startCatalogRefresh();
+    await refreshCatalogOnce();
+    startTableRealtime(tableCode);
+    startCatalogRealtime();
     submitOrderBtn.disabled = false;
   } catch (error) {
     authStatus.textContent = "Lỗi kết nối";
@@ -120,18 +123,44 @@ async function fetchTableByCode(code) {
   return snapshot.docs[0].data();
 }
 
-async function refreshCatalogFromServer() {
-  const [categorySnapshot, productSnapshot] = await Promise.all([
-    getDocsFromServer(collection(db, "categories")),
-    getDocsFromServer(collection(db, "products"))
-  ]);
+function startTableRealtime(code) {
+  if (tableUnsubscribe) {
+    tableUnsubscribe();
+  }
 
-  rawCategories = categorySnapshot.docs.map(mapCategoryDocument);
-  rawProducts = productSnapshot.docs.map(mapProductDocument);
-  rebuildCatalogState();
+  const tableQuery = query(
+    collection(db, "tables"),
+    where("code", "==", code),
+    limit(1)
+  );
+
+  tableUnsubscribe = onSnapshot(tableQuery, (snapshot) => {
+    if (snapshot.empty) {
+      currentTable = null;
+      submitOrderBtn.disabled = true;
+      showError("Bàn này không còn khả dụng. Vui lòng báo nhân viên hỗ trợ.");
+      return;
+    }
+
+    const nextTable = snapshot.docs[0].data();
+    const activeValue = nextTable.is_active ?? nextTable.active;
+    if (activeValue === false) {
+      currentTable = null;
+      submitOrderBtn.disabled = true;
+      showError("Bàn này đang tạm ngưng nhận đơn.");
+      return;
+    }
+
+    currentTable = nextTable;
+    tableDisplay.textContent = formatTableDisplay(currentTable);
+    submitOrderBtn.disabled = false;
+  }, (error) => {
+    showError(normalizeError(error));
+  });
 }
 
 function startCatalogRefresh() {
+  return;
   if (catalogRefreshHandle) {
     window.clearInterval(catalogRefreshHandle);
   }
@@ -142,13 +171,60 @@ function startCatalogRefresh() {
   }, 5000);
 }
 
+async function refreshCatalogOnce() {
+  const [categorySnapshot, productSnapshot] = await Promise.all([
+    getDocs(collection(db, "categories")),
+    getDocs(collection(db, "products"))
+  ]);
+
+  rawCategories = categorySnapshot.docs.map(mapCategoryDocument);
+  rawProducts = productSnapshot.docs.map(mapProductDocument);
+  rebuildCatalogState();
+}
+
+function startCatalogRealtime() {
+  stopCatalogRealtime();
+
+  categoryUnsubscribe = onSnapshot(collection(db, "categories"), (snapshot) => {
+    rawCategories = snapshot.docs.map(mapCategoryDocument);
+    rebuildCatalogState();
+  }, (error) => {
+    showError(normalizeError(error));
+  });
+
+  productUnsubscribe = onSnapshot(collection(db, "products"), (snapshot) => {
+    rawProducts = snapshot.docs.map(mapProductDocument);
+    rebuildCatalogState();
+  }, (error) => {
+    showError(normalizeError(error));
+  });
+}
+
+function stopCatalogRealtime() {
+  if (categoryUnsubscribe) {
+    categoryUnsubscribe();
+    categoryUnsubscribe = null;
+  }
+  if (productUnsubscribe) {
+    productUnsubscribe();
+    productUnsubscribe = null;
+  }
+}
+
+window.addEventListener("beforeunload", () => {
+  if (tableUnsubscribe) {
+    tableUnsubscribe();
+  }
+  stopCatalogRealtime();
+});
+
 function mapCategoryDocument(snapshot) {
   const activeValue = snapshot.get("is_active");
   const legacyActiveValue = snapshot.get("active");
   return {
     categoryId: snapshot.get("category_id") || snapshot.get("categoryId") || snapshot.id,
     name: snapshot.get("name") || "Chưa đặt tên",
-    imageUrl: normalizeAssetUrl(snapshot.get("image_url") || snapshot.get("imageUrl")),
+    imageUrl: readAssetUrl(snapshot, ["image_url", "imageUrl", "image", "photo_url", "photoUrl", "thumbnail_url", "thumbnailUrl", "download_url", "downloadUrl"]),
     active: (activeValue !== undefined ? activeValue : legacyActiveValue) !== false
   };
 }
@@ -156,14 +232,14 @@ function mapCategoryDocument(snapshot) {
 function mapProductDocument(snapshot) {
   const activeValue = snapshot.get("is_active");
   const legacyActiveValue = snapshot.get("active");
-  const basePrice = snapshot.get("base_price");
+  const basePrice = snapshot.get("base_price") ?? snapshot.get("basePrice") ?? snapshot.get("unit_price") ?? snapshot.get("unitPrice");
   const legacyPrice = snapshot.get("price");
   return {
     productId: snapshot.get("product_id") || snapshot.get("productId") || snapshot.id,
     name: snapshot.get("name") || snapshot.get("product_name") || snapshot.get("productName") || "Chưa đặt tên",
     price: Number(basePrice ?? legacyPrice ?? 0),
     categoryId: snapshot.get("category_id") || snapshot.get("categoryId") || "",
-    imageUrl: normalizeAssetUrl(snapshot.get("image_url") || snapshot.get("imageUrl")),
+    imageUrl: readAssetUrl(snapshot, ["image_url", "imageUrl", "image", "photo_url", "photoUrl", "thumbnail_url", "thumbnailUrl", "download_url", "downloadUrl"]),
     description: snapshot.get("description") || "Món được chuẩn bị ngay sau khi quầy nhận đơn.",
     active: (activeValue !== undefined ? activeValue : legacyActiveValue) !== false
   };
@@ -210,16 +286,17 @@ function renderCategories() {
   categoryList.innerHTML = "";
   categories.forEach((category) => {
     const visual = getCategoryVisual(category);
-    const thumbStyle = category.imageUrl
-      ? `background-image:url('${escapeAttribute(category.imageUrl)}');`
-      : `background:${visual.image};`;
+    const thumbStyle = `background:${visual.image};`;
     const card = document.createElement("button");
     card.type = "button";
     card.className = `category-card${category.categoryId === activeCategory ? " active" : ""}`;
     card.innerHTML = `
-      <div class="category-thumb" style="${thumbStyle}"></div>
+      <div class="category-thumb" style="${thumbStyle}">
+        ${renderImageTag(category.imageUrl, category.name, "category-img")}
+      </div>
       <div class="category-label">${escapeHtml(category.name)}</div>
     `;
+    bindImageFallback(card);
     card.addEventListener("click", () => {
       activeCategory = category.categoryId;
       renderCategories();
@@ -253,19 +330,17 @@ function renderMenu() {
   filteredItems.forEach((item) => {
     const visual = getProductVisual(item);
     const productVisualUrl = normalizeAssetUrl(item.imageUrl) || normalizeAssetUrl(item.categoryImageUrl);
-    const cardBackground = productVisualUrl
-      ? `background-image:url('${escapeAttribute(productVisualUrl)}');`
-      : `background:${visual.image};`;
-    const plateBackground = productVisualUrl
-      ? `background-image:url('${escapeAttribute(productVisualUrl)}');`
-      : `background:${visual.plate};`;
+    const cardBackground = `background:${visual.image};`;
+    const plateBackground = `background:${visual.plate};`;
 
     const card = document.createElement("article");
     card.className = "product-card";
     card.innerHTML = `
       <div class="product-visual" style="${cardBackground}">
         <span class="product-badge">${escapeHtml(item.accentLabel)}</span>
-        <div class="product-image" style="${plateBackground}"></div>
+        <div class="product-image-shell" style="${plateBackground}">
+          ${renderImageTag(productVisualUrl, item.name, "product-img")}
+        </div>
       </div>
 
       <div class="product-body">
@@ -288,6 +363,7 @@ function renderMenu() {
 
     const qtyInput = card.querySelector(".qty-input");
     const addButton = card.querySelector(".add-btn");
+    bindImageFallback(card);
     addButton.addEventListener("click", () => {
       const qty = Math.max(1, parseInt(qtyInput.value || "1", 10));
       addToCart(item, qty);
@@ -413,12 +489,17 @@ submitOrderBtn.addEventListener("click", async () => {
       const mergedItems = mergeItems(existingOrder.items || [], incomingItems);
       const subtotal = mergedItems.reduce((sum, item) => sum + (item.lineTotal || 0), 0);
       const primaryItem = mergedItems[0];
+      const addedQty = incomingItems.reduce((sum, item) => sum + item.qty, 0);
 
       await updateDoc(doc(db, "orders", existingOrder.orderId), {
         status: "created",
         subtotal,
         total: subtotal,
         updatedAt: serverTimestamp(),
+        lastCustomerAction: "item_added",
+        lastCustomerItemAddedAt: Date.now(),
+        lastCustomerItemAddedQty: addedQty,
+        needsStaffAttention: true,
         note: commonNote || existingOrder.note || null,
         customerName: existingOrder.customerName || null,
         customerPhone: existingOrder.customerPhone || null,
@@ -567,6 +648,32 @@ function getProductVisual(item) {
   };
 }
 
+function readAssetUrl(snapshot, fieldNames) {
+  for (const fieldName of fieldNames) {
+    const normalized = normalizeAssetUrl(snapshot.get(fieldName));
+    if (normalized) {
+      return normalized;
+    }
+  }
+  return "";
+}
+
+function renderImageTag(url, alt, className) {
+  const normalized = normalizeAssetUrl(url);
+  if (!normalized) {
+    return "";
+  }
+  return `<img class="${className}" src="${escapeAttribute(normalized)}" alt="${escapeAttribute(alt || "CafePlus")}" loading="lazy" decoding="async" data-fallback="true">`;
+}
+
+function bindImageFallback(root) {
+  root.querySelectorAll("img[data-fallback]").forEach((image) => {
+    image.addEventListener("error", () => {
+      image.remove();
+    }, { once: true });
+  });
+}
+
 function normalizeAssetUrl(value) {
   if (value === null || value === undefined) {
     return "";
@@ -575,7 +682,29 @@ function normalizeAssetUrl(value) {
   if (!normalized || normalized.toLowerCase() === "null" || normalized.toLowerCase() === "undefined") {
     return "";
   }
+  const lower = normalized.toLowerCase();
+  if (
+    lower.startsWith("content://") ||
+    lower.startsWith("file://") ||
+    lower.startsWith("android.resource://")
+  ) {
+    return "";
+  }
+  if (lower.startsWith("gs://")) {
+    return toFirebaseStorageDownloadUrl(normalized);
+  }
   return normalized;
+}
+
+function toFirebaseStorageDownloadUrl(value) {
+  const withoutScheme = value.slice(5);
+  const slashIndex = withoutScheme.indexOf("/");
+  if (slashIndex <= 0 || slashIndex >= withoutScheme.length - 1) {
+    return "";
+  }
+  const bucket = withoutScheme.slice(0, slashIndex);
+  const path = withoutScheme.slice(slashIndex + 1);
+  return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodeURIComponent(path)}?alt=media`;
 }
 
 function formatTableDisplay(table) {

@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dashboard_background"
+    android:clipToPadding="false"
+    android:paddingBottom="18dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@color/dashboard_card"
+            app:cardCornerRadius="22dp"
+            app:cardElevation="7dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="18dp">
+
+                <ImageView
+                    android:layout_width="58dp"
+                    android:layout_height="58dp"
+                    android:background="@drawable/dashboard_icon_circle_primary"
+                    android:padding="13dp"
+                    android:src="@drawable/outline_account_circle_24"
+                    android:tint="@color/dashboard_primary" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="HỒ SƠ NHÂN VIÊN"
+                        android:textAllCaps="true"
+                        android:textColor="@color/dashboard_text_secondary"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvStaffAccountName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Nhân viên"
+                        android:textColor="@color/dashboard_text_primary"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvStaffAccountEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="staff@cfplus.vn"
+                        android:textColor="@color/dashboard_text_secondary"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardBackgroundColor="@color/dashboard_card"
+            app:cardCornerRadius="22dp"
+            app:cardElevation="7dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tác vụ nhân viên"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/rowStaffOnlineOrders"
+                    style="@style/Widget.AppCompat.TextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:background="@drawable/manager_search_background"
+                    android:drawableEnd="@drawable/baseline_keyboard_arrow_right_24"
+                    android:drawablePadding="10dp"
+                    android:padding="14dp"
+                    android:text="Nhận đơn online"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/rowStaffTables"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/manager_search_background"
+                    android:drawableEnd="@drawable/baseline_keyboard_arrow_right_24"
+                    android:drawablePadding="10dp"
+                    android:padding="14dp"
+                    android:text="Đơn tại bàn"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/rowStaffReservations"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/manager_search_background"
+                    android:drawableEnd="@drawable/baseline_keyboard_arrow_right_24"
+                    android:drawablePadding="10dp"
+                    android:padding="14dp"
+                    android:text="Đặt bàn"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/rowStaffTakeaway"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/manager_search_background"
+                    android:drawableEnd="@drawable/baseline_keyboard_arrow_right_24"
+                    android:drawablePadding="10dp"
+                    android:padding="14dp"
+                    android:text="Mang về"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/rowStaffBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/manager_search_background"
+                    android:drawableEnd="@drawable/baseline_keyboard_arrow_right_24"
+                    android:drawablePadding="10dp"
+                    android:padding="14dp"
+                    android:text="Pha chế / KDS"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/rowStaffStockIn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/manager_search_background"
+                    android:drawableEnd="@drawable/baseline_keyboard_arrow_right_24"
+                    android:drawablePadding="10dp"
+                    android:padding="14dp"
+                    android:text="Nhập kho"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/rowStaffShiftUsage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/manager_search_background"
+                    android:drawableEnd="@drawable/baseline_keyboard_arrow_right_24"
+                    android:drawablePadding="10dp"
+                    android:padding="14dp"
+                    android:text="Báo cáo tiêu hao cuối ca"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/rowStaffShiftAttendance"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/manager_search_background"
+                    android:drawableEnd="@drawable/baseline_keyboard_arrow_right_24"
+                    android:drawablePadding="10dp"
+                    android:padding="14dp"
+                    android:text="Check-in / Check-out ca"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardBackgroundColor="@color/dashboard_card"
+            app:cardCornerRadius="22dp"
+            app:cardElevation="7dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tài khoản"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/rowStaffEditProfile"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:background="@drawable/manager_search_background"
+                    android:drawableEnd="@drawable/baseline_keyboard_arrow_right_24"
+                    android:drawablePadding="10dp"
+                    android:padding="14dp"
+                    android:text="Thông tin cá nhân"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+</ScrollView>

@@ -2,81 +2,76 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:background="@color/dashboard_card"
+    android:orientation="vertical"
+    android:padding="22dp">
 
     <TextView
         android:id="@+id/tvXacthucotp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FEF6E17D"
         android:gravity="center_horizontal"
         android:text="Xác thực email bằng OTP"
-        android:textColor="#D50000"
+        android:textColor="@color/dashboard_text_primary"
         android:textSize="20sp"
         android:textStyle="bold" />
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/tvmaotp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:text="Mã OTP"
+        android:textColor="@color/dashboard_text_primary"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/edtotp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="20dp"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/tvmaotp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|start"
-            android:text="Mã OTP:"
-            android:textColor="@color/brown"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/edtotp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:background="@drawable/rounded_background"
-            android:ems="10"
-            android:hint="Nhập mã OTP"
-            android:inputType="text"
-            android:minHeight="48dp"
-            android:textColor="@color/grey"
-            android:textSize="20sp" />
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/manager_search_background"
+        android:ems="10"
+        android:hint="Nhập mã OTP"
+        android:inputType="text"
+        android:minHeight="52dp"
+        android:paddingHorizontal="14dp"
+        android:textColor="@color/dashboard_text_primary"
+        android:textColorHint="@color/dashboard_text_secondary"
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/testdemgiay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="12dp"
         android:text="Mã OTP sẽ hết hạn sau: (đếm thời gian)"
-        android:textColor="#DD2C00"
+        android:textColor="#D32F2F"
         android:textSize="14sp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/luuy"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="15dp"
-        android:hint="*Lưu ý: Mã OTP sẽ hết hạn sau 2 phút và vui lòng kiểm tra email cá nhân để nhận lại"
-        android:textColor="@color/grey"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Lưu ý: Mã OTP sẽ hết hạn sau 2 phút. Vui lòng kiểm tra email cá nhân để nhận mã."
+        android:textColor="@color/dashboard_text_secondary"
         android:textSize="14sp"
-        android:textStyle="bold|italic" />
+        android:textStyle="italic" />
 
     <TextView
         android:id="@+id/tvXacnhan"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:background="@drawable/rounded_background_2"
-        android:backgroundTint="@color/grey"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/manager_primary_pill"
+        android:gravity="center"
+        android:padding="14dp"
         android:text="Xác nhận"
-        android:textAlignment="center"
-        android:textColor="@color/brown"
-        android:textSize="20sp"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
         android:textStyle="bold" />
 </LinearLayout>

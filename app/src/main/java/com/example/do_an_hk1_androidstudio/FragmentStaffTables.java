@@ -38,6 +38,8 @@ public class FragmentStaffTables extends Fragment {
     private OrderCloudRepository orderRepository;
     private TableGridAdapter adapter;
     private TextView tvEmpty;
+    private TextView btnTakeaway;
+    private int takeawayOpenOrderCount = 0;
 
     @Nullable
     @Override
@@ -49,12 +51,19 @@ public class FragmentStaffTables extends Fragment {
         RecyclerView rvTables = view.findViewById(R.id.rvStaffTables);
         tvEmpty = view.findViewById(R.id.tvStaffTablesEmpty);
         View btnReservations = view.findViewById(R.id.btnStaffReservations);
+        View btnBarMode = view.findViewById(R.id.btnStaffBarMode);
+        btnTakeaway = view.findViewById(R.id.btnStaffTakeaway);
 
         rvTables.setLayoutManager(new GridLayoutManager(requireContext(), 3));
         adapter = new TableGridAdapter();
         rvTables.setAdapter(adapter);
+
         btnReservations.setOnClickListener(v ->
                 startActivity(new Intent(requireContext(), XuLyDatBanActivity.class)));
+        btnTakeaway.setOnClickListener(v -> openTakeawayBill());
+        btnBarMode.setOnClickListener(v ->
+                startActivity(new Intent(requireContext(), KdsBarActivity.class)));
+        renderTakeawayButton();
         return view;
     }
 
@@ -89,7 +98,7 @@ public class FragmentStaffTables extends Fragment {
             requireActivity().runOnUiThread(() -> {
                 tables.clear();
                 for (LocalCafeTable table : fetchedTables) {
-                    if (table.isActive()) {
+                    if (table.isActive() && !TableCloudRepository.TAKEAWAY_TABLE_ID.equals(table.getTableId())) {
                         tables.add(table);
                     }
                 }
@@ -104,22 +113,44 @@ public class FragmentStaffTables extends Fragment {
         if (orderListener != null) {
             orderListener.remove();
         }
-        orderListener = orderRepository.listenOnlineOrders(fetchedOrders -> {
+        orderListener = orderRepository.listenAllOrders(fetchedOrders -> {
             if (!isAdded()) {
                 return;
             }
             requireActivity().runOnUiThread(() -> {
                 tablesWithOpenOrders.clear();
+                takeawayOpenOrderCount = 0;
                 fetchedOrders.forEach(order -> {
                     String status = order.getStatus();
                     if (("created".equals(status) || "confirmed".equals(status)) && order.getTableId() != null) {
-                        tablesWithOpenOrders.add(order.getTableId());
+                        if (TableCloudRepository.TAKEAWAY_TABLE_ID.equals(order.getTableId())) {
+                            takeawayOpenOrderCount++;
+                        } else {
+                            tablesWithOpenOrders.add(order.getTableId());
+                        }
                     }
                 });
+                renderTakeawayButton();
                 sortTables();
                 adapter.notifyDataSetChanged();
             });
         });
+    }
+
+    private void openTakeawayBill() {
+        Intent intent = new Intent(requireContext(), HoaDonBanActivity.class);
+        intent.putExtra(HoaDonBanActivity.EXTRA_TABLE_ID, TableCloudRepository.TAKEAWAY_TABLE_ID);
+        intent.putExtra(HoaDonBanActivity.EXTRA_TABLE_NAME, "Mang về");
+        startActivity(intent);
+    }
+
+    private void renderTakeawayButton() {
+        if (btnTakeaway == null) {
+            return;
+        }
+        btnTakeaway.setText(takeawayOpenOrderCount > 0
+                ? "Mang về (" + takeawayOpenOrderCount + ")"
+                : "Mang về");
     }
 
     private void sortTables() {
@@ -167,11 +198,11 @@ public class FragmentStaffTables extends Fragment {
         switch (displayStatus) {
             case "Có khách":
             case "Đang dùng":
-                return R.color.coffee_success;
+                return R.color.dashboard_success;
             case "Đã đặt":
-                return R.color.coffee_warning;
+                return R.color.dashboard_warning;
             default:
-                return R.color.coffee_primary_dark;
+                return R.color.dashboard_primary;
         }
     }
 

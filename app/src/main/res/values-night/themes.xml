@@ -1,7 +1,17 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Base.Theme.Do_an_hk1_Androidstudio" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Màu nền cho chế độ sáng -->
-        <item name="android:windowBackground">@color/kem</item>
+        <item name="colorPrimary">@color/dashboard_primary</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/dashboard_nav_active_bg</item>
+        <item name="colorOnPrimaryContainer">@color/dashboard_text_primary</item>
+        <item name="colorSecondary">@color/dashboard_accent</item>
+        <item name="colorOnSecondary">@color/dashboard_text_primary</item>
+        <item name="android:windowBackground">@color/dashboard_background</item>
+        <item name="colorSurface">@color/dashboard_card</item>
+        <item name="colorOnSurface">@color/dashboard_text_primary</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/dashboard_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
     </style>
 </resources>

@@ -21,6 +21,9 @@ public class LocalOrder {
     private final int total;
     private final String deliveryAddressText;
     private final long createdAtMillis;
+    private final boolean needsStaffAttention;
+    private final int lastCustomerItemAddedQty;
+    private final long lastCustomerItemAddedAtMillis;
     private final List<LocalOrderItem> items;
 
     public LocalOrder(String orderId,
@@ -38,6 +41,44 @@ public class LocalOrder {
                       String deliveryAddressText,
                       long createdAtMillis,
                       List<LocalOrderItem> items) {
+        this(orderId,
+                orderCode,
+                orderType,
+                orderChannel,
+                tableId,
+                tableName,
+                customerId,
+                staffId,
+                status,
+                subtotal,
+                discountAmount,
+                total,
+                deliveryAddressText,
+                createdAtMillis,
+                false,
+                0,
+                0L,
+                items);
+    }
+
+    public LocalOrder(String orderId,
+                      String orderCode,
+                      String orderType,
+                      String orderChannel,
+                      String tableId,
+                      String tableName,
+                      String customerId,
+                      String staffId,
+                      String status,
+                      int subtotal,
+                      int discountAmount,
+                      int total,
+                      String deliveryAddressText,
+                      long createdAtMillis,
+                      boolean needsStaffAttention,
+                      int lastCustomerItemAddedQty,
+                      long lastCustomerItemAddedAtMillis,
+                      List<LocalOrderItem> items) {
         this.orderId = orderId;
         this.orderCode = orderCode;
         this.orderType = orderType;
@@ -52,6 +93,9 @@ public class LocalOrder {
         this.total = total;
         this.deliveryAddressText = deliveryAddressText;
         this.createdAtMillis = createdAtMillis;
+        this.needsStaffAttention = needsStaffAttention;
+        this.lastCustomerItemAddedQty = lastCustomerItemAddedQty;
+        this.lastCustomerItemAddedAtMillis = lastCustomerItemAddedAtMillis;
         this.items = items == null ? new ArrayList<>() : new ArrayList<>(items);
     }
 
@@ -121,6 +165,18 @@ public class LocalOrder {
 
     public long getCreatedAtMillis() {
         return createdAtMillis;
+    }
+
+    public boolean needsStaffAttention() {
+        return needsStaffAttention;
+    }
+
+    public int getLastCustomerItemAddedQty() {
+        return lastCustomerItemAddedQty;
+    }
+
+    public long getLastCustomerItemAddedAtMillis() {
+        return lastCustomerItemAddedAtMillis;
     }
 
     public List<LocalOrderItem> getItems() {

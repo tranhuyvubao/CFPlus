@@ -1,6 +1,5 @@
 package com.example.do_an_hk1_androidstudio;
 
-import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -21,21 +20,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.do_an_hk1_androidstudio.cloud.UserCloudRepository;
 import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
 import com.example.do_an_hk1_androidstudio.local.model.LocalCustomerAddress;
-import com.example.do_an_hk1_androidstudio.local.model.LocalCustomerProfile;
 import com.example.do_an_hk1_androidstudio.ui.AddressCatalog;
 import com.example.do_an_hk1_androidstudio.ui.InsetsHelper;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class HoSoKhachHangActivity extends AppCompatActivity {
 
-    private TextView tvLoyalty;
-    private EditText edtBirthday;
-    private AutoCompleteTextView edtGender;
     private LinearLayout addressContainer;
     private TextView tvAddressEmpty;
     private UserCloudRepository userCloudRepository;
@@ -55,12 +46,8 @@ public class HoSoKhachHangActivity extends AppCompatActivity {
             tvBack.setOnClickListener(v -> finish());
         }
 
-        tvLoyalty = findViewById(R.id.tvLoyaltyPoint);
-        edtBirthday = findViewById(R.id.edtCustomerBirthday);
-        edtGender = findViewById(R.id.edtCustomerGender);
         addressContainer = findViewById(R.id.addressContainer);
         tvAddressEmpty = findViewById(R.id.tvAddressEmpty);
-        TextView btnSave = findViewById(R.id.btnSaveCustomerProfile);
         TextView btnAddAddress = findViewById(R.id.btnAddAddress);
 
         userCloudRepository = new UserCloudRepository(this);
@@ -73,99 +60,8 @@ public class HoSoKhachHangActivity extends AppCompatActivity {
             return;
         }
 
-        bindGenderDropdown();
-        bindBirthdayPicker(edtBirthday);
-        loadProfile();
         renderAddresses();
-
-        btnSave.setOnClickListener(v -> saveProfile());
         btnAddAddress.setOnClickListener(v -> showAddressDialog(null));
-    }
-
-    private void bindGenderDropdown() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new String[]{"Nam", "Nữ", "Khác"});
-        edtGender.setAdapter(adapter);
-        edtGender.setOnClickListener(v -> edtGender.showDropDown());
-    }
-
-    private void bindBirthdayPicker(EditText target) {
-        target.setFocusable(false);
-        target.setOnClickListener(v -> {
-            Calendar calendar = Calendar.getInstance();
-            String current = target.getText().toString().trim();
-            if (!current.isEmpty()) {
-                try {
-                    Date date = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(current);
-                    if (date != null) {
-                        calendar.setTime(date);
-                    }
-                } catch (Exception ignored) {
-                }
-            }
-
-            new DatePickerDialog(
-                    this,
-                    (view, year, month, dayOfMonth) -> {
-                        Calendar picked = Calendar.getInstance();
-                        picked.set(year, month, dayOfMonth);
-                        target.setText(new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(picked.getTime()));
-                    },
-                    calendar.get(Calendar.YEAR),
-                    calendar.get(Calendar.MONTH),
-                    calendar.get(Calendar.DAY_OF_MONTH)
-            ).show();
-        });
-    }
-
-    private void loadProfile() {
-        userCloudRepository.getCustomerProfile(userId, (profile, message) -> {
-            if (profile == null) {
-                tvLoyalty.setText("Điểm tích lũy: 0");
-                edtBirthday.setText("");
-                edtGender.setText("", false);
-                return;
-            }
-            bindProfile(profile);
-        });
-    }
-
-    private void bindProfile(LocalCustomerProfile profile) {
-        tvLoyalty.setText("Điểm tích lũy: " + profile.getLoyaltyPoint());
-        if (profile.getBirthdayMillis() != null) {
-            edtBirthday.setText(new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date(profile.getBirthdayMillis())));
-        } else {
-            edtBirthday.setText("");
-        }
-        edtGender.setText(profile.getGender() == null ? "" : profile.getGender(), false);
-    }
-
-    private void saveProfile() {
-        Long birthdayMillis = null;
-        String birthdayStr = edtBirthday.getText().toString().trim();
-        String gender = edtGender.getText().toString().trim();
-
-        if (!TextUtils.isEmpty(birthdayStr)) {
-            try {
-                Date date = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(birthdayStr);
-                if (date != null) {
-                    birthdayMillis = date.getTime();
-                }
-            } catch (Exception e) {
-                Toast.makeText(this, "Ngày sinh phải đúng định dạng dd/MM/yyyy.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-        }
-
-        userCloudRepository.saveCustomerProfile(userId, birthdayMillis, gender, (success, message) -> {
-            Toast.makeText(this,
-                    success ? "Lưu hồ sơ thành công." : (message == null ? "Không thể lưu hồ sơ." : message),
-                    Toast.LENGTH_SHORT).show();
-            if (success) {
-                loadProfile();
-                setResult(RESULT_OK);
-                finish();
-            }
-        });
     }
 
     private void renderAddresses() {
@@ -277,8 +173,9 @@ public class HoSoKhachHangActivity extends AppCompatActivity {
                 String ward = autoWard.getText().toString().trim();
                 String detail = edtDetailAddress.getText().toString().trim();
 
-                if (label.isEmpty() || recipientName.isEmpty() || phone.isEmpty() || country.isEmpty()
-                        || province.isEmpty() || district.isEmpty() || ward.isEmpty() || detail.isEmpty()) {
+                if (TextUtils.isEmpty(label) || TextUtils.isEmpty(recipientName) || TextUtils.isEmpty(phone)
+                        || TextUtils.isEmpty(country) || TextUtils.isEmpty(province) || TextUtils.isEmpty(district)
+                        || TextUtils.isEmpty(ward) || TextUtils.isEmpty(detail)) {
                     Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin địa chỉ.", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -304,7 +201,6 @@ public class HoSoKhachHangActivity extends AppCompatActivity {
                             renderAddresses();
                             dialog.dismiss();
                             setResult(RESULT_OK);
-                            finish();
                         }
                 );
             }));

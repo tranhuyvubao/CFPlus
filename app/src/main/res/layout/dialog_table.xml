@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/dashboard_card">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,14 +15,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Tên bàn"
-            android:textColor="@color/coffee_dark"
+            android:textColor="@color/dashboard_text_primary"
             android:textStyle="bold" />
 
         <EditText
             android:id="@+id/edtTableName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/rounded_background"
+            android:background="@drawable/manager_search_background"
             android:hint="Tên bàn"
             android:padding="12dp" />
 
@@ -31,14 +32,14 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:text="Mã bàn"
-            android:textColor="@color/coffee_dark"
+            android:textColor="@color/dashboard_text_primary"
             android:textStyle="bold" />
 
         <EditText
             android:id="@+id/edtTableCode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/rounded_background"
+            android:background="@drawable/manager_search_background"
             android:hint="Mã bàn tự động sinh"
             android:padding="12dp"
             android:textAllCaps="true" />
@@ -49,14 +50,14 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:text="Khu vực"
-            android:textColor="@color/coffee_dark"
+            android:textColor="@color/dashboard_text_primary"
             android:textStyle="bold" />
 
         <EditText
             android:id="@+id/edtTableArea"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/rounded_background"
+            android:background="@drawable/manager_search_background"
             android:hint="Khu vực (tùy chọn)"
             android:padding="12dp" />
 
@@ -66,7 +67,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:text="Trạng thái bàn"
-            android:textColor="@color/coffee_dark"
+            android:textColor="@color/dashboard_text_primary"
             android:textStyle="bold" />
 
         <Spinner
@@ -79,7 +80,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Đang sử dụng" />
-
+            android:text="Đang sử dụng"
+            android:textColor="@color/dashboard_text_primary" />
     </LinearLayout>
 </ScrollView>

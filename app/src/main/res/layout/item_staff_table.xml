@@ -1,47 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="6dp"
-    android:background="@drawable/app_card_background"
-    android:gravity="center"
-    android:minHeight="112dp"
-    android:orientation="vertical"
-    android:padding="12dp">
+    android:minHeight="132dp"
+    app:cardBackgroundColor="@color/dashboard_card"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="5dp"
+    app:strokeWidth="0dp">
 
-    <TextView
-        android:id="@+id/tvStaffTableName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:gravity="center"
-        android:text="Ban 1"
-        android:textColor="@color/coffee_dark"
-        android:textSize="17sp"
-        android:textStyle="bold" />
+        android:orientation="vertical"
+        android:padding="14dp">
 
-    <TextView
-        android:id="@+id/tvStaffTableStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:background="@drawable/app_chip_status_empty"
-        android:paddingLeft="10dp"
-        android:paddingTop="6dp"
-        android:paddingRight="10dp"
-        android:paddingBottom="6dp"
-        android:text="Trong"
-        android:textColor="@color/coffee_primary_dark"
-        android:textSize="13sp"
-        android:textStyle="bold" />
+        <TextView
+            android:id="@+id/tvStaffTableName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Bàn 1"
+            android:textColor="@color/dashboard_text_primary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/tvStaffTableArea"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:gravity="center"
-        android:text="Tang 1"
-        android:textColor="@color/coffee_muted"
-        android:textSize="13sp" />
+        <TextView
+            android:id="@+id/tvStaffTableStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/manager_soft_pill"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:text="Trống"
+            android:textColor="@color/dashboard_primary"
+            android:textSize="13sp"
+            android:textStyle="bold" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/tvStaffTableArea"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="Tầng 1"
+            android:textColor="@color/dashboard_text_secondary"
+            android:textSize="13sp" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -1,150 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
-    android:background="@drawable/app_card_background"
-    android:orientation="horizontal"
-    android:padding="14dp">
-
-    <ImageButton
-        android:id="@+id/imageButton1"
-        android:layout_width="92dp"
-        android:layout_height="92dp"
-        android:background="@drawable/rounded_background"
-        android:clickable="false"
-        android:contentDescription="@string/anh_san_pham"
-        android:focusable="false"
-        android:padding="4dp"
-        android:scaleType="centerCrop" />
+    app:cardBackgroundColor="@color/dashboard_card"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="5dp"
+    app:strokeWidth="0dp">
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:padding="14dp">
 
-        <TextView
-            android:id="@+id/tenban"
-            android:layout_width="match_parent"
+        <ImageButton
+            android:id="@+id/imageButton1"
+            android:layout_width="92dp"
+            android:layout_height="92dp"
+            android:background="@drawable/manager_image_surface"
+            android:clickable="false"
+            android:contentDescription="@string/anh_san_pham"
+            android:focusable="false"
+            android:padding="4dp"
+            android:scaleType="centerCrop" />
+
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Tên bàn"
-            android:textColor="@color/coffee_dark"
-            android:textSize="17sp"
-            android:textStyle="bold" />
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tvTen"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="Tên sản phẩm"
-            android:textColor="@color/coffee_primary"
-            android:textStyle="bold" />
+            <TextView
+                android:id="@+id/tenban"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tên bàn"
+                android:textColor="@color/dashboard_text_primary"
+                android:textSize="17sp"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tvGiamGia"
+            <TextView
+                android:id="@+id/tvTen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Tên sản phẩm"
+                android:textColor="@color/dashboard_primary"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvGiamGia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvSize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Size"
+                android:textColor="@color/dashboard_text_secondary" />
+
+            <TextView
+                android:id="@+id/tvmucda"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Mức đá"
+                android:textColor="@color/dashboard_text_secondary" />
+
+            <TextView
+                android:id="@+id/tvslsp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Số lượng"
+                android:textColor="@color/dashboard_text_secondary" />
+
+            <TextView
+                android:id="@+id/tvGia"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Tổng tiền"
+                android:textColor="@color/dashboard_primary"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvhinhthuc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Hình thức"
+                android:textColor="@color/dashboard_text_secondary" />
+
+            <TextView
+                android:id="@+id/tvtrangthai_thanhtoan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Trạng thái"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
+            android:layout_height="match_parent"
+            android:gravity="end"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tvSize"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Size"
-            android:textColor="@color/coffee_muted" />
+            <TextView
+                android:id="@+id/edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/manager_accent_pill"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="8dp"
+                android:text="Thanh toán"
+                android:textColor="@color/dashboard_accent"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tvmucda"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="Mức đá"
-            android:textColor="@color/coffee_muted" />
+            <TextView
+                android:id="@+id/chuyenban"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/manager_back_chip"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="8dp"
+                android:text="Chuyển bàn"
+                android:textColor="@color/dashboard_primary"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tvslsp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="Số lượng"
-            android:textColor="@color/coffee_muted" />
-
-        <TextView
-            android:id="@+id/tvGia"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="Tổng tiền"
-            android:textColor="@color/coffee_primary"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvhinhthuc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Hình thức"
-            android:textColor="@color/coffee_muted" />
-
-        <TextView
-            android:id="@+id/tvtrangthai_thanhtoan"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="Trạng thái"
-            android:textStyle="bold" />
+            <TextView
+                android:id="@+id/deleted"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/manager_danger_pill"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="8dp"
+                android:text="Hủy đơn"
+                android:textColor="#D32F2F"
+                android:textStyle="bold" />
+        </LinearLayout>
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:gravity="end"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/edit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/rounded_background"
-            android:paddingLeft="12dp"
-            android:paddingTop="8dp"
-            android:paddingRight="12dp"
-            android:paddingBottom="8dp"
-            android:text="Thanh toán"
-            android:textColor="@color/coffee_warning"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/chuyenban"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/rounded_background"
-            android:paddingLeft="12dp"
-            android:paddingTop="8dp"
-            android:paddingRight="12dp"
-            android:paddingBottom="8dp"
-            android:text="Chuyển bàn"
-            android:textColor="@color/coffee_primary"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/deleted"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/rounded_background"
-            android:paddingLeft="12dp"
-            android:paddingTop="8dp"
-            android:paddingRight="12dp"
-            android:paddingBottom="8dp"
-            android:text="Hủy đơn"
-            android:textColor="@color/coffee_danger"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

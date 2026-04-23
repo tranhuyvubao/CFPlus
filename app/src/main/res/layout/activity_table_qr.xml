@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/scrollContent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/app_screen_background"
+    android:background="@color/dashboard_background"
     android:fillViewport="true">
 
     <LinearLayout
@@ -16,70 +17,77 @@
             android:id="@+id/tvBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/rounded_background"
-            android:paddingLeft="14dp"
-            android:paddingTop="8dp"
-            android:paddingRight="14dp"
-            android:paddingBottom="8dp"
+            android:background="@drawable/manager_back_chip"
+            android:elevation="3dp"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp"
             android:text="Trở về"
-            android:textColor="@color/coffee_dark"
+            android:textColor="@color/dashboard_primary"
             android:textSize="14sp"
             android:textStyle="bold" />
 
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:background="@drawable/app_card_background"
-            android:orientation="vertical"
-            android:padding="18dp">
+            app:cardBackgroundColor="@color/dashboard_card"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="8dp"
+            app:strokeWidth="0dp">
 
-            <TextView
-                android:id="@+id/tvQrTitle"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="QR bàn"
-                android:textColor="@color/coffee_dark"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+                android:orientation="vertical"
+                android:padding="20dp">
 
-            <TextView
-                android:id="@+id/tvQrCode"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Mã bàn"
-                android:textColor="@color/coffee_primary"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/tvQrTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="QR bàn"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/tvQrPayload"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="Link order"
-                android:textColor="@color/coffee_muted"
-                android:textSize="14sp" />
+                <TextView
+                    android:id="@+id/tvQrCode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Mã bàn"
+                    android:textColor="@color/dashboard_primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
-            <ImageView
-                android:id="@+id/imgTableQr"
-                android:layout_width="match_parent"
-                android:layout_height="320dp"
-                android:layout_marginTop="18dp"
-                android:adjustViewBounds="true"
-                android:background="@drawable/rounded_background"
-                android:padding="12dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/cfplus4" />
+                <TextView
+                    android:id="@+id/tvQrPayload"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Link order"
+                    android:textColor="@color/dashboard_text_secondary"
+                    android:textSize="14sp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:text="Khách có thể quét mã này để mở web order mới nhất hoặc nhập mã bàn thủ công khi cần."
-                android:textColor="@color/coffee_muted"
-                android:textSize="14sp" />
-        </LinearLayout>
+                <ImageView
+                    android:id="@+id/imgTableQr"
+                    android:layout_width="match_parent"
+                    android:layout_height="320dp"
+                    android:layout_marginTop="18dp"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/manager_search_background"
+                    android:padding="12dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/cfplus4" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Khách có thể quét mã này để mở web order mới nhất hoặc nhập mã bàn thủ công khi cần."
+                    android:textColor="@color/dashboard_text_secondary"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 </ScrollView>

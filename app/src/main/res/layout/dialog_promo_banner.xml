@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/tvBannerDialogTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Banner"
+            android:textColor="@color/dashboard_text_primary"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/imgBannerPreview"
+            android:layout_width="match_parent"
+            android:layout_height="130dp"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/manager_image_surface"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:id="@+id/btnChooseBannerImage"
+            android:layout_width="wrap_content"
+            android:layout_height="42dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/manager_accent_pill"
+            android:gravity="center"
+            android:paddingHorizontal="14dp"
+            android:text="Chọn ảnh"
+            android:textColor="@color/dashboard_accent"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/edtBannerTitle"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="12dp"
+            android:hint="Tiêu đề, ví dụ: Mùa hè tươi mát"
+            android:singleLine="true" />
+
+        <EditText
+            android:id="@+id/edtBannerSubtitle"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="10dp"
+            android:hint="Mô tả ngắn"
+            android:singleLine="true" />
+
+        <EditText
+            android:id="@+id/edtBannerAction"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="10dp"
+            android:hint="Nút hiển thị, ví dụ: Xem combo"
+            android:singleLine="true" />
+
+        <TextView
+            android:id="@+id/tvSelectedBannerProduct"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/manager_search_background"
+            android:drawableEnd="@android:drawable/ic_menu_search"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="14dp"
+            android:text="Chọn các món liên kết"
+            android:textColor="@color/dashboard_text_secondary"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/btnClearBannerProduct"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/manager_accent_pill"
+            android:gravity="center"
+            android:paddingHorizontal="12dp"
+            android:text="Bỏ liên kết món"
+            android:textColor="@color/dashboard_primary"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/edtBannerSortOrder"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="10dp"
+            android:hint="Thứ tự hiển thị"
+            android:inputType="numberSigned"
+            android:singleLine="true" />
+
+        <Switch
+            android:id="@+id/switchBannerActive"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Đang hiển thị" />
+    </LinearLayout>
+</ScrollView>

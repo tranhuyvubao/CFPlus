@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/dashboard_card"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Bộ lọc"
+            android:textColor="@color/dashboard_text_primary"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Chỉ giữ lại những tùy chọn giúp bạn chọn món nhanh hơn."
+            android:textColor="@color/dashboard_text_secondary"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Khoảng giá"
+            android:textColor="@color/dashboard_text_primary"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <RadioGroup
+            android:id="@+id/radioPriceGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+
+            <RadioButton
+                android:id="@+id/radioPriceAll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/dashboard_primary"
+                android:text="Tất cả mức giá"
+                android:textColor="@color/dashboard_text_primary" />
+
+            <RadioButton
+                android:id="@+id/radioPrice30"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/dashboard_primary"
+                android:text="Tối đa 30.000đ"
+                android:textColor="@color/dashboard_text_primary" />
+
+            <RadioButton
+                android:id="@+id/radioPrice50"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/dashboard_primary"
+                android:text="Tối đa 50.000đ"
+                android:textColor="@color/dashboard_text_primary" />
+        </RadioGroup>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Sắp xếp"
+            android:textColor="@color/dashboard_text_primary"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <RadioGroup
+            android:id="@+id/radioSortGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+
+            <RadioButton
+                android:id="@+id/radioSortName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/dashboard_primary"
+                android:text="Tên A-Z"
+                android:textColor="@color/dashboard_text_primary" />
+
+            <RadioButton
+                android:id="@+id/radioSortPriceAsc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/dashboard_primary"
+                android:text="Giá tăng dần"
+                android:textColor="@color/dashboard_text_primary" />
+
+            <RadioButton
+                android:id="@+id/radioSortPriceDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/dashboard_primary"
+                android:text="Giá giảm dần"
+                android:textColor="@color/dashboard_text_primary" />
+        </RadioGroup>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Tùy chọn thêm"
+            android:textColor="@color/dashboard_text_primary"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <CheckBox
+            android:id="@+id/checkRating"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:buttonTint="@color/dashboard_primary"
+            android:text="Chỉ hiện món từ 4 sao trở lên"
+            android:textColor="@color/dashboard_text_primary" />
+
+        <CheckBox
+            android:id="@+id/checkPromotion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:buttonTint="@color/dashboard_primary"
+            android:text="Chỉ hiện món đang có ưu đãi"
+            android:textColor="@color/dashboard_text_primary" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:gravity="end"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnResetFilters"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/dashboard_nav_active_bg"
+                android:text="Đặt lại"
+                android:textAllCaps="false"
+                android:textColor="@color/dashboard_primary"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnApplyFilters"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:backgroundTint="@color/dashboard_primary"
+                android:text="Áp dụng"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

@@ -202,6 +202,7 @@ public class FragmentOnlineOrders extends Fragment {
     private void openPayment(LocalOrder order) {
         Intent intent = new Intent(requireContext(), ThanhToanKhachActivity.class);
         intent.putExtra(ThanhToanKhachActivity.EXTRA_ORDER_ID, order.getOrderId());
+        intent.putExtra(ThanhToanKhachActivity.EXTRA_DISPLAY_ORDER_CODE, order.getDisplayOrderCode());
         intent.putExtra(ThanhToanKhachActivity.EXTRA_AMOUNT, order.getSubtotal());
         startActivity(intent);
     }
@@ -285,7 +286,7 @@ public class FragmentOnlineOrders extends Fragment {
         bill.append("\nTổng cộng: ").append(MoneyFormatter.format(order.getTotal()));
 
         new AlertDialog.Builder(requireContext())
-                .setTitle("In bill demo")
+                .setTitle("Xem hóa đơn")
                 .setMessage(bill.toString())
                 .setPositiveButton("Đóng", null)
                 .show();

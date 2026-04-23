@@ -1,19 +1,55 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Base.Theme.Do_an_hk1_Androidstudio" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/coffee_primary</item>
+        <item name="colorPrimary">@color/dashboard_primary</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorPrimaryContainer">@color/coffee_accent</item>
-        <item name="colorOnPrimaryContainer">@color/coffee_dark</item>
-        <item name="colorSecondary">@color/coffee_secondary</item>
-        <item name="colorOnSecondary">@color/coffee_dark</item>
-        <item name="android:colorBackground">@color/coffee_background</item>
-        <item name="colorSurface">@color/coffee_surface</item>
-        <item name="colorOnSurface">@color/coffee_text</item>
+        <item name="colorPrimaryContainer">@color/dashboard_nav_active_bg</item>
+        <item name="colorOnPrimaryContainer">@color/dashboard_text_primary</item>
+        <item name="colorSecondary">@color/dashboard_accent</item>
+        <item name="colorOnSecondary">@color/dashboard_text_primary</item>
+        <item name="android:colorBackground">@color/dashboard_background</item>
+        <item name="colorSurface">@color/dashboard_card</item>
+        <item name="colorOnSurface">@color/dashboard_text_primary</item>
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.CFPlus.Small</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.CFPlus.Medium</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.CFPlus.Large</item>
+        <item name="materialCardViewStyle">@style/Widget.CFPlus.MaterialCardView</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@color/coffee_surface</item>
+        <item name="android:navigationBarColor">@color/dashboard_background</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowLightNavigationBar">true</item>
     </style>
 
     <style name="Theme.Do_an_hk1_Androidstudio" parent="Base.Theme.Do_an_hk1_Androidstudio" />
+
+    <style name="ShapeAppearance.CFPlus.Small" parent="ShapeAppearance.Material3.Corner.Small">
+        <item name="cornerSize">18dp</item>
+    </style>
+
+    <style name="ShapeAppearance.CFPlus.Medium" parent="ShapeAppearance.Material3.Corner.Medium">
+        <item name="cornerSize">24dp</item>
+    </style>
+
+    <style name="ShapeAppearance.CFPlus.Large" parent="ShapeAppearance.Material3.Corner.Large">
+        <item name="cornerSize">30dp</item>
+    </style>
+
+    <style name="Widget.CFPlus.MaterialCardView" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardCornerRadius">28dp</item>
+        <item name="cardElevation">8dp</item>
+    </style>
+
+    <style name="DashboardActionTile" parent="Widget.Material3.CardView.Elevated">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">96dp</item>
+        <item name="android:layout_columnWeight">1</item>
+        <item name="android:layout_gravity">fill</item>
+        <item name="android:layout_margin">6dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="cardBackgroundColor">@color/dashboard_card</item>
+        <item name="cardCornerRadius">18dp</item>
+        <item name="cardElevation">5dp</item>
+        <item name="rippleColor">@color/dashboard_nav_active_bg</item>
+        <item name="strokeWidth">0dp</item>
+    </style>
 </resources>

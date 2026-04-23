@@ -1,181 +1,182 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
+    android:background="@color/dashboard_background"
+    android:fillViewport="true"
     tools:context=".Fragment_Account">
 
-
-
-    <TableLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:stretchColumns="1"
-        android:layout_marginTop="16dp">
+        android:orientation="vertical"
+        android:padding="20dp">
 
-        <!-- Họ tên -->
-        <TableRow
+        <TextView
+            android:id="@+id/tvquaylaiTTnv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/manager_back_chip"
+            android:elevation="3dp"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp"
+            android:text="Về hồ sơ"
+            android:textAlignment="center"
+            android:textColor="@color/dashboard_primary"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:gravity="center_vertical">
+            android:layout_marginTop="18dp"
+            app:cardBackgroundColor="@color/dashboard_card"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="8dp"
+            app:strokeWidth="0dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="Họ tên"
-                android:textSize="20sp"
-                android:textStyle="normal|bold" />
-
-            <EditText
-                android:id="@+id/edtHoTen"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="48dp"
-                android:paddingVertical="12dp"
-                android:paddingHorizontal="8dp"
-                android:background="@drawable/round_background_3"
-                android:hint="Nhập họ tên"
-                android:inputType="textPersonName" />
-        </TableRow>
+                android:orientation="vertical"
+                android:padding="20dp">
 
-        <!-- Ngày sinh -->
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:gravity="center_vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Sửa thông tin cá nhân"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="26sp"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="Ngày sinh"
-                android:textSize="20sp"
-                android:textStyle="normal|bold" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Cập nhật hồ sơ để đặt hàng và nhận hỗ trợ chính xác hơn."
+                    android:textColor="@color/dashboard_text_secondary"
+                    android:textSize="14sp" />
 
-            <EditText
-                android:id="@+id/edtNgaySinh"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="48dp"
-                android:paddingVertical="12dp"
-                android:paddingHorizontal="8dp"
-                android:background="@drawable/round_background_3"
-                android:hint="dd/mm/yyyy"
-                android:inputType="date" />
-        </TableRow>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:text="Họ tên"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textStyle="bold" />
 
-        <!-- Giới tính -->
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:gravity="center_vertical">
+                <EditText
+                    android:id="@+id/edtHoTen"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/manager_search_background"
+                    android:hint="Nhập họ tên"
+                    android:inputType="textPersonName"
+                    android:minHeight="52dp"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textColorHint="@color/dashboard_text_secondary" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="Giới tính"
-                android:textSize="20sp"
-                android:textStyle="normal|bold" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Ngày sinh"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textStyle="bold" />
 
-            <EditText
-                android:id="@+id/edtGioiTinh"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="48dp"
-                android:paddingVertical="12dp"
-                android:paddingHorizontal="8dp"
-                android:background="@drawable/round_background_3"
-                android:hint="Nam / Nữ"
-                android:inputType="text" />
-        </TableRow>
+                <EditText
+                    android:id="@+id/edtNgaySinh"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/manager_search_background"
+                    android:hint="dd/mm/yyyy"
+                    android:inputType="date"
+                    android:minHeight="52dp"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textColorHint="@color/dashboard_text_secondary" />
 
-        <!-- Email -->
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:gravity="center_vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Giới tính"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="Email"
-                android:textSize="20sp"
-                android:textStyle="normal|bold" />
+                <EditText
+                    android:id="@+id/edtGioiTinh"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/manager_search_background"
+                    android:hint="Nam / Nữ"
+                    android:inputType="text"
+                    android:minHeight="52dp"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textColorHint="@color/dashboard_text_secondary" />
 
-            <EditText
-                android:id="@+id/edtEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="48dp"
-                android:paddingVertical="12dp"
-                android:paddingHorizontal="8dp"
-                android:background="@drawable/round_background_3"
-                android:hint="example@email.com"
-                android:enabled="false"
-                android:inputType="textEmailAddress" />
-        </TableRow>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Email"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textStyle="bold" />
 
-        <!-- Số điện thoại -->
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:gravity="center_vertical">
+                <EditText
+                    android:id="@+id/edtEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/manager_search_background"
+                    android:enabled="false"
+                    android:hint="example@email.com"
+                    android:inputType="textEmailAddress"
+                    android:minHeight="52dp"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textColorHint="@color/dashboard_text_secondary" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="Số điện thoại"
-                android:textSize="20sp"
-                android:textStyle="normal|bold" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Số điện thoại"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textStyle="bold" />
 
-            <EditText
-                android:id="@+id/edtSoDienThoai"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="48dp"
-                android:paddingVertical="12dp"
-                android:paddingHorizontal="8dp"
-                android:background="@drawable/round_background_3"
-                android:hint="0123456789"
-                android:inputType="phone" />
-        </TableRow>
+                <EditText
+                    android:id="@+id/edtSoDienThoai"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/manager_search_background"
+                    android:hint="0123456789"
+                    android:inputType="phone"
+                    android:minHeight="52dp"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textColorHint="@color/dashboard_text_secondary" />
 
-    </TableLayout>
-
-
-    <Button
-        android:id="@+id/btn_luu"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/brown"
-        android:drawableLeft="@drawable/baseline_note_alt_24"
-        android:text="Lưu thay đổi"
-        android:textSize="20sp"
-        android:layout_marginTop="10dp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/tvquaylaiTTnv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:paddingVertical="12dp"
-        android:background="@drawable/bg_color_2"
-        android:text="Trở về trang thông tin nhân viên"
-        android:textAlignment="center"
-        android:textColor="@android:color/white"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-</LinearLayout>
+                <Button
+                    android:id="@+id/btn_luu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:backgroundTint="@color/dashboard_primary"
+                    android:drawableLeft="@drawable/baseline_note_alt_24"
+                    android:text="Lưu thay đổi"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+</ScrollView>

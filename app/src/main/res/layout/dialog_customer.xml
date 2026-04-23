@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/dashboard_card"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -9,21 +10,34 @@
         android:id="@+id/edtCustomerName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Họ tên" />
+        android:background="@drawable/manager_search_background"
+        android:hint="Họ tên"
+        android:minHeight="52dp"
+        android:paddingHorizontal="14dp"
+        android:textColor="@color/dashboard_text_primary"
+        android:textColorHint="@color/dashboard_text_secondary" />
 
     <EditText
         android:id="@+id/edtCustomerPhone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/manager_search_background"
         android:hint="Số điện thoại"
-        android:layout_marginTop="12dp" />
+        android:minHeight="52dp"
+        android:paddingHorizontal="14dp"
+        android:textColor="@color/dashboard_text_primary"
+        android:textColorHint="@color/dashboard_text_secondary" />
 
     <EditText
         android:id="@+id/edtCustomerEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/manager_search_background"
         android:hint="Email"
-        android:layout_marginTop="12dp" />
-
+        android:minHeight="52dp"
+        android:paddingHorizontal="14dp"
+        android:textColor="@color/dashboard_text_primary"
+        android:textColorHint="@color/dashboard_text_secondary" />
 </LinearLayout>
-

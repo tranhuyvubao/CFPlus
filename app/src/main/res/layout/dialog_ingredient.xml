@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/dashboard_card">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,38 +14,96 @@
             android:id="@+id/edtIngName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Tên nguyên liệu" />
+            android:background="@drawable/manager_search_background"
+            android:hint="Tên nguyên liệu"
+            android:padding="12dp"
+            android:singleLine="true" />
 
-        <EditText
-            android:id="@+id/edtIngUnit"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Đơn vị (g/ml/pcs)"
-            android:layout_marginTop="12dp" />
+            android:layout_marginTop="14dp"
+            android:text="Đơn vị quản lý"
+            android:textColor="@color/dashboard_text_primary"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="Chọn cách nhân viên kiểm kê nguyên liệu, ví dụ: túi, chai, hộp."
+            android:textColor="@color/dashboard_text_secondary"
+            android:textSize="12sp" />
+
+        <Spinner
+            android:id="@+id/spIngUnit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Tồn hiện tại"
+            android:textColor="@color/dashboard_text_primary"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="Số lượng đang có trong kho theo đơn vị đã chọn."
+            android:textColor="@color/dashboard_text_secondary"
+            android:textSize="12sp" />
 
         <EditText
             android:id="@+id/edtIngCurrentQty"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Tồn hiện tại"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/manager_search_background"
+            android:hint="Ví dụ: 5"
             android:inputType="numberDecimal"
-            android:layout_marginTop="12dp" />
+            android:padding="12dp"
+            android:singleLine="true" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Ngưỡng cảnh báo tồn thấp"
+            android:textColor="@color/dashboard_text_primary"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="Khi tồn kho thấp hơn số này, app sẽ báo cần nhập thêm."
+            android:textColor="@color/dashboard_text_secondary"
+            android:textSize="12sp" />
 
         <EditText
             android:id="@+id/edtIngMinStock"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Tồn tối thiểu"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/manager_search_background"
+            android:hint="Ví dụ: 2"
             android:inputType="numberDecimal"
-            android:layout_marginTop="12dp" />
+            android:padding="12dp"
+            android:singleLine="true" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/swIngActive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:text="Đang quản lý"
-            android:layout_marginTop="12dp" />
-
+            android:textColor="@color/dashboard_text_primary" />
     </LinearLayout>
 </ScrollView>
-

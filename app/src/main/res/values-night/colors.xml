@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="coffee_dark">#FFF8F5F2</color>
+    <color name="coffee_primary">#D39A67</color>
+    <color name="coffee_primary_dark">#A76C3B</color>
+    <color name="coffee_secondary">#E7B98A</color>
+    <color name="coffee_background">#15110E</color>
+    <color name="coffee_surface">#1D1714</color>
+    <color name="coffee_surface_overlay">#2AF7EEE8</color>
+    <color name="coffee_surface_elevated">#261E1A</color>
+    <color name="coffee_border">#3A2D26</color>
+    <color name="coffee_border_strong">#4A392F</color>
+    <color name="coffee_text">#FFF6F0EB</color>
+    <color name="coffee_on_surface">#FFF6F0EB</color>
+    <color name="coffee_muted">#C5B0A0</color>
+    <color name="coffee_success">#7DDC8F</color>
+    <color name="coffee_warning">#F7C45E</color>
+    <color name="coffee_danger">#FF7B86</color>
+    <color name="coffee_accent">#33261E</color>
+    <color name="coffee_accent_soft">#3B2B22</color>
+    <color name="coffee_deep_discount">#FF6D8F</color>
+    <color name="coffee_summer">#F6D285</color>
+    <color name="dashboard_background">#15110E</color>
+    <color name="dashboard_card">#1D1714</color>
+    <color name="dashboard_primary">#D39A67</color>
+    <color name="dashboard_accent">#FFB457</color>
+    <color name="dashboard_text_primary">#FFF6F0EB</color>
+    <color name="dashboard_text_secondary">#C5B0A0</color>
+    <color name="dashboard_icon_surface">#33261E</color>
+    <color name="dashboard_accent_surface">#3B2B22</color>
+    <color name="dashboard_nav_active_bg">#33261E</color>
+    <color name="dashboard_success">#7DDC8F</color>
+    <color name="dashboard_warning">#F7C45E</color>
+    <color name="dashboard_danger">#FF7B86</color>
+</resources>

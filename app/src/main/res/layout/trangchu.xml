@@ -1,93 +1,266 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rootTrangChu"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/app_screen_background"
-    android:orientation="vertical">
+    android:background="@color/dashboard_background">
 
     <LinearLayout
-        android:id="@+id/headerContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/coffee_surface"
-        android:elevation="4dp"
-        android:orientation="vertical"
-        android:paddingHorizontal="18dp"
-        android:paddingTop="18dp"
-        android:paddingBottom="14dp">
-
-        <ImageView
-            android:id="@+id/hinh1"
-            android:layout_width="120dp"
-            android:layout_height="40dp"
-            android:adjustViewBounds="true"
-            android:src="@drawable/cfplus2" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/headerContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:background="@drawable/app_card_background"
+            android:background="@color/dashboard_card"
+            android:elevation="2dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="14dp">
+            android:paddingLeft="18dp"
+            android:paddingTop="12dp"
+            android:paddingRight="18dp"
+            android:paddingBottom="10dp">
+
+            <TextView
+                android:id="@+id/btnOpenSidebar"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/manager_back_chip"
+                android:gravity="center"
+                android:text="☰"
+                android:textColor="@color/dashboard_primary"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <ImageView
-                android:id="@+id/hinh2"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:src="@drawable/cfplus" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Xin chào"
-                    android:textColor="@color/coffee_muted"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Hello, CFPLUS"
-                    android:textColor="@color/coffee_dark"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                android:id="@+id/hinh1"
+                android:layout_width="96dp"
+                android:layout_height="30dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/cfplus2" />
         </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/frameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:layout_weight="1" />
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNav"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/app_bottom_nav_background"
+            android:elevation="10dp"
+            app:itemBackground="@drawable/bottom_nav_item_background"
+            app:itemIconTint="@color/app_bottom_nav_item_colors"
+            app:itemPaddingBottom="8dp"
+            app:itemPaddingTop="10dp"
+            app:itemRippleColor="@color/dashboard_nav_active_bg"
+            app:itemTextColor="@color/app_bottom_nav_item_colors"
+            app:labelVisibilityMode="labeled"
+            app:menu="@menu/bottom_nav" />
     </LinearLayout>
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPager"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:visibility="gone" />
-
     <FrameLayout
-        android:id="@+id/frameLayout"
+        android:id="@+id/sideMenuOverlay"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_height="match_parent"
+        android:background="#66000000"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone">
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNav"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/coffee_surface"
-        android:elevation="8dp"
-        app:itemIconTint="@color/coffee_primary_dark"
-        app:itemTextColor="@color/coffee_primary_dark"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/bottom_nav" />
-</LinearLayout>
+        <LinearLayout
+            android:id="@+id/sideMenuPanel"
+            android:layout_width="220dp"
+            android:layout_height="match_parent"
+            android:background="@color/dashboard_card"
+            android:elevation="18dp"
+            android:orientation="vertical"
+            android:paddingLeft="18dp"
+            android:paddingTop="48dp"
+            android:paddingRight="18dp"
+            android:paddingBottom="18dp">
+
+            <TextView
+                android:id="@+id/tvSidebarTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="CFPLUS"
+                android:textColor="@color/dashboard_text_primary"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvSidebarSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Lối tắt nhanh"
+                android:textColor="@color/dashboard_text_secondary"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/rowSidebarHome"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/manager_search_background"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="16dp"
+                android:text="Trang chủ"
+                android:textColor="@color/dashboard_text_primary"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/rowSidebarCart"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/manager_search_background"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="16dp"
+                android:text="Giỏ hàng"
+                android:textColor="@color/dashboard_text_primary"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/rowSidebarOrders"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/manager_search_background"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="16dp"
+                android:text="Đơn hàng của tôi"
+                android:textColor="@color/dashboard_text_primary"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/rowSidebarChat"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/manager_search_background"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="16dp"
+                android:text="Chat AI"
+                android:textColor="@color/dashboard_text_primary"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/rowSidebarAnalytics"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/manager_search_background"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="16dp"
+                android:text="Thống kê"
+                android:textColor="@color/dashboard_text_primary"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/rowSidebarProducts"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/manager_search_background"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="16dp"
+                android:text="Quản lý món"
+                android:textColor="@color/dashboard_text_primary"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/rowSidebarBanners"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/manager_search_background"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="16dp"
+                android:text="Slide banner"
+                android:textColor="@color/dashboard_text_primary"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/rowSidebarStock"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/manager_search_background"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="16dp"
+                android:text="Kho nguyên liệu"
+                android:textColor="@color/dashboard_text_primary"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/rowSidebarStaff"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/manager_search_background"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="16dp"
+                android:text="Nhân viên"
+                android:textColor="@color/dashboard_text_primary"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/rowSidebarStoreSettings"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/manager_search_background"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="16dp"
+                android:text="Cửa hàng &amp; chi nhánh"
+                android:textColor="@color/dashboard_text_primary"
+                android:textStyle="bold"
+                android:visibility="gone" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/chatBubble"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="18dp"
+        android:layout_marginBottom="132dp"
+        android:background="@drawable/app_chat_fab_background"
+        android:clickable="true"
+        android:contentDescription="Mở chat AI hỗ trợ"
+        android:elevation="10dp"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="AI"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</FrameLayout>

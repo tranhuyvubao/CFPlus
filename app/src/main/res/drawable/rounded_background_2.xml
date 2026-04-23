@@ -6,7 +6,7 @@
 
     <stroke
         android:width="2dp"
-        android:color="@color/grey"
+        android:color="@color/dashboard_text_secondary"
         />
 
     <corners android:radius="10dp" />

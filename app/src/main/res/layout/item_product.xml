@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardBackgroundColor="@color/coffee_surface"
+    android:layout_marginHorizontal="2dp"
+    android:layout_marginBottom="12dp"
+    app:cardBackgroundColor="@color/dashboard_card"
     app:cardCornerRadius="18dp"
-    app:cardElevation="4dp">
+    app:cardElevation="5dp"
+    app:strokeWidth="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,17 +18,18 @@
 
         <ImageView
             android:id="@+id/imgProductThumb"
-            android:layout_width="76dp"
-            android:layout_height="76dp"
-            android:background="@drawable/round_background_3"
+            android:layout_width="78dp"
+            android:layout_height="78dp"
+            android:background="@drawable/manager_image_surface"
             android:contentDescription="Ảnh món"
+            android:padding="5dp"
             android:scaleType="centerCrop"
             android:src="@mipmap/ic_launcher_round" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="14dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -35,7 +38,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Tên món"
-                android:textColor="@color/coffee_dark"
+                android:textColor="@color/dashboard_text_primary"
                 android:textSize="17sp"
                 android:textStyle="bold" />
 
@@ -43,9 +46,10 @@
                 android:id="@+id/tvProductPrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="5dp"
                 android:text="Giá"
-                android:textColor="@color/coffee_primary"
+                android:textColor="@color/dashboard_primary"
+                android:textSize="15sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -54,7 +58,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="Danh mục"
-                android:textColor="@color/coffee_muted" />
+                android:textColor="@color/dashboard_text_secondary"
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/tvProductActive"
@@ -62,12 +67,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="Đang kinh doanh"
-                android:textColor="@color/coffee_muted" />
+                android:textColor="@color/dashboard_text_secondary"
+                android:textSize="14sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="12dp"
                 android:gravity="end"
                 android:orientation="horizontal">
 
@@ -75,11 +81,11 @@
                     android:id="@+id/btnProductEdit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/round_background_3"
-                    android:paddingHorizontal="12dp"
+                    android:background="@drawable/manager_accent_pill"
+                    android:paddingHorizontal="14dp"
                     android:paddingVertical="8dp"
                     android:text="Sửa"
-                    android:textColor="@color/coffee_warning"
+                    android:textColor="@color/dashboard_accent"
                     android:textStyle="bold" />
 
                 <TextView
@@ -87,13 +93,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:background="@drawable/round_background_3"
-                    android:paddingHorizontal="12dp"
+                    android:background="@drawable/manager_danger_pill"
+                    android:paddingHorizontal="14dp"
                     android:paddingVertical="8dp"
                     android:text="Xóa"
-                    android:textColor="@color/coffee_danger"
+                    android:textColor="@color/dashboard_danger"
                     android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

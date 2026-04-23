@@ -1,85 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rootNhanDonOnline"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/app_screen_background"
-    android:orientation="vertical">
+    android:background="@color/dashboard_background"
+    android:orientation="vertical"
+    android:padding="20dp">
 
     <LinearLayout
         android:id="@+id/headerNhanDonOnline"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingLeft="16dp"
-        android:paddingTop="12dp"
-        android:paddingRight="16dp"
-        android:paddingBottom="12dp">
+        android:orientation="vertical">
 
-        <LinearLayout
+        <TextView
             android:id="@+id/tvBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/app_chip_accent"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingLeft="14dp"
-            android:paddingTop="10dp"
-            android:paddingRight="14dp"
-            android:paddingBottom="10dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="←"
-                android:textColor="@color/coffee_primary_dark"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Trở về"
-                android:textColor="@color/coffee_primary_dark"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/tvTitleOnline"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:text="Nhận đơn online"
-            android:textColor="@color/coffee_dark"
-            android:textSize="28sp"
+            android:background="@drawable/manager_back_chip"
+            android:elevation="3dp"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="9dp"
+            android:text="Trở về"
+            android:textColor="@color/dashboard_primary"
+            android:textSize="14sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tvOnlineSubtitle"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Theo dõi đơn khách đặt qua app, xác nhận chế biến và hoàn tất đơn."
-            android:textColor="@color/coffee_muted"
-            android:textSize="14sp" />
+            android:layout_marginTop="16dp"
+            app:cardBackgroundColor="@color/dashboard_card"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="7dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:id="@+id/tvTitleOnline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Nhận đơn online"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="26sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvOnlineSubtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Xác nhận, chế biến và hoàn tất đơn khách đặt qua app."
+                    android:textColor="@color/dashboard_text_secondary"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 
     <TextView
         android:id="@+id/tvEmpty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginRight="16dp"
-        android:background="@drawable/app_card_background"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/manager_search_background"
+        android:elevation="3dp"
         android:gravity="center"
         android:padding="24dp"
         android:text="Chưa có đơn online nào."
-        android:textColor="@color/coffee_muted"
+        android:textColor="@color/dashboard_text_secondary"
         android:textSize="15sp"
         android:visibility="gone" />
 
@@ -87,12 +81,9 @@
         android:id="@+id/rvOnlineOrders"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="14dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        android:paddingBottom="8dp" />
+        android:paddingBottom="12dp" />
 
 </LinearLayout>

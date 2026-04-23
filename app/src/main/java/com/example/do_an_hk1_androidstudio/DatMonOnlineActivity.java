@@ -2,6 +2,8 @@ package com.example.do_an_hk1_androidstudio;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DatMonOnlineActivity extends AppCompatActivity {
+    private static final long ORDER_CREATE_TIMEOUT_MS = 15000L;
 
     private LinearLayout cartItemsContainer;
     private TextView tvSelectedAddress;
@@ -36,7 +39,7 @@ public class DatMonOnlineActivity extends AppCompatActivity {
     private TextView tvEmptyCart;
     private TextView edtOrderNote;
     private RadioGroup rgPaymentMethod;
-    private View btnPlaceOnlineOrder;
+    private TextView btnPlaceOnlineOrder;
 
     private final List<LocalCustomerAddress> currentAddresses = new ArrayList<>();
     private CustomerCartStore cartStore;
@@ -44,6 +47,8 @@ public class DatMonOnlineActivity extends AppCompatActivity {
     private LocalSessionManager sessionManager;
     private UserCloudRepository userRepository;
     private LocalCustomerAddress selectedAddress;
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private Runnable orderCreateTimeoutRunnable;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,9 +80,7 @@ public class DatMonOnlineActivity extends AppCompatActivity {
                 startActivity(new Intent(this, HoSoKhachHangActivity.class)));
         btnPlaceOnlineOrder.setOnClickListener(v -> submitOrder());
 
-        if (rgPaymentMethod != null) {
-            rgPaymentMethod.check(R.id.rbPaymentCod);
-        }
+        rgPaymentMethod.check(R.id.rbPaymentCod);
     }
 
     @Override
@@ -153,6 +156,7 @@ public class DatMonOnlineActivity extends AppCompatActivity {
         List<CustomerCartItem> items = cartStore.getItems();
         cartItemsContainer.removeAllViews();
         tvEmptyCart.setVisibility(items.isEmpty() ? View.VISIBLE : View.GONE);
+
         for (CustomerCartItem item : items) {
             View itemView = LayoutInflater.from(this).inflate(R.layout.item_cart_checkout, cartItemsContainer, false);
             android.widget.ImageView imgCartItem = itemView.findViewById(R.id.imgCartItem);
@@ -195,6 +199,10 @@ public class DatMonOnlineActivity extends AppCompatActivity {
     }
 
     private void submitOrder() {
+        if (!btnPlaceOnlineOrder.isEnabled()) {
+            return;
+        }
+
         String customerId = sessionManager.getCurrentUserId();
         if (customerId == null) {
             Toast.makeText(this, "Vui lòng đăng nhập để đặt món online.", Toast.LENGTH_SHORT).show();
@@ -216,9 +224,22 @@ public class DatMonOnlineActivity extends AppCompatActivity {
                 : "cod";
 
         String note = edtOrderNote.getText().toString().trim();
-        if (btnPlaceOnlineOrder != null) {
-            btnPlaceOnlineOrder.setEnabled(false);
-        }
+        setSubmitting(true);
+
+        final boolean[] handled = {false};
+        orderCreateTimeoutRunnable = () -> {
+            if (handled[0]) {
+                return;
+            }
+            handled[0] = true;
+            setSubmitting(false);
+            Toast.makeText(
+                    this,
+                    "Không kết nối được Firestore. Kiểm tra DNS/mạng emulator rồi thử lại.",
+                    Toast.LENGTH_LONG
+            ).show();
+        };
+        mainHandler.postDelayed(orderCreateTimeoutRunnable, ORDER_CREATE_TIMEOUT_MS);
 
         orderRepository.createOnlineCartOrder(
                 customerId,
@@ -227,10 +248,16 @@ public class DatMonOnlineActivity extends AppCompatActivity {
                 TextUtils.isEmpty(note) ? null : note,
                 paymentPreference,
                 (success, orderId, message) -> runOnUiThread(() -> {
+                    if (handled[0]) {
+                        return;
+                    }
+                    handled[0] = true;
+                    if (orderCreateTimeoutRunnable != null) {
+                        mainHandler.removeCallbacks(orderCreateTimeoutRunnable);
+                        orderCreateTimeoutRunnable = null;
+                    }
                     if (!success || TextUtils.isEmpty(orderId)) {
-                        if (btnPlaceOnlineOrder != null) {
-                            btnPlaceOnlineOrder.setEnabled(true);
-                        }
+                        setSubmitting(false);
                         Toast.makeText(this, message == null ? "Không thể tạo đơn online." : message, Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -242,8 +269,10 @@ public class DatMonOnlineActivity extends AppCompatActivity {
                     if ("vnpay".equals(paymentPreference)) {
                         Intent intent = new Intent(this, ThanhToanKhachActivity.class);
                         intent.putExtra(ThanhToanKhachActivity.EXTRA_ORDER_ID, orderId);
+                        intent.putExtra(ThanhToanKhachActivity.EXTRA_DISPLAY_ORDER_CODE, orderId);
                         intent.putExtra(ThanhToanKhachActivity.EXTRA_AMOUNT, itemsTotal(items));
                         intent.putExtra(ThanhToanKhachActivity.EXTRA_CUSTOMER_ONLINE_ONLY, true);
+                        intent.putExtra(ThanhToanKhachActivity.EXTRA_INITIAL_PAYMENT_METHOD, "vnpay");
                         startActivity(intent);
                         finish();
                         return;
@@ -253,6 +282,12 @@ public class DatMonOnlineActivity extends AppCompatActivity {
                     finish();
                 })
         );
+    }
+
+    private void setSubmitting(boolean submitting) {
+        btnPlaceOnlineOrder.setEnabled(!submitting);
+        btnPlaceOnlineOrder.setAlpha(submitting ? 0.72f : 1f);
+        btnPlaceOnlineOrder.setText(submitting ? "Đang tạo đơn..." : "Đặt đơn online");
     }
 
     private int itemsTotal(List<CustomerCartItem> items) {

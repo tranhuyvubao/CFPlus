@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/dashboard_card">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,6 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Hình ảnh"
+            android:textColor="@color/dashboard_text_primary"
             android:textStyle="bold" />
 
         <FrameLayout
@@ -20,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="160dp"
             android:layout_marginTop="8dp"
-            android:background="@drawable/round_background_3">
+            android:background="@drawable/manager_image_surface">
 
             <ImageView
                 android:id="@+id/imgPickProduct"
@@ -37,7 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:background="@drawable/rounded_background"
+            android:background="@drawable/manager_search_background"
             android:hint="Tên món"
             android:imeOptions="flagNoExtractUi"
             android:inputType="textCapSentences|textMultiLine"
@@ -48,7 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:background="@drawable/rounded_background"
+            android:background="@drawable/manager_search_background"
             android:hint="Giá cơ bản (VND)"
             android:inputType="number"
             android:paddingHorizontal="14dp" />
@@ -58,6 +60,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:text="Danh mục"
+            android:textColor="@color/dashboard_text_primary"
             android:textStyle="bold" />
 
         <Spinner
@@ -71,7 +74,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Đang bán" />
-
+            android:text="Đang bán"
+            android:textColor="@color/dashboard_text_primary" />
     </LinearLayout>
 </ScrollView>

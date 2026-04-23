@@ -1,5 +1,6 @@
 package com.example.do_an_hk1_androidstudio;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -9,10 +10,13 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.do_an_hk1_androidstudio.ui.MoneyFormatter;
+import com.example.do_an_hk1_androidstudio.ui.UiMotion;
 
 import java.util.List;
 
@@ -36,7 +40,8 @@ public class SanPhamAdapter extends RecyclerView.Adapter<SanPhamAdapter.SanPhamV
     public void onBindViewHolder(@NonNull SanPhamViewHolder holder, int position) {
         SanPham sp = sanPhamList.get(position);
         holder.bind(sp);
-        holder.itemView.setOnClickListener(v -> openProductDetail(sp));
+        holder.itemView.setOnClickListener(v -> openProductDetail(sp, holder.hinhAnh));
+        UiMotion.applyPressFeedback(holder.itemView);
     }
 
     @Override
@@ -44,18 +49,30 @@ public class SanPhamAdapter extends RecyclerView.Adapter<SanPhamAdapter.SanPhamV
         return sanPhamList.size();
     }
 
-    private void openProductDetail(SanPham sp) {
+    private void openProductDetail(SanPham sp, View sharedImage) {
         Intent intent = new Intent(context, chitiet_sanpham.class);
         intent.putExtra("productId", sp.getProductId());
         intent.putExtra("Ten", sp.getTen());
         intent.putExtra("Gia", sp.getGia());
         intent.putExtra("hinhAnh", sp.getHinhAnh());
+        intent.putExtra("image_transition_name", "product_image_" + sp.getProductId());
+
+        if (context instanceof Activity) {
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    (Activity) context,
+                    sharedImage,
+                    "product_image_" + sp.getProductId()
+            );
+            context.startActivity(intent, options.toBundle());
+            return;
+        }
         context.startActivity(intent);
     }
 
     public static class SanPhamViewHolder extends RecyclerView.ViewHolder {
         ImageButton hinhAnh;
-        TextView ten, gia;
+        TextView ten;
+        TextView gia;
 
         public SanPhamViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -67,8 +84,10 @@ public class SanPhamAdapter extends RecyclerView.Adapter<SanPhamAdapter.SanPhamV
         public void bind(SanPham sp) {
             ten.setText(sp.getTen());
             gia.setText(formatGia(sp.getGia()));
+            ViewCompat.setTransitionName(hinhAnh, "product_image_" + sp.getProductId());
             Glide.with(itemView.getContext())
                     .load(sp.getHinhAnh())
+                    .fitCenter()
                     .placeholder(R.drawable.loading_spinner)
                     .error(R.drawable.cfplus)
                     .into(hinhAnh);

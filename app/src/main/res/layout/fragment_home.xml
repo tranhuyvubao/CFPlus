@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layoutMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/app_screen_background"
+    android:background="@color/dashboard_background"
     android:orientation="vertical"
-    android:paddingLeft="12dp"
-    android:paddingTop="10dp"
-    android:paddingRight="12dp"
+    android:paddingHorizontal="16dp"
+    android:paddingTop="8dp"
     android:paddingBottom="8dp"
     tools:context=".FragmentHome">
 
@@ -19,57 +17,40 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <LinearLayout
+        <SearchView
+            android:id="@+id/action_search"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Khám phá menu"
-                android:textColor="@color/coffee_dark"
-                android:textSize="21sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:ellipsize="end"
-                android:maxLines="2"
-                android:text="Ưu tiên thực đơn thật từ Firebase để khách chọn món online nhanh hơn."
-                android:textColor="@color/coffee_muted"
-                android:textSize="13sp" />
-        </LinearLayout>
+            android:background="@drawable/manager_search_background"
+            android:iconifiedByDefault="false"
+            android:queryHint="Tim ca phe, tra hoac mon ban thich..." />
 
         <FrameLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp">
 
             <TextView
                 android:id="@+id/btnOpenCart"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/app_chip_accent"
+                android:layout_height="40dp"
+                android:background="@drawable/manager_back_chip"
                 android:drawableStart="@drawable/baseline_shopping_cart_24"
-                android:drawablePadding="8dp"
-                android:paddingLeft="12dp"
-                android:paddingTop="8dp"
-                android:paddingRight="12dp"
-                android:paddingBottom="8dp"
-                android:text="Giỏ hàng"
-                android:textColor="@color/coffee_primary_dark"
+                android:drawablePadding="6dp"
+                android:gravity="center"
+                android:paddingHorizontal="12dp"
+                android:text="Gio hang"
+                android:textColor="@color/dashboard_primary"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvHomeCartCount"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:layout_gravity="end|top"
-                android:background="@drawable/app_button_primary"
+                android:background="@drawable/manager_primary_pill"
                 android:gravity="center"
                 android:textColor="@android:color/white"
                 android:textSize="10sp"
@@ -78,33 +59,32 @@
         </FrameLayout>
     </LinearLayout>
 
-    <SearchView
-        android:id="@+id/action_search"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/rounded_background"
-        android:iconifiedByDefault="false"
-        android:queryHint="Tìm kiếm sản phẩm..." />
-
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout"
+    <HorizontalScrollView
+        android:id="@+id/bannerScrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/app_card_background"
-        android:contentDescription="Thanh chuyển đổi danh mục sản phẩm" />
+        android:layout_marginTop="12dp"
+        android:clipToPadding="false"
+        android:scrollbars="none"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/layoutPromoBanners"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
 
     <TextView
         android:id="@+id/tvSearchEmpty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:background="@drawable/app_card_background"
+        android:background="@drawable/manager_search_background"
         android:gravity="center"
         android:padding="18dp"
-        android:text="Không tìm thấy món phù hợp."
-        android:textColor="@color/coffee_muted"
+        android:text="Khong tim thay mon phu hop."
+        android:textColor="@color/dashboard_text_secondary"
         android:textSize="15sp"
         android:visibility="gone" />
 
@@ -112,7 +92,7 @@
         android:id="@+id/viewPager2"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="10dp"
         android:layout_weight="1" />
 
     <ListView

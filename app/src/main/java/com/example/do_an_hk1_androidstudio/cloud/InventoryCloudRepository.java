@@ -161,7 +161,7 @@ public class InventoryCloudRepository {
                         double nextQty = currentQty;
                         if ("in".equals(type)) {
                             nextQty = currentQty + qty;
-                        } else if ("out".equals(type)) {
+                        } else if ("out".equals(type) || "shift_usage".equals(type)) {
                             nextQty = Math.max(0, currentQty - qty);
                         } else if ("adjust".equals(type)) {
                             nextQty = qty;

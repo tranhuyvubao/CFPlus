@@ -20,6 +20,10 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow read, write: if request.auth != null;
+
+      match /favorites/{productId} {
+        allow read, write: if request.auth != null;
+      }
     }
 
     match /customer_profiles/{profileId} {
@@ -43,6 +47,22 @@ service cloud.firestore {
     }
 
     match /promotions/{promotionId} {
+      allow read, write: if request.auth != null;
+    }
+
+    match /promo_banners/{bannerId} {
+      allow read, write: if request.auth != null;
+    }
+
+    match /store_profiles/{profileId} {
+      allow read, write: if request.auth != null;
+    }
+
+    match /store_branches/{branchId} {
+      allow read, write: if request.auth != null;
+    }
+
+    match /settings/{settingId} {
       allow read, write: if request.auth != null;
     }
 

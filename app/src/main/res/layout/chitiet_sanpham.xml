@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/app_screen_background"
+    android:background="@color/dashboard_background"
     android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="18dp">
+        android:padding="20dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -21,13 +22,12 @@
                 android:id="@+id/btnBackTop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/app_chip_accent"
-                android:paddingLeft="14dp"
-                android:paddingTop="10dp"
-                android:paddingRight="14dp"
-                android:paddingBottom="10dp"
-                android:text="← Trở về"
-                android:textColor="@color/coffee_primary_dark"
+                android:background="@drawable/manager_back_chip"
+                android:elevation="3dp"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="9dp"
+                android:text="Trở về"
+                android:textColor="@color/dashboard_primary"
                 android:textStyle="bold" />
 
             <View
@@ -43,15 +43,13 @@
                     android:id="@+id/btnOpenCart"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/app_chip_accent"
-                    android:drawablePadding="8dp"
+                    android:background="@drawable/manager_back_chip"
                     android:drawableStart="@drawable/baseline_shopping_cart_24"
-                    android:paddingLeft="14dp"
-                    android:paddingTop="10dp"
-                    android:paddingRight="14dp"
-                    android:paddingBottom="10dp"
+                    android:drawablePadding="8dp"
+                    android:paddingHorizontal="14dp"
+                    android:paddingVertical="9dp"
                     android:text="Giỏ hàng"
-                    android:textColor="@color/coffee_primary_dark"
+                    android:textColor="@color/dashboard_primary"
                     android:textStyle="bold" />
 
                 <TextView
@@ -59,224 +57,284 @@
                     android:layout_width="22dp"
                     android:layout_height="22dp"
                     android:layout_gravity="end|top"
-                    android:background="@drawable/app_button_primary"
+                    android:background="@drawable/manager_primary_pill"
                     android:gravity="center"
                     android:textColor="@android:color/white"
                     android:textSize="11sp"
                     android:textStyle="bold"
                     android:visibility="gone" />
             </FrameLayout>
+
+            <ImageButton
+                android:id="@+id/btnFavoriteTop"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/manager_back_chip"
+                android:contentDescription="Yêu thích"
+                android:padding="10dp"
+                android:src="@drawable/ic_heart_outline" />
         </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/imageButton1"
-            android:layout_width="match_parent"
-            android:layout_height="240dp"
-            android:layout_marginTop="14dp"
-            android:adjustViewBounds="true"
-            android:background="@drawable/app_card_background"
-            android:clickable="false"
-            android:contentDescription="@string/anh_san_pham"
-            android:focusable="false"
-            android:padding="10dp"
-            android:scaleType="fitCenter" />
-
-        <TextView
-            android:id="@+id/tvTen"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Tên sản phẩm"
-            android:textAlignment="center"
-            android:textColor="@color/coffee_dark"
-            android:textSize="26sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvOptionPreview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Lựa chọn:"
-            android:textAlignment="center"
-            android:textColor="@color/coffee_muted"
-            android:textSize="14sp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/app_card_background"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <TextView
-                android:id="@+id/tvSize"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Chọn size"
-                android:textColor="@color/coffee_dark"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+            app:cardBackgroundColor="@color/dashboard_card"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="8dp"
+            app:strokeWidth="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal">
-
-                <CheckBox
-                    android:id="@+id/checkSizeS"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="S"
-                    android:textColor="@color/coffee_dark"
-                    android:textStyle="bold" />
-
-                <CheckBox
-                    android:id="@+id/checkSizeM"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="M"
-                    android:textColor="@color/coffee_dark"
-                    android:textStyle="bold" />
-
-                <CheckBox
-                    android:id="@+id/checkSizeL"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="L"
-                    android:textColor="@color/coffee_dark"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:background="@drawable/app_card_background"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <TextView
-                android:id="@+id/tvmucda"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Chọn mức đá"
-                android:textColor="@color/coffee_dark"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <CheckBox
-                android:id="@+id/check_Da_nhieu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="Đá bình thường"
-                android:textColor="@color/coffee_dark" />
-
-            <CheckBox
-                android:id="@+id/check_it_da"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Ít đá"
-                android:textColor="@color/coffee_dark" />
-
-            <CheckBox
-                android:id="@+id/check_da_rieng"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Đá riêng"
-                android:textColor="@color/coffee_dark" />
-
-            <CheckBox
-                android:id="@+id/check_khong_da"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Không đá"
-                android:textColor="@color/coffee_dark" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:background="@drawable/app_card_background"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="16dp">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/tvslsp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Số lượng"
-                    android:textColor="@color/coffee_muted"
-                    android:textSize="14sp" />
+                <ImageButton
+                    android:id="@+id/imageButton1"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/manager_image_surface"
+                    android:clickable="false"
+                    android:contentDescription="@string/anh_san_pham"
+                    android:focusable="false"
+                    android:padding="10dp"
+                    android:scaleType="centerCrop" />
 
-                <TextView
-                    android:id="@+id/tvGia"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Tổng tiền: 0đ"
-                    android:textColor="@color/coffee_primary"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:id="@+id/tvTen"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Tên sản phẩm"
+                        android:textColor="@color/dashboard_text_primary"
+                        android:textSize="28sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvOptionPreview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Lựa chọn:"
+                        android:textColor="@color/dashboard_text_secondary"
+                        android:textSize="14sp" />
+                </LinearLayout>
             </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            app:cardBackgroundColor="@color/dashboard_card"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="6dp"
+            app:strokeWidth="0dp">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/rounded_background"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:padding="6dp">
-
-                <ImageButton
-                    android:id="@+id/iB_giam"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:background="@null"
-                    android:contentDescription="Giảm"
-                    android:src="@drawable/baseline_keyboard_arrow_left_24" />
+                android:orientation="vertical"
+                android:padding="18dp">
 
                 <TextView
-                    android:id="@+id/tvso"
-                    android:layout_width="44dp"
+                    android:id="@+id/tvSize"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="1"
-                    android:textColor="@color/coffee_dark"
+                    android:text="Chọn size"
+                    android:textColor="@color/dashboard_text_primary"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
-                <ImageButton
-                    android:id="@+id/iB_tang"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:background="@null"
-                    android:contentDescription="Tăng"
-                    android:src="@drawable/baseline_keyboard_arrow_right_24" />
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <CheckBox
+                        android:id="@+id/checkSizeS"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:buttonTint="@color/dashboard_primary"
+                        android:text="S"
+                        android:textColor="@color/dashboard_text_primary"
+                        android:textStyle="bold" />
+
+                    <CheckBox
+                        android:id="@+id/checkSizeM"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:buttonTint="@color/dashboard_primary"
+                        android:text="M"
+                        android:textColor="@color/dashboard_text_primary"
+                        android:textStyle="bold" />
+
+                    <CheckBox
+                        android:id="@+id/checkSizeL"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:buttonTint="@color/dashboard_primary"
+                        android:text="L"
+                        android:textColor="@color/dashboard_text_primary"
+                        android:textStyle="bold" />
+                </RadioGroup>
             </LinearLayout>
-        </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            app:cardBackgroundColor="@color/dashboard_card"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="6dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:id="@+id/tvmucda"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Chọn mức đá"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <CheckBox
+                    android:id="@+id/check_Da_nhieu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:buttonTint="@color/dashboard_primary"
+                    android:text="Đá bình thường"
+                    android:textColor="@color/dashboard_text_primary" />
+
+                <CheckBox
+                    android:id="@+id/check_it_da"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/dashboard_primary"
+                    android:text="Ít đá"
+                    android:textColor="@color/dashboard_text_primary" />
+
+                <CheckBox
+                    android:id="@+id/check_da_rieng"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/dashboard_primary"
+                    android:text="Đá riêng"
+                    android:textColor="@color/dashboard_text_primary" />
+
+                <CheckBox
+                    android:id="@+id/check_khong_da"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/dashboard_primary"
+                    android:text="Không đá"
+                    android:textColor="@color/dashboard_text_primary" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            app:cardBackgroundColor="@color/dashboard_card"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="6dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="18dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvslsp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Số lượng"
+                        android:textColor="@color/dashboard_text_secondary"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tvGia"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Tổng tiền: 0đ"
+                        android:textColor="@color/dashboard_primary"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/manager_search_background"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="6dp">
+
+                    <ImageButton
+                        android:id="@+id/iB_giam"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@null"
+                        android:contentDescription="Giảm"
+                        android:src="@drawable/baseline_keyboard_arrow_left_24" />
+
+                    <TextView
+                        android:id="@+id/tvso"
+                        android:layout_width="44dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="1"
+                        android:textColor="@color/dashboard_text_primary"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <ImageButton
+                        android:id="@+id/iB_tang"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@null"
+                        android:contentDescription="Tăng"
+                        android:src="@drawable/baseline_keyboard_arrow_right_24" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:id="@+id/tvthemgiohang"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
-            android:background="@drawable/bg_color"
+            android:background="@drawable/manager_primary_pill"
             android:gravity="center"
             android:padding="16dp"
             android:text="Thêm vào giỏ hàng"
@@ -289,11 +347,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:background="@drawable/rounded_background"
+            android:background="@drawable/manager_back_chip"
             android:gravity="center"
             android:padding="16dp"
             android:text="Tiếp tục chọn món"
-            android:textColor="@color/coffee_dark"
+            android:textColor="@color/dashboard_primary"
             android:textSize="17sp"
             android:textStyle="bold" />
     </LinearLayout>

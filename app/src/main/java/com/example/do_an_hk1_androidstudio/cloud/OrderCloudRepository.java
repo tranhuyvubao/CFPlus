@@ -2,20 +2,27 @@ package com.example.do_an_hk1_androidstudio.cloud;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.do_an_hk1_androidstudio.local.DataHelper;
+import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
 import com.example.do_an_hk1_androidstudio.local.model.CustomerCartItem;
 import com.example.do_an_hk1_androidstudio.local.model.LocalCustomerAddress;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrder;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrderItem;
+import com.example.do_an_hk1_androidstudio.local.room.PendingSyncRepository;
+import com.example.do_an_hk1_androidstudio.ui.NotificationCenter;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -24,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 
 public class OrderCloudRepository {
+    private static final String TAG = "OrderCloudRepository";
+    private static final long ORDER_WRITE_TIMEOUT_MS = 15000L;
 
     public interface OrdersCallback {
         void onChanged(List<LocalOrder> orders);
@@ -39,10 +48,17 @@ public class OrderCloudRepository {
 
     private final FirebaseFirestore firestore;
     private final Context appContext;
+    private final PendingSyncRepository pendingSyncRepository;
+    private final LocalSessionManager sessionManager;
+    private final OrderActionLogRepository actionLogRepository;
+    private final android.os.Handler mainHandler = new android.os.Handler(android.os.Looper.getMainLooper());
 
     public OrderCloudRepository(Context context) {
         appContext = context.getApplicationContext();
         firestore = FirebaseProvider.getFirestore(appContext);
+        pendingSyncRepository = new PendingSyncRepository(appContext);
+        sessionManager = new LocalSessionManager(appContext);
+        actionLogRepository = new OrderActionLogRepository(appContext);
     }
 
     public void createCustomerOrder(String orderType,
@@ -133,8 +149,12 @@ public class OrderCloudRepository {
             return;
         }
 
+        Log.d(TAG, "createOnlineCartOrder start customerId=" + customerId
+                + ", items=" + items.size()
+                + ", payment=" + paymentPreference);
         FirebaseProvider.ensureAuthenticated(appContext, (authSuccess, authMessage) -> {
             if (!authSuccess) {
+                Log.e(TAG, "createOnlineCartOrder auth failed: " + authMessage);
                 callback.onComplete(false, null, authMessage == null ? "Firebase auth chưa sẵn sàng" : authMessage);
                 return;
             }
@@ -192,12 +212,59 @@ public class OrderCloudRepository {
             data.put("deliveryDetailAddress", nullableTrim(deliveryAddress.getDetailAddress()));
             data.put("items", orderItems);
 
+            final boolean[] handled = {false};
+            final Runnable[] timeoutRunnable = new Runnable[1];
+            timeoutRunnable[0] = () -> {
+                if (handled[0]) {
+                    return;
+                }
+                handled[0] = true;
+                Log.w(TAG, "createOnlineCartOrder timed out waiting for Firestore ACK orderId=" + orderId);
+                callback.onComplete(
+                        false,
+                        null,
+                        "Không kết nối được Firestore (firestore.googleapis.com). Kiểm tra DNS/mạng của emulator rồi thử lại."
+                );
+            };
+            mainHandler.postDelayed(timeoutRunnable[0], ORDER_WRITE_TIMEOUT_MS);
+
             firestore.collection("orders")
                     .document(orderId)
                     .set(data)
-                    .addOnSuccessListener(unused -> callback.onComplete(true, orderId, null))
-                    .addOnFailureListener(e -> callback.onComplete(false, null, e.getMessage()));
+                    .addOnSuccessListener(unused -> {
+                        if (handled[0]) {
+                            return;
+                        }
+                        handled[0] = true;
+                        mainHandler.removeCallbacks(timeoutRunnable[0]);
+                        Log.d(TAG, "createOnlineCartOrder success orderId=" + orderId);
+                        callback.onComplete(true, orderId, null);
+                    })
+                    .addOnFailureListener(e -> {
+                        if (handled[0]) {
+                            return;
+                        }
+                        handled[0] = true;
+                        mainHandler.removeCallbacks(timeoutRunnable[0]);
+                        Log.e(TAG, "createOnlineCartOrder failed orderId=" + orderId, e);
+                        callback.onComplete(false, null, buildOrderCreateFailureMessage(e));
+                    });
         });
+    }
+
+    private String buildOrderCreateFailureMessage(@Nullable Exception e) {
+        String message = e == null ? null : e.getMessage();
+        if (TextUtils.isEmpty(message)) {
+            return "Không thể tạo đơn online. Kiểm tra kết nối Firestore rồi thử lại.";
+        }
+        String lowerMessage = message.toLowerCase();
+        if (lowerMessage.contains("unavailable")
+                || lowerMessage.contains("unable to resolve host")
+                || lowerMessage.contains("firestore.googleapis.com")
+                || lowerMessage.contains("unknownhost")) {
+            return "Không kết nối được Firestore (firestore.googleapis.com). Kiểm tra DNS/mạng của emulator rồi thử lại.";
+        }
+        return message;
     }
 
     public void createTableQrOrder(String customerId,
@@ -211,7 +278,8 @@ public class OrderCloudRepository {
                                    @Nullable String note,
                                    @Nullable String imageUrl,
                                    @NonNull CompletionCallback callback) {
-        createCustomerOrder("dine_in", "customer_qr", customerId, tableId, tableName, productId, productName, unitPrice, qty, variantName, note, imageUrl, null, callback);
+        String orderType = TableCloudRepository.TAKEAWAY_TABLE_ID.equals(tableId) ? "takeaway" : "dine_in";
+        createCustomerOrder(orderType, "customer_qr", customerId, tableId, tableName, productId, productName, unitPrice, qty, variantName, note, imageUrl, null, callback);
     }
 
     public ListenerRegistration listenOnlineOrders(@NonNull OrdersCallback callback) {
@@ -277,14 +345,33 @@ public class OrderCloudRepository {
             Map<String, Object> updates = new HashMap<>();
             updates.put("status", nextStatus);
             updates.put("updatedAt", FieldValue.serverTimestamp());
+            updates.put("needsStaffAttention", false);
             if (!TextUtils.isEmpty(staffId)) {
                 updates.put("staffId", staffId);
             }
             firestore.collection("orders")
                     .document(orderId)
                     .update(updates)
-                    .addOnSuccessListener(unused -> callback.onComplete(true, null))
-                    .addOnFailureListener(e -> callback.onComplete(false, e.getMessage()));
+                    .addOnSuccessListener(unused -> {
+                        actionLogRepository.log(orderId, mapStatusAction(nextStatus), staffId, buildActorName(), null);
+                        NotificationCenter.storeAndShow(
+                                appContext,
+                                "Đơn hàng đã cập nhật",
+                                "Đơn " + orderId + " vừa chuyển sang trạng thái " + nextStatus + ".",
+                                "order_status",
+                                orderId,
+                                nextStatus
+                        );
+                        callback.onComplete(true, null);
+                    })
+                    .addOnFailureListener(e -> {
+                        if (pendingSyncRepository.isLikelyNetworkIssue(e.getMessage())) {
+                            enqueuePendingStatusUpdate(orderId, nextStatus, staffId);
+                            callback.onComplete(true, "Đã lưu offline, sẽ tự đồng bộ khi có mạng.");
+                            return;
+                        }
+                        callback.onComplete(false, e.getMessage());
+                    });
         });
     }
 
@@ -370,9 +457,83 @@ public class OrderCloudRepository {
                     .document(orderId)
                     .set(payment)
                     .continueWithTask(task -> firestore.collection("orders").document(orderId).update(orderUpdate))
-                    .addOnSuccessListener(unused -> callback.onComplete(true, null))
-                    .addOnFailureListener(e -> callback.onComplete(false, e.getMessage()));
+                    .addOnSuccessListener(unused -> {
+                        actionLogRepository.log(orderId, "Thanh toán đơn", sessionManager.getCurrentUserId(), buildActorName(), method);
+                        NotificationCenter.storeAndShow(
+                                appContext,
+                                "Thanh toán thành công",
+                                "Đơn " + orderId + " đã được ghi nhận thanh toán.",
+                                "payment",
+                                orderId,
+                                "paid"
+                        );
+                        callback.onComplete(true, null);
+                    })
+                    .addOnFailureListener(e -> {
+                        if (pendingSyncRepository.isLikelyNetworkIssue(e.getMessage())) {
+                            enqueuePendingPayment(orderId, finalAmount, method, bankRef, discountAmount, promotionCode);
+                            callback.onComplete(true, "Đã lưu thanh toán offline, sẽ tự đồng bộ khi có mạng.");
+                            return;
+                        }
+                        callback.onComplete(false, e.getMessage());
+                    });
         });
+    }
+
+    private void enqueuePendingStatusUpdate(@NonNull String orderId,
+                                            @NonNull String nextStatus,
+                                            @Nullable String staffId) {
+        try {
+            JSONObject payload = new JSONObject();
+            payload.put("orderId", orderId);
+            payload.put("nextStatus", nextStatus);
+            payload.put("staffId", nullableTrim(staffId));
+            pendingSyncRepository.enqueue(PendingSyncRepository.ACTION_UPDATE_STATUS, payload.toString());
+        } catch (JSONException ignored) {
+        }
+    }
+
+    private void enqueuePendingPayment(@NonNull String orderId,
+                                       int amount,
+                                       @NonNull String method,
+                                       @Nullable String bankRef,
+                                       int discountAmount,
+                                       @Nullable String promotionCode) {
+        try {
+            JSONObject payload = new JSONObject();
+            payload.put("orderId", orderId);
+            payload.put("amount", amount);
+            payload.put("method", method);
+            payload.put("bankRef", nullableTrim(bankRef));
+            payload.put("discountAmount", discountAmount);
+            payload.put("promotionCode", nullableTrim(promotionCode));
+            pendingSyncRepository.enqueue(PendingSyncRepository.ACTION_PAY_ORDER, payload.toString());
+        } catch (JSONException ignored) {
+        }
+    }
+
+    @NonNull
+    private String buildActorName() {
+        String fullName = sessionManager.getCurrentUserFullName();
+        if (!TextUtils.isEmpty(fullName)) {
+            return fullName;
+        }
+        String email = sessionManager.getCurrentUserEmail();
+        return email == null ? "Nhân viên quán" : email;
+    }
+
+    @NonNull
+    private String mapStatusAction(@NonNull String nextStatus) {
+        switch (nextStatus) {
+            case "confirmed":
+                return "Xác nhận đơn";
+            case "paid":
+                return "Hoàn tất / thanh toán đơn";
+            case "cancelled":
+                return "Hủy đơn";
+            default:
+                return "Cập nhật trạng thái đơn";
+        }
     }
 
     private List<LocalOrder> filterAndMap(@Nullable com.google.firebase.firestore.QuerySnapshot snapshot,
@@ -414,6 +575,9 @@ public class OrderCloudRepository {
                 intValue(doc.getLong("total")),
                 buildDeliveryAddress(doc),
                 longValue(doc.get("createdAt")),
+                Boolean.TRUE.equals(doc.getBoolean("needsStaffAttention")),
+                intValue(doc.getLong("lastCustomerItemAddedQty")),
+                longValueOrZero(doc.get("lastCustomerItemAddedAt")),
                 mapOrderItems(doc)
         );
     }
@@ -516,6 +680,19 @@ public class OrderCloudRepository {
             return ((Timestamp) value).toDate().getTime();
         }
         return System.currentTimeMillis();
+    }
+
+    private long longValueOrZero(@Nullable Object value) {
+        if (value instanceof Long) {
+            return (Long) value;
+        }
+        if (value instanceof Timestamp) {
+            return ((Timestamp) value).toDate().getTime();
+        }
+        if (value instanceof Number) {
+            return ((Number) value).longValue();
+        }
+        return 0L;
     }
 
     @Nullable

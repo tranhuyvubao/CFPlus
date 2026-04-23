@@ -3,24 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CafePlus | Gọi món tại bàn</title>
+  <title>CFPLUS | Gọi món tại bàn</title>
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <link rel="stylesheet" href="./styles.css?v=web-20260415a">
+  <link rel="stylesheet" href="./styles.css?v=web-20260423-modern">
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
       <div class="brand-block">
         <div class="brand-mark">CF</div>
-        <div>
-          <p class="brand-kicker">CafePlus Table Order - Web</p>
+        <div class="brand-copy">
+          <p class="brand-kicker">CFPLUS TABLE ORDER</p>
           <h1>Gọi món tại bàn</h1>
+          <span>Chọn món nhanh, nhân viên nhận đơn ngay tại quầy.</span>
         </div>
       </div>
 
-      <div class="topbar-meta">
+      <div class="topbar-meta" aria-label="Thông tin bàn và kết nối">
         <div class="meta-chip">
           <span class="meta-label">Bàn hiện tại</span>
           <strong id="tableDisplay">Đang tải...</strong>
@@ -43,16 +44,16 @@
 
       <section class="menu-stage panel">
         <div class="stage-head">
-          <div>
+          <div class="stage-title">
             <p class="section-kicker">Menu tại bàn</p>
             <h2 id="menuHeading">Tất cả món</h2>
+            <span>Ảnh món được đồng bộ trực tiếp từ Firebase Storage.</span>
           </div>
 
-          <div class="stage-actions">
-            <label class="search-field">
-              <input id="searchInput" type="search" placeholder="Tìm món, ví dụ: cà phê sữa đá">
-            </label>
-          </div>
+          <label class="search-field">
+            <span class="search-icon" aria-hidden="true">⌕</span>
+            <input id="searchInput" type="search" placeholder="Tìm cà phê, trà, món lạnh...">
+          </label>
         </div>
 
         <div id="menuGrid" class="menu-grid"></div>
@@ -76,7 +77,7 @@
 
         <label class="note-field">
           <span>Ghi chú chung</span>
-          <textarea id="commonNote" rows="3" placeholder="Ví dụ: lên món theo đợt, ít đá, cần thêm ly..."></textarea>
+          <textarea id="commonNote" rows="3" placeholder="Ví dụ: ít đá, lên món theo đợt, cần thêm ly..."></textarea>
         </label>
 
         <div class="totals-card">
@@ -101,8 +102,8 @@
     <strong id="mobileCartSummary">0 món - 0đ</strong>
   </button>
 
-  <div id="mobileCartBackdrop" class="mobile-cart-backdrop hidden"></div>
+  <div id="mobileCartBackdrop" class="mobile-cart-backdrop"></div>
 
-  <script type="module" src="./app.js?v=web-20260415a"></script>
+  <script type="module" src="./app.js?v=web-20260423-modern"></script>
 </body>
 </html>

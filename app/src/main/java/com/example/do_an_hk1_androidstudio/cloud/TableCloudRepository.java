@@ -22,7 +22,7 @@ public class TableCloudRepository {
 
     public static final String TAKEAWAY_TABLE_ID = "table_takeaway";
     public static final String TAKEAWAY_TABLE_CODE = "TAKEAWAY";
-    public static final String TAKEAWAY_TABLE_NAME = "Take away";
+    public static final String TAKEAWAY_TABLE_NAME = "Mang về";
 
     public interface TablesCallback {
         void onChanged(List<LocalCafeTable> tables);
@@ -65,18 +65,13 @@ public class TableCloudRepository {
                         List<LocalCafeTable> tables = new ArrayList<>();
                         if (value != null) {
                             for (DocumentSnapshot doc : value.getDocuments()) {
-                                tables.add(mapTable(doc));
+                                LocalCafeTable table = mapTable(doc);
+                                if (!TAKEAWAY_TABLE_ID.equals(table.getTableId())) {
+                                    tables.add(table);
+                                }
                             }
                         }
                         tables.sort((first, second) -> {
-                            boolean firstTakeaway = TAKEAWAY_TABLE_ID.equals(first.getTableId());
-                            boolean secondTakeaway = TAKEAWAY_TABLE_ID.equals(second.getTableId());
-                            if (firstTakeaway && !secondTakeaway) {
-                                return -1;
-                            }
-                            if (!firstTakeaway && secondTakeaway) {
-                                return 1;
-                            }
                             return first.getName().compareToIgnoreCase(second.getName());
                         });
                         callback.onChanged(tables);
@@ -98,7 +93,10 @@ public class TableCloudRepository {
                     .addOnSuccessListener(query -> {
                         List<LocalCafeTable> tables = new ArrayList<>();
                         for (DocumentSnapshot doc : query.getDocuments()) {
-                            tables.add(mapTable(doc));
+                            LocalCafeTable table = mapTable(doc);
+                            if (!TAKEAWAY_TABLE_ID.equals(table.getTableId())) {
+                                tables.add(table);
+                            }
                         }
                         tables.sort((first, second) -> first.getName().compareToIgnoreCase(second.getName()));
                         callback.onResult(tables, null);

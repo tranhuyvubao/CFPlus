@@ -1,45 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="6dp">
+    app:cardBackgroundColor="@color/dashboard_card"
+    app:cardCornerRadius="18dp"
+    app:cardElevation="5dp"
+    app:strokeWidth="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="8dp"
-        android:gravity="center_vertical">
+        android:padding="10dp">
 
-        <!-- Hình ảnh bên trái -->
-        <ImageButton
-            android:id="@+id/imageButton1"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:adjustViewBounds="true"
-            android:background="@null"
-            android:clickable="false"
-            android:focusable="false"
-            android:contentDescription="@string/anh_san_pham"
-            android:scaleType="centerCrop" />
+        <FrameLayout
+            android:layout_width="94dp"
+            android:layout_height="94dp"
+            android:background="@drawable/manager_image_surface">
 
-        <!-- Thông tin sản phẩm ở giữa -->
+            <ImageButton
+                android:id="@+id/imageButton1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                android:background="@null"
+                android:clickable="false"
+                android:contentDescription="@string/anh_san_pham"
+                android:focusable="false"
+                android:padding="8dp"
+                android:scaleType="fitCenter" />
+        </FrameLayout>
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_marginStart="12dp">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tvTen"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:maxLines="2"
                 android:text="Tên sản phẩm"
-                android:textColor="#304FFE"
+                android:textColor="@color/dashboard_text_primary"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -47,22 +55,21 @@
                 android:id="@+id/tvGia"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Giá sản phẩm"
-                android:textColor="#03A9F4"
-                android:textSize="14sp"
                 android:paddingTop="4dp"
+                android:text="Giá sản phẩm"
+                android:textColor="@color/dashboard_primary"
+                android:textSize="15sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Nút thêm vào giỏ bên phải -->
         <ImageButton
             android:id="@+id/imageButton2"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@null"
-            android:contentDescription="Thêm vào giỏ"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/manager_back_chip"
+            android:contentDescription="Mở chi tiết món"
             android:scaleType="centerInside"
+            android:tint="@color/dashboard_primary"
             app:srcCompat="@drawable/baseline_add_circle_outline_24" />
     </LinearLayout>
-
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

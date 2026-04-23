@@ -1,5 +1,6 @@
 package com.example.do_an_hk1_androidstudio;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -9,8 +10,12 @@ import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.view.ViewCompat;
+
 import com.bumptech.glide.Glide;
 import com.example.do_an_hk1_androidstudio.ui.MoneyFormatter;
+import com.example.do_an_hk1_androidstudio.ui.UiMotion;
 
 import java.util.List;
 
@@ -42,8 +47,11 @@ public class TimKiemAdapter extends BaseAdapter {
     }
 
     static class ViewHolder {
-        ImageButton imgProduct, btnAddCart;
-        TextView tvTen, tvGia;
+        ImageButton imgProduct;
+        ImageButton btnAddCart;
+        TextView tvTen;
+        TextView tvGia;
+        View root;
     }
 
     @Override
@@ -52,6 +60,7 @@ public class TimKiemAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.timkiem_sanpham, parent, false);
             holder = new ViewHolder();
+            holder.root = convertView;
             holder.imgProduct = convertView.findViewById(R.id.imageButton1);
             holder.tvTen = convertView.findViewById(R.id.tvTen);
             holder.tvGia = convertView.findViewById(R.id.tvGia);
@@ -64,27 +73,44 @@ public class TimKiemAdapter extends BaseAdapter {
         SanPham sanPham = sanPhamList.get(pos);
         holder.tvTen.setText(sanPham.getTen());
         holder.tvGia.setText(formatGia(sanPham.getGia()));
+        ViewCompat.setTransitionName(holder.imgProduct, "product_image_" + sanPham.getProductId());
+        UiMotion.applyPressFeedback(holder.root);
 
         Glide.with(context)
                 .load(sanPham.getHinhAnh())
-                .centerCrop()
+                .fitCenter()
                 .placeholder(R.drawable.loading_spinner)
                 .error(R.drawable.cfplus)
                 .into(holder.imgProduct);
 
-        View.OnClickListener openDetail = v -> {
-            Intent intent = new Intent(context, chitiet_sanpham.class);
-            intent.putExtra("productId", sanPham.getProductId());
-            intent.putExtra("Ten", sanPham.getTen());
-            intent.putExtra("Gia", sanPham.getGia());
-            intent.putExtra("hinhAnh", sanPham.getHinhAnh());
-            context.startActivity(intent);
-        };
-
-        holder.btnAddCart.setOnClickListener(openDetail);
+        View.OnClickListener openDetail = v -> openProductDetail(sanPham, holder.imgProduct);
+        holder.btnAddCart.setOnClickListener(v -> {
+            UiMotion.bounce(holder.btnAddCart);
+            openProductDetail(sanPham, holder.imgProduct);
+        });
         holder.imgProduct.setOnClickListener(openDetail);
         convertView.setOnClickListener(openDetail);
         return convertView;
+    }
+
+    private void openProductDetail(SanPham sanPham, View sharedImage) {
+        Intent intent = new Intent(context, chitiet_sanpham.class);
+        intent.putExtra("productId", sanPham.getProductId());
+        intent.putExtra("Ten", sanPham.getTen());
+        intent.putExtra("Gia", sanPham.getGia());
+        intent.putExtra("hinhAnh", sanPham.getHinhAnh());
+        intent.putExtra("image_transition_name", "product_image_" + sanPham.getProductId());
+
+        if (context instanceof Activity) {
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    (Activity) context,
+                    sharedImage,
+                    "product_image_" + sanPham.getProductId()
+            );
+            context.startActivity(intent, options.toBundle());
+            return;
+        }
+        context.startActivity(intent);
     }
 
     private String formatGia(String raw) {

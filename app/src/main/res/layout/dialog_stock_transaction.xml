@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/dashboard_card">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,17 +25,21 @@
             android:id="@+id/edtTxnQty"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/manager_search_background"
             android:hint="Số lượng"
             android:inputType="numberDecimal"
-            android:layout_marginTop="12dp" />
+            android:minHeight="52dp"
+            android:paddingHorizontal="14dp" />
 
         <EditText
             android:id="@+id/edtTxnNote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Ghi chú (tuỳ chọn)"
-            android:layout_marginTop="12dp" />
-
+            android:layout_marginTop="12dp"
+            android:background="@drawable/manager_search_background"
+            android:hint="Ghi chú (tùy chọn)"
+            android:minHeight="52dp"
+            android:paddingHorizontal="14dp" />
     </LinearLayout>
 </ScrollView>
-

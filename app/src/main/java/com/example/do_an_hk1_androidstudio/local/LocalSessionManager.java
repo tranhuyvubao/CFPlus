@@ -7,6 +7,8 @@ import androidx.annotation.Nullable;
 
 import com.example.do_an_hk1_androidstudio.local.model.LocalUser;
 
+import java.util.Locale;
+
 public class LocalSessionManager {
     private static final String PREF_NAME = "local_session";
     private static final String KEY_USER_ID = "user_id";
@@ -49,7 +51,11 @@ public class LocalSessionManager {
 
     @Nullable
     public String getCurrentUserRole() {
-        return sharedPreferences.getString(KEY_ROLE, null);
+        String role = sharedPreferences.getString(KEY_ROLE, null);
+        if (role == null || role.trim().isEmpty()) {
+            return "customer";
+        }
+        return role.trim().toLowerCase(Locale.US);
     }
 
     @Nullable

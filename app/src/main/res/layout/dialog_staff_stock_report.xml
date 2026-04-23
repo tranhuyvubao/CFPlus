@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/dashboard_card">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="18dp">
+
+        <TextView
+            android:id="@+id/tvReportIngredient"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nguyên liệu"
+            android:textColor="@color/dashboard_text_primary"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvReportCurrentStock"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Tồn hiện tại"
+            android:textColor="@color/dashboard_text_secondary"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/edtReportQty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/manager_search_background"
+            android:hint="Nhập số lượng"
+            android:inputType="numberDecimal"
+            android:minHeight="54dp"
+            android:paddingHorizontal="14dp"
+            android:textColor="@color/dashboard_text_primary"
+            android:textColorHint="@color/dashboard_text_secondary" />
+
+        <EditText
+            android:id="@+id/edtReportNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/manager_search_background"
+            android:gravity="top|start"
+            android:hint="Nhập ghi chú bắt buộc"
+            android:minHeight="88dp"
+            android:padding="14dp"
+            android:textColor="@color/dashboard_text_primary"
+            android:textColorHint="@color/dashboard_text_secondary" />
+    </LinearLayout>
+</ScrollView>

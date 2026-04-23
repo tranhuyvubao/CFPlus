@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:fillViewport="true">
@@ -7,143 +8,151 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/app_screen_background"
+        android:background="@color/dashboard_background"
         android:orientation="vertical"
         android:padding="18dp">
 
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/app_card_background"
-            android:orientation="vertical"
-            android:padding="18dp">
+            app:cardBackgroundColor="@color/dashboard_card"
+            app:cardCornerRadius="22dp"
+            app:cardElevation="7dp"
+            app:strokeWidth="0dp">
 
-            <TextView
-                android:id="@+id/thongtin"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Thông tin tạo đơn"
-                android:textColor="@color/coffee_dark"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                android:orientation="vertical"
+                android:padding="18dp">
 
-            <TextView
-                android:id="@+id/luuy"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="center"
-                android:text="Nhập đầy đủ bàn, hình thức, số điện thoại và nhân viên để đơn được lưu chính xác."
-                android:textColor="@color/coffee_muted"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/tenban"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:text="Bàn / khu vực"
-                android:textColor="@color/coffee_dark"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/editban"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/rounded_background"
-                android:hint="Ví dụ: Bàn 01"
-                android:inputType="text"
-                android:padding="12dp"
-                android:textColor="@color/coffee_dark"
-                android:textColorHint="@color/coffee_muted" />
-
-            <TextView
-                android:id="@+id/tvhinh_thuc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:text="Hình thức"
-                android:textColor="@color/coffee_dark"
-                android:textStyle="bold" />
-
-            <RadioGroup
-                android:id="@+id/rgHinhThuc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal">
-
-                <RadioButton
-                    android:id="@+id/tai_cho"
-                    android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/thongtin"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:buttonTint="@color/coffee_primary"
-                    android:checked="true"
-                    android:text="Tại chỗ"
-                    android:textColor="@color/coffee_dark" />
+                    android:gravity="center"
+                    android:text="Thông tin tạo đơn"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
 
-                <RadioButton
-                    android:id="@+id/mang_ve"
-                    android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/luuy"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:buttonTint="@color/coffee_primary"
-                    android:text="Mang về"
-                    android:textColor="@color/coffee_dark" />
-            </RadioGroup>
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
+                    android:text="Nhập đầy đủ bàn, hình thức, số điện thoại và nhân viên để đơn được lưu chính xác."
+                    android:textColor="@color/dashboard_text_secondary"
+                    android:textSize="13sp" />
 
-            <TextView
-                android:id="@+id/sdt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:text="Số điện thoại khách"
-                android:textColor="@color/coffee_dark"
-                android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/tenban"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Bàn / khu vực"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textStyle="bold" />
 
-            <EditText
-                android:id="@+id/editSdt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/rounded_background"
-                android:hint="Nhập số điện thoại"
-                android:inputType="phone"
-                android:padding="12dp"
-                android:textColor="@color/coffee_dark"
-                android:textColorHint="@color/coffee_muted" />
+                <EditText
+                    android:id="@+id/editban"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/manager_search_background"
+                    android:hint="Ví dụ: Bàn 01"
+                    android:inputType="text"
+                    android:padding="12dp"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textColorHint="@color/dashboard_text_secondary" />
 
-            <TextView
-                android:id="@+id/tvtennv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:text="Nhân viên phụ trách"
-                android:textColor="@color/coffee_dark"
-                android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/tvhinh_thuc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Hình thức"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textStyle="bold" />
 
-            <EditText
-                android:id="@+id/edit_tennv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/rounded_background"
-                android:hint="Nhập tên nhân viên"
-                android:inputType="textPersonName"
-                android:padding="12dp"
-                android:textColor="@color/coffee_dark"
-                android:textColorHint="@color/coffee_muted" />
-        </LinearLayout>
+                <RadioGroup
+                    android:id="@+id/rgHinhThuc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/tai_cho"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:buttonTint="@color/dashboard_primary"
+                        android:checked="true"
+                        android:text="Tại chỗ"
+                        android:textColor="@color/dashboard_text_primary" />
+
+                    <RadioButton
+                        android:id="@+id/mang_ve"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:buttonTint="@color/dashboard_primary"
+                        android:text="Mang về"
+                        android:textColor="@color/dashboard_text_primary" />
+                </RadioGroup>
+
+                <TextView
+                    android:id="@+id/sdt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Số điện thoại khách"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/editSdt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/manager_search_background"
+                    android:hint="Nhập số điện thoại"
+                    android:inputType="phone"
+                    android:padding="12dp"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textColorHint="@color/dashboard_text_secondary" />
+
+                <TextView
+                    android:id="@+id/tvtennv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Nhân viên phụ trách"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/edit_tennv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/manager_search_background"
+                    android:hint="Nhập tên nhân viên"
+                    android:inputType="textPersonName"
+                    android:padding="12dp"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textColorHint="@color/dashboard_text_secondary" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:id="@+id/tvthemgiohang"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:background="@drawable/bg_color"
+            android:background="@drawable/manager_primary_pill"
             android:gravity="center"
             android:padding="15dp"
             android:text="Lưu vào đơn"

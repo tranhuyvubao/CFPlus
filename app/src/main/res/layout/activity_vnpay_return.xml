@@ -1,58 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/app_screen_background"
+    android:background="@color/dashboard_background"
     android:gravity="center"
     android:orientation="vertical"
     android:padding="24dp">
 
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/app_card_background"
-        android:orientation="vertical"
-        android:padding="24dp">
+        app:cardBackgroundColor="@color/dashboard_card"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="9dp"
+        app:strokeWidth="0dp">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Kết quả thanh toán VNPAY"
-            android:textColor="@color/coffee_dark"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:orientation="vertical"
+            android:padding="24dp">
 
-        <TextView
-            android:id="@+id/tvVnpayStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:text="Đang xử lý..."
-            android:textColor="@color/coffee_primary_dark"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Kết quả thanh toán VNPAY"
+                android:textColor="@color/dashboard_text_primary"
+                android:textSize="24sp"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tvVnpayDetail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Ứng dụng đang kiểm tra trạng thái thanh toán."
-            android:textColor="@color/coffee_muted"
-            android:textSize="15sp" />
+            <TextView
+                android:id="@+id/tvVnpayStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:text="Đang xử lý..."
+                android:textColor="@color/dashboard_primary"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/btnVnpayClose"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/app_button_primary"
-            android:gravity="center"
-            android:padding="15dp"
-            android:text="Đóng"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/tvVnpayDetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Ứng dụng đang kiểm tra trạng thái thanh toán."
+                android:textColor="@color/dashboard_text_secondary"
+                android:textSize="15sp" />
 
+            <TextView
+                android:id="@+id/btnVnpayClose"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/manager_primary_pill"
+                android:gravity="center"
+                android:padding="15dp"
+                android:text="Đóng"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 </LinearLayout>

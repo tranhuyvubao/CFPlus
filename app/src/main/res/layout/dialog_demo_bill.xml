@@ -299,14 +299,12 @@
                 android:id="@+id/btnDemoClose"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/app_button_secondary"
+                android:background="@drawable/manager_back_chip"
                 android:gravity="center"
-                android:paddingLeft="18dp"
-                android:paddingTop="12dp"
-                android:paddingRight="18dp"
-                android:paddingBottom="12dp"
+                android:paddingHorizontal="18dp"
+                android:paddingVertical="12dp"
                 android:text="Đóng"
-                android:textColor="@color/coffee_primary_dark"
+                android:textColor="@color/dashboard_primary"
                 android:textStyle="bold" />
 
             <TextView
@@ -314,16 +312,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:background="@drawable/app_button_primary"
+                android:background="@drawable/manager_primary_pill"
                 android:gravity="center"
-                android:paddingLeft="18dp"
-                android:paddingTop="12dp"
-                android:paddingRight="18dp"
-                android:paddingBottom="12dp"
-                android:text="In demo"
+                android:paddingHorizontal="18dp"
+                android:paddingVertical="12dp"
+                android:text="In hóa đơn"
                 android:textColor="@android:color/white"
                 android:textStyle="bold" />
         </LinearLayout>
-
     </LinearLayout>
 </ScrollView>

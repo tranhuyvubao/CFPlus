@@ -3,22 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/dashboard_background"
     android:orientation="vertical"
     tools:context=".tabThree_Monngon">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="MÓN NGON PHẢI THỬ"
         android:layout_margin="8dp"
+        android:text="Món ngon phải thử"
+        android:textColor="@color/dashboard_text_primary"
         android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="@color/brown" />
+        android:textStyle="bold" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewMonNgon"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
         android:padding="8dp" />
-
 </LinearLayout>

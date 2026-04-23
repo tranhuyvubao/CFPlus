@@ -1,555 +1,380 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/app_screen_background"
+    android:background="@color/dashboard_background"
+    android:clipToPadding="false"
     android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/app_card_background"
-            android:orientation="vertical"
-            android:padding="18dp">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Bảng điều hành quản lý"
-                android:textColor="@color/coffee_dark"
-                android:textSize="26sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="Theo dõi nhanh tình hình quán và mở trực tiếp các chức năng quản lý quan trọng."
-                android:textColor="@color/coffee_muted"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="7dp"
-                android:layout_weight="1"
-                android:background="@drawable/app_card_background"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Doanh thu hôm nay"
-                    android:textColor="@color/coffee_muted"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/tvManagerMetricRevenue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="0đ"
-                    android:textColor="@color/coffee_primary_dark"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="7dp"
-                android:layout_weight="1"
-                android:background="@drawable/app_card_background"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Bàn đang hoạt động"
-                    android:textColor="@color/coffee_muted"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/tvManagerMetricTables"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="0"
-                    android:textColor="@color/coffee_primary_dark"
-                    android:textSize="28sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="7dp"
-                android:layout_weight="1"
-                android:background="@drawable/app_card_background"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Đơn đã thanh toán"
-                    android:textColor="@color/coffee_muted"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/tvManagerMetricPaidOrders"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="0"
-                    android:textColor="@color/coffee_primary_dark"
-                    android:textSize="28sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="7dp"
-                android:layout_weight="1"
-                android:background="@drawable/app_card_background"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Nhân viên"
-                    android:textColor="@color/coffee_muted"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/tvManagerMetricStaff"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="0"
-                    android:textColor="@color/coffee_primary_dark"
-                    android:textSize="28sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="7dp"
-                android:layout_weight="1"
-                android:background="@drawable/app_card_background"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Mã khuyến mãi"
-                    android:textColor="@color/coffee_muted"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/tvManagerMetricPromo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="0"
-                    android:textColor="@color/coffee_primary_dark"
-                    android:textSize="28sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="7dp"
-                android:layout_weight="1"
-                android:background="@drawable/app_card_background"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Nguyên liệu sắp chạm ngưỡng"
-                    android:textColor="@color/coffee_muted"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/tvManagerMetricStock"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="0"
-                    android:textColor="@color/coffee_warning"
-                    android:textSize="28sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </LinearLayout>
+        android:paddingLeft="20dp"
+        android:paddingTop="18dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="28dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Điều hướng nhanh"
-            android:textColor="@color/coffee_dark"
-            android:textSize="20sp"
+            android:text="Dashboard"
+            android:textColor="@color/dashboard_text_primary"
+            android:textSize="30sp"
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tvDashboardSubtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Mở trực tiếp các nhóm chức năng quản lý chính."
-            android:textColor="@color/coffee_muted"
+            android:text="Chào buổi sáng, quản lý"
+            android:textColor="@color/dashboard_text_secondary"
             android:textSize="14sp" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:minHeight="156dp"
+            app:cardBackgroundColor="@color/dashboard_card"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="8dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="22dp">
+
+                <ImageView
+                    android:layout_width="54dp"
+                    android:layout_height="54dp"
+                    android:background="@drawable/dashboard_icon_circle_primary"
+                    android:padding="14dp"
+                    android:src="@drawable/ic_dashboard_revenue_24" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="18dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:letterSpacing="0.08"
+                        android:text="DOANH THU HÔM NAY"
+                        android:textColor="@color/dashboard_text_secondary"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvManagerMetricRevenue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="0đ"
+                        android:textColor="@color/dashboard_text_primary"
+                        android:textSize="30sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Cập nhật theo đơn đã thanh toán"
+                        android:textColor="@color/dashboard_text_secondary"
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:text="Tổng quan hôm nay"
+            android:textColor="@color/dashboard_text_primary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <GridLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
+            android:layout_marginTop="10dp"
             android:alignmentMode="alignMargins"
             android:columnCount="2"
-            android:useDefaultMargins="true">
+            android:rowCount="2"
+            android:useDefaultMargins="false">
 
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="132dp"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:layout_marginEnd="7dp"
+                android:layout_marginBottom="14dp"
+                app:cardBackgroundColor="@color/dashboard_card"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="6dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:background="@drawable/dashboard_icon_circle_primary"
+                        android:padding="9dp"
+                        android:src="@drawable/ic_dashboard_receipt_24" />
+
+                    <TextView
+                        android:id="@+id/tvManagerMetricPaidOrders"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="0"
+                        android:textColor="@color/dashboard_text_primary"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Đơn đã thanh toán"
+                        android:textColor="@color/dashboard_text_secondary"
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="132dp"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:layout_marginStart="7dp"
+                android:layout_marginBottom="14dp"
+                app:cardBackgroundColor="@color/dashboard_card"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="6dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:background="@drawable/dashboard_icon_circle_primary"
+                        android:padding="9dp"
+                        android:src="@drawable/ic_dashboard_staff_24" />
+
+                    <TextView
+                        android:id="@+id/tvManagerMetricStaff"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="0"
+                        android:textColor="@color/dashboard_text_primary"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nhân viên"
+                        android:textColor="@color/dashboard_text_secondary"
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="132dp"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:layout_marginEnd="7dp"
+                app:cardBackgroundColor="@color/dashboard_card"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="6dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:background="@drawable/dashboard_icon_circle_accent"
+                        android:padding="9dp"
+                        android:src="@drawable/ic_dashboard_offer_24" />
+
+                    <TextView
+                        android:id="@+id/tvManagerMetricPromo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="0"
+                        android:textColor="@color/dashboard_text_primary"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mã khuyến mãi"
+                        android:textColor="@color/dashboard_text_secondary"
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="132dp"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:layout_marginStart="7dp"
+                app:cardBackgroundColor="@color/dashboard_card"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="6dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:background="@drawable/dashboard_icon_circle_accent"
+                        android:padding="9dp"
+                        android:src="@drawable/ic_dashboard_inventory_24" />
+
+                    <TextView
+                        android:id="@+id/tvManagerMetricStock"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="0"
+                        android:textColor="@color/dashboard_accent"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sắp hết hàng"
+                        android:textColor="@color/dashboard_text_secondary"
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </GridLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Quản lý nhanh"
+            android:textColor="@color/dashboard_text_primary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:alignmentMode="alignMargins"
+            android:columnCount="2"
+            android:useDefaultMargins="false">
+
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardThongKeHomNay"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:background="@drawable/app_card_background"
-                android:clickable="true"
-                android:focusable="true"
-                android:orientation="vertical"
-                android:padding="16dp">
+                style="@style/DashboardActionTile">
+                <include layout="@layout/include_dashboard_action_today" />
+            </com.google.android.material.card.MaterialCardView>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Thống kê hôm nay"
-                    android:textColor="@color/coffee_dark"
-                    android:textSize="17sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Doanh thu và đơn đã xử lý trong ngày."
-                    android:textColor="@color/coffee_muted"
-                    android:textSize="13sp" />
-            </LinearLayout>
-
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardThongKeTongHop"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:background="@drawable/app_card_background"
-                android:clickable="true"
-                android:focusable="true"
-                android:orientation="vertical"
-                android:padding="16dp">
+                style="@style/DashboardActionTile">
+                <include layout="@layout/include_dashboard_action_analytics" />
+            </com.google.android.material.card.MaterialCardView>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Thống kê tổng hợp"
-                    android:textColor="@color/coffee_dark"
-                    android:textSize="17sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Theo dõi báo cáo dài hạn của quán."
-                    android:textColor="@color/coffee_muted"
-                    android:textSize="13sp" />
-            </LinearLayout>
-
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardQuanLyMon"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:background="@drawable/app_card_background"
-                android:clickable="true"
-                android:focusable="true"
-                android:orientation="vertical"
-                android:padding="16dp">
+                style="@style/DashboardActionTile">
+                <include layout="@layout/include_dashboard_action_products" />
+            </com.google.android.material.card.MaterialCardView>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Quản lý món"
-                    android:textColor="@color/coffee_dark"
-                    android:textSize="17sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Thêm, sửa và sắp xếp menu."
-                    android:textColor="@color/coffee_muted"
-                    android:textSize="13sp" />
-            </LinearLayout>
-
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardQuanLyDanhMuc"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:background="@drawable/app_card_background"
-                android:clickable="true"
-                android:focusable="true"
-                android:orientation="vertical"
-                android:padding="16dp">
+                style="@style/DashboardActionTile">
+                <include layout="@layout/include_dashboard_action_categories" />
+            </com.google.android.material.card.MaterialCardView>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Danh mục"
-                    android:textColor="@color/coffee_dark"
-                    android:textSize="17sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Tổ chức nhóm món hợp lý hơn."
-                    android:textColor="@color/coffee_muted"
-                    android:textSize="13sp" />
-            </LinearLayout>
-
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardQuanLyBan"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:background="@drawable/app_card_background"
-                android:clickable="true"
-                android:focusable="true"
-                android:orientation="vertical"
-                android:padding="16dp">
+                style="@style/DashboardActionTile">
+                <include layout="@layout/include_dashboard_action_tables" />
+            </com.google.android.material.card.MaterialCardView>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Quản lý bàn"
-                    android:textColor="@color/coffee_dark"
-                    android:textSize="17sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Cấu hình sơ đồ bàn và mã QR."
-                    android:textColor="@color/coffee_muted"
-                    android:textSize="13sp" />
-            </LinearLayout>
-
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardQuanLyKho"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:background="@drawable/app_card_background"
-                android:clickable="true"
-                android:focusable="true"
-                android:orientation="vertical"
-                android:padding="16dp">
+                style="@style/DashboardActionTile">
+                <include layout="@layout/include_dashboard_action_stock" />
+            </com.google.android.material.card.MaterialCardView>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Quản lý kho"
-                    android:textColor="@color/coffee_dark"
-                    android:textSize="17sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Theo dõi nguyên liệu và nhập xuất."
-                    android:textColor="@color/coffee_muted"
-                    android:textSize="13sp" />
-            </LinearLayout>
-
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardQuanLyKhuyenMai"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:background="@drawable/app_card_background"
-                android:clickable="true"
-                android:focusable="true"
-                android:orientation="vertical"
-                android:padding="16dp">
+                style="@style/DashboardActionTile">
+                <include layout="@layout/include_dashboard_action_promo" />
+            </com.google.android.material.card.MaterialCardView>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Khuyến mãi"
-                    android:textColor="@color/coffee_dark"
-                    android:textSize="17sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Tạo và quản lý mã giảm giá."
-                    android:textColor="@color/coffee_muted"
-                    android:textSize="13sp" />
-            </LinearLayout>
-
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardQuanLyNhanVien"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:background="@drawable/app_card_background"
-                android:clickable="true"
-                android:focusable="true"
-                android:orientation="vertical"
-                android:padding="16dp">
+                style="@style/DashboardActionTile">
+                <include layout="@layout/include_dashboard_action_staff" />
+            </com.google.android.material.card.MaterialCardView>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Nhân viên"
-                    android:textColor="@color/coffee_dark"
-                    android:textSize="17sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Quản lý tài khoản nhân viên."
-                    android:textColor="@color/coffee_muted"
-                    android:textSize="13sp" />
-            </LinearLayout>
-
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardQuanLyKhachHang"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:background="@drawable/app_card_background"
-                android:clickable="true"
-                android:focusable="true"
-                android:orientation="vertical"
-                android:padding="16dp">
+                style="@style/DashboardActionTile">
+                <include layout="@layout/include_dashboard_action_customers" />
+            </com.google.android.material.card.MaterialCardView>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Khách hàng"
-                    android:textColor="@color/coffee_dark"
-                    android:textSize="17sp"
-                    android:textStyle="bold" />
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardBarMode"
+                style="@style/DashboardActionTile">
+                <include layout="@layout/include_dashboard_action_bar" />
+            </com.google.android.material.card.MaterialCardView>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Theo dõi hồ sơ và lịch sử mua."
-                    android:textColor="@color/coffee_muted"
-                    android:textSize="13sp" />
-            </LinearLayout>
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardActionLogs"
+                style="@style/DashboardActionTile">
+                <include layout="@layout/include_dashboard_action_logs" />
+            </com.google.android.material.card.MaterialCardView>
 
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardVnpaySandbox"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:background="@drawable/app_card_background"
-                android:clickable="true"
-                android:focusable="true"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="VNPAY sandbox"
-                    android:textColor="@color/coffee_dark"
-                    android:textSize="17sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Cấu hình TMN code và hash secret để test thanh toán."
-                    android:textColor="@color/coffee_muted"
-                    android:textSize="13sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/cardSeedDuLieu"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:background="@drawable/app_card_background"
-                android:clickable="true"
-                android:focusable="true"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Seed dữ liệu"
-                    android:textColor="@color/coffee_dark"
-                    android:textSize="17sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Tạo nhanh dữ liệu mẫu để demo."
-                    android:textColor="@color/coffee_muted"
-                    android:textSize="13sp" />
-            </LinearLayout>
+                style="@style/DashboardActionTile">
+                <include layout="@layout/include_dashboard_action_payment" />
+            </com.google.android.material.card.MaterialCardView>
         </GridLayout>
 
     </LinearLayout>

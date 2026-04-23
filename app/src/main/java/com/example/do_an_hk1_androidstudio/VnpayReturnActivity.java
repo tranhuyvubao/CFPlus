@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.do_an_hk1_androidstudio.cloud.OrderCloudRepository;
+import com.example.do_an_hk1_androidstudio.cloud.VnpayConfigCloudRepository;
 import com.example.do_an_hk1_androidstudio.payment.VnpayPaymentSessionStore;
 import com.example.do_an_hk1_androidstudio.payment.VnpaySettingsStore;
 import com.example.do_an_hk1_androidstudio.payment.VnpayUtils;
@@ -22,6 +23,7 @@ public class VnpayReturnActivity extends AppCompatActivity {
     private OrderCloudRepository orderRepository;
     private VnpayPaymentSessionStore paymentSessionStore;
     private VnpaySettingsStore settingsStore;
+    private VnpayConfigCloudRepository cloudConfigRepository;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,6 +36,7 @@ public class VnpayReturnActivity extends AppCompatActivity {
         orderRepository = new OrderCloudRepository(this);
         paymentSessionStore = new VnpayPaymentSessionStore(this);
         settingsStore = new VnpaySettingsStore(this);
+        cloudConfigRepository = new VnpayConfigCloudRepository(this);
 
         findViewById(R.id.btnVnpayClose).setOnClickListener(v -> openHome());
         handleReturnIntent(getIntent() == null ? null : getIntent().getData());
@@ -44,11 +47,25 @@ public class VnpayReturnActivity extends AppCompatActivity {
             showResult("Không nhận được dữ liệu trả về", "VNPAY chưa trả kết quả về ứng dụng.");
             return;
         }
-        if (!settingsStore.isConfigured()) {
+        cloudConfigRepository.getConfig((cloudConfig, message) -> runOnUiThread(() -> {
+            VnpaySettingsStore.MerchantConfig merchantConfig = isConfigured(cloudConfig)
+                    ? cloudConfig
+                    : settingsStore.read();
+            if (!isConfigured(merchantConfig)) {
+                showResult("Thiếu cấu hình VNPAY", "Hãy cập nhật TMN code, hash secret và return URL trong cấu hình sandbox.");
+                return;
+            }
+            settingsStore.save(merchantConfig.tmnCode, merchantConfig.hashSecret, merchantConfig.returnUrl);
+            continueHandleReturn(data, merchantConfig);
+        }));
+    }
+
+    private void continueHandleReturn(Uri data, VnpaySettingsStore.MerchantConfig merchantConfig) {
+        if (!isConfigured(merchantConfig)) {
             showResult("Thiếu cấu hình VNPAY", "Hãy cập nhật TMN code, hash secret và return URL trong cấu hình sandbox.");
             return;
         }
-        if (!VnpayUtils.isValidReturnSignature(data, settingsStore.read().hashSecret)) {
+        if (!VnpayUtils.isValidReturnSignature(data, merchantConfig.hashSecret)) {
             showResult("Chữ ký không hợp lệ", "Ứng dụng đã chặn kết quả thanh toán vì chữ ký phản hồi không khớp.");
             return;
         }
@@ -92,6 +109,13 @@ public class VnpayReturnActivity extends AppCompatActivity {
                     tvStatus.postDelayed(this::openHome, 900);
                 })
         );
+    }
+
+    private boolean isConfigured(@Nullable VnpaySettingsStore.MerchantConfig config) {
+        return config != null
+                && !TextUtils.isEmpty(config.tmnCode)
+                && !TextUtils.isEmpty(config.hashSecret)
+                && !TextUtils.isEmpty(config.returnUrl);
     }
 
     private void showResult(String title, String detail) {

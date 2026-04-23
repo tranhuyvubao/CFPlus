@@ -128,6 +128,7 @@ public class DonHangCuaToiActivity extends AppCompatActivity {
         private final TextView tvTime;
         private final TextView tvItemsPreview;
         private final TextView btnPay;
+        private final TextView btnReview;
 
         MyOrderVH(@NonNull View itemView) {
             super(itemView);
@@ -137,11 +138,12 @@ public class DonHangCuaToiActivity extends AppCompatActivity {
             tvTime = itemView.findViewById(R.id.tvMyOrderTime);
             tvItemsPreview = itemView.findViewById(R.id.tvMyOrderItems);
             btnPay = itemView.findViewById(R.id.btnPayMyOrder);
+            btnReview = itemView.findViewById(R.id.btnReviewMyOrder);
         }
 
         void bind(LocalOrder order) {
             String status = order.getStatus();
-            tvOrderId.setText("Đơn: " + order.getOrderId());
+            tvOrderId.setText("Đơn: " + order.getDisplayOrderCode());
             tvStatus.setText("Trạng thái: " + mapStatus(status));
             tvTotal.setText("Tổng: " + MoneyFormatter.format(order.getTotal()));
             tvTime.setText("Tạo lúc: " + fmtTime(order.getCreatedAtMillis()));
@@ -158,13 +160,36 @@ public class DonHangCuaToiActivity extends AppCompatActivity {
                 btnPay.setOnClickListener(v -> {
                     Intent intent = new Intent(DonHangCuaToiActivity.this, ThanhToanKhachActivity.class);
                     intent.putExtra(ThanhToanKhachActivity.EXTRA_ORDER_ID, order.getOrderId());
+                    intent.putExtra(ThanhToanKhachActivity.EXTRA_DISPLAY_ORDER_CODE, order.getDisplayOrderCode());
                     intent.putExtra(ThanhToanKhachActivity.EXTRA_AMOUNT, order.getTotal());
                     startActivity(intent);
                 });
             } else {
                 btnPay.setVisibility(View.GONE);
             }
+
+            boolean canReview = "paid".equals(status) || "completed".equals(status);
+            btnReview.setVisibility(canReview ? View.VISIBLE : View.GONE);
+            if (canReview) {
+                btnReview.setOnClickListener(v -> {
+                    Intent intent = new Intent(DonHangCuaToiActivity.this, ReviewActivity.class);
+                    intent.putExtra(ReviewActivity.EXTRA_ORDER_ID, order.getOrderId());
+                    intent.putExtra(ReviewActivity.EXTRA_ITEMS_PREVIEW, orderItemsPreview(order));
+                    startActivity(intent);
+                });
+            }
         }
+    }
+
+    private String orderItemsPreview(LocalOrder order) {
+        StringBuilder builder = new StringBuilder();
+        for (com.example.do_an_hk1_androidstudio.local.model.LocalOrderItem item : order.getItems()) {
+            if (builder.length() > 0) {
+                builder.append(" | ");
+            }
+            builder.append(item.getProductName()).append(" x").append(item.getQty());
+        }
+        return builder.toString();
     }
 
     private String mapStatus(String status) {

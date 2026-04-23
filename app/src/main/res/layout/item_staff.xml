@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardBackgroundColor="@color/coffee_surface"
+    android:layout_marginHorizontal="2dp"
+    android:layout_marginBottom="12dp"
+    app:cardBackgroundColor="@color/dashboard_card"
     app:cardCornerRadius="18dp"
-    app:cardElevation="4dp">
+    app:cardElevation="5dp"
+    app:strokeWidth="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="14dp">
+        android:padding="16dp">
 
         <TextView
             android:id="@+id/tvStaffName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Họ tên:"
-            android:textColor="@color/coffee_dark"
+            android:text="Họ tên"
+            android:textColor="@color/dashboard_text_primary"
             android:textSize="17sp"
             android:textStyle="bold" />
 
@@ -28,41 +30,41 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="Email:"
-            android:textColor="@color/coffee_muted" />
+            android:text="Email"
+            android:textColor="@color/dashboard_text_secondary" />
 
         <TextView
             android:id="@+id/tvStaffRole"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Vai trò:"
-            android:textColor="@color/coffee_muted" />
+            android:text="Vai trò"
+            android:textColor="@color/dashboard_text_secondary" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/round_background_3"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/manager_soft_pill"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="8dp">
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="9dp">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Trạng thái"
-                android:textColor="@color/coffee_text"
+                android:textColor="@color/dashboard_text_primary"
                 android:textStyle="bold" />
 
             <Switch
                 android:id="@+id/swStaffStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textOn="Hoạt động"
-                android:textOff="Khóa" />
+                android:textOff="Khóa"
+                android:textOn="Hoạt động" />
         </LinearLayout>
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

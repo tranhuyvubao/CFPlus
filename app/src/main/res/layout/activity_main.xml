@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/app_screen_background"
+    android:background="@color/dashboard_background"
     android:fillViewport="true"
     tools:context=".MainActivity">
 
@@ -17,132 +18,140 @@
 
         <ImageView
             android:id="@+id/logo"
-            android:layout_width="128dp"
-            android:layout_height="128dp"
-            android:layout_marginTop="24dp"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_marginTop="34dp"
             android:src="@drawable/cfplus" />
 
         <TextView
             android:id="@+id/tvDki1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="14dp"
             android:text="Đăng nhập"
-            android:textColor="@color/coffee_dark"
+            android:textColor="@color/dashboard_text_primary"
             android:textSize="30sp"
             android:textStyle="bold" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:gravity="center"
             android:text="Quản lý quán cà phê và đặt món nhanh hơn với dữ liệu đồng bộ Firebase."
-            android:textColor="@color/coffee_muted"
+            android:textColor="@color/dashboard_text_secondary"
             android:textSize="14sp" />
 
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:background="@drawable/app_card_background"
-            android:elevation="3dp"
-            android:orientation="vertical"
-            android:padding="20dp">
+            app:cardBackgroundColor="@color/dashboard_card"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="8dp"
+            app:strokeWidth="0dp">
 
-            <TextView
-                android:id="@+id/tvnguoidung"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Email"
-                android:textColor="@color/coffee_text"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/editemail"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/rounded_background"
-                android:hint="Nhập email của bạn"
-                android:inputType="textEmailAddress"
-                android:minHeight="52dp"
-                android:paddingHorizontal="14dp"
-                android:textColor="@color/coffee_text"
-                android:textColorHint="@color/coffee_muted"
-                android:textSize="16sp" />
+                android:orientation="vertical"
+                android:padding="22dp">
 
-            <TextView
-                android:id="@+id/tvmatkhau"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:text="Mật khẩu"
-                android:textColor="@color/coffee_text"
-                android:textSize="15sp"
-                android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/tvnguoidung"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Email"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
 
-            <EditText
-                android:id="@+id/edtmk"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/rounded_background"
-                android:hint="Nhập mật khẩu của bạn"
-                android:inputType="textPassword"
-                android:minHeight="52dp"
-                android:paddingHorizontal="14dp"
-                android:textColor="@color/coffee_text"
-                android:textColorHint="@color/coffee_muted"
-                android:textSize="16sp" />
+                <EditText
+                    android:id="@+id/editemail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/manager_search_background"
+                    android:hint="Nhập email của bạn"
+                    android:inputType="textEmailAddress"
+                    android:minHeight="52dp"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textColorHint="@color/dashboard_text_secondary"
+                    android:textSize="16sp" />
 
-            <TextView
-                android:id="@+id/testMkDn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:gravity="center"
-                android:text="@string/testMkDn"
-                android:textColor="@color/coffee_danger"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:visibility="gone" />
+                <TextView
+                    android:id="@+id/tvmatkhau"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:text="Mật khẩu"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
 
-            <CheckBox
-                android:id="@+id/autofill"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="Nhớ mật khẩu"
-                android:textColor="@color/coffee_text"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                <EditText
+                    android:id="@+id/edtmk"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/manager_search_background"
+                    android:hint="Nhập mật khẩu của bạn"
+                    android:inputType="textPassword"
+                    android:minHeight="52dp"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textColorHint="@color/dashboard_text_secondary"
+                    android:textSize="16sp" />
 
-            <TextView
-                android:id="@+id/tvDN"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:background="@drawable/bg_color"
-                android:gravity="center"
-                android:padding="14dp"
-                android:text="Đăng nhập"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/testMkDn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:text="@string/testMkDn"
+                    android:textColor="#D32F2F"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
 
-            <TextView
-                android:id="@+id/tvQuenmk"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="14dp"
-                android:text="Quên mật khẩu?"
-                android:textColor="@color/coffee_primary"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+                <CheckBox
+                    android:id="@+id/autofill"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:buttonTint="@color/dashboard_primary"
+                    android:text="Nhớ mật khẩu"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvDN"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:background="@drawable/manager_primary_pill"
+                    android:gravity="center"
+                    android:padding="14dp"
+                    android:text="Đăng nhập"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvQuenmk"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="14dp"
+                    android:text="Quên mật khẩu?"
+                    android:textColor="@color/dashboard_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -156,7 +165,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Chưa có tài khoản?"
-                android:textColor="@color/coffee_muted"
+                android:textColor="@color/dashboard_text_secondary"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -166,7 +175,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="Đăng ký"
-                android:textColor="@color/coffee_primary"
+                android:textColor="@color/dashboard_primary"
                 android:textSize="15sp"
                 android:textStyle="bold" />
         </LinearLayout>

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rootHoSoKhachHang"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/app_screen_background"
+    android:background="@color/dashboard_background"
     android:orientation="vertical">
 
     <LinearLayout
@@ -11,187 +12,147 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingLeft="16dp"
+        android:paddingLeft="20dp"
         android:paddingTop="12dp"
-        android:paddingRight="16dp"
-        android:paddingBottom="12dp">
+        android:paddingRight="20dp"
+        android:paddingBottom="10dp">
 
-        <LinearLayout
+        <TextView
             android:id="@+id/tvBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/app_chip_accent"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingLeft="14dp"
-            android:paddingTop="10dp"
-            android:paddingRight="14dp"
-            android:paddingBottom="10dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="←"
-                android:textColor="@color/coffee_primary_dark"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Trở về"
-                android:textColor="@color/coffee_primary_dark"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:text="Hồ sơ khách hàng"
-            android:textColor="@color/coffee_dark"
-            android:textSize="28sp"
+            android:background="@drawable/manager_back_chip"
+            android:elevation="3dp"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="9dp"
+            android:text="Trở về"
+            android:textColor="@color/dashboard_primary"
             android:textStyle="bold" />
 
-        <TextView
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Cập nhật thông tin cá nhân và quản lý tối đa 3 địa chỉ giao hàng."
-            android:textColor="@color/coffee_muted"
-            android:textSize="14sp" />
+            android:layout_marginTop="16dp"
+            app:cardBackgroundColor="@color/dashboard_card"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="7dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Địa chỉ giao hàng"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="26sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Quản lý tối đa 3 địa chỉ để đặt hàng nhanh hơn."
+                    android:textColor="@color/dashboard_text_secondary"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:clipToPadding="false"
         android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingBottom="16dp">
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingBottom="20dp">
 
-            <TextView
-                android:id="@+id/tvLoyaltyPoint"
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/app_card_background"
-                android:padding="16dp"
-                android:text="Điểm tích lũy: 0"
-                android:textColor="@color/coffee_primary_dark"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/edtCustomerBirthday"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/rounded_background"
-                android:focusable="false"
-                android:hint="Chọn ngày sinh"
-                android:inputType="none"
-                android:padding="12dp"
-                android:textColor="@color/coffee_dark"
-                android:textColorHint="@color/coffee_muted" />
-
-            <AutoCompleteTextView
-                android:id="@+id/edtCustomerGender"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/rounded_background"
-                android:hint="Chọn giới tính"
-                android:inputType="none"
-                android:padding="12dp"
-                android:textColor="@color/coffee_dark"
-                android:textColorHint="@color/coffee_muted" />
-
-            <TextView
-                android:id="@+id/btnSaveCustomerProfile"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:background="@drawable/app_button_primary"
-                android:gravity="center"
-                android:padding="14dp"
-                android:text="Lưu hồ sơ"
-                android:textColor="@color/white"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:background="@drawable/app_card_background"
-                android:orientation="vertical"
-                android:padding="16dp">
+                app:cardBackgroundColor="@color/dashboard_card"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="6dp"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    android:padding="18dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Danh sách địa chỉ"
+                                android:textColor="@color/dashboard_text_primary"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvAddressHint"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Chọn địa chỉ mặc định để đặt hàng nhanh hơn."
+                                android:textColor="@color/dashboard_text_secondary"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/btnAddAddress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/manager_primary_pill"
+                            android:paddingHorizontal="16dp"
+                            android:paddingVertical="10dp"
+                            android:text="Thêm"
+                            android:textColor="@android:color/white"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/addressContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="vertical" />
 
                     <TextView
-                        android:layout_width="0dp"
+                        android:id="@+id/tvAddressEmpty"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Địa chỉ giao hàng"
-                        android:textColor="@color/coffee_dark"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/btnAddAddress"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/app_button_secondary"
-                        android:paddingLeft="14dp"
-                        android:paddingTop="10dp"
-                        android:paddingRight="14dp"
-                        android:paddingBottom="10dp"
-                        android:text="Thêm địa chỉ"
-                        android:textColor="@color/coffee_primary_dark"
-                        android:textStyle="bold" />
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/manager_search_background"
+                        android:gravity="center"
+                        android:padding="18dp"
+                        android:text="Chưa có địa chỉ nào. Hãy thêm địa chỉ đầu tiên."
+                        android:textColor="@color/dashboard_text_secondary" />
                 </LinearLayout>
-
-                <TextView
-                    android:id="@+id/tvAddressHint"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Bạn có thể lưu tối đa 3 địa chỉ."
-                    android:textColor="@color/coffee_muted"
-                    android:textSize="13sp" />
-
-                <LinearLayout
-                    android:id="@+id/addressContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" />
-
-                <TextView
-                    android:id="@+id/tvAddressEmpty"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/rounded_background"
-                    android:gravity="center"
-                    android:padding="16dp"
-                    android:text="Chưa có địa chỉ nào. Hãy thêm địa chỉ đầu tiên."
-                    android:textColor="@color/coffee_muted" />
-            </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
     </ScrollView>
-
 </LinearLayout>

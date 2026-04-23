@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.do_an_hk1_androidstudio.cloud.OrderCloudRepository;
 import com.example.do_an_hk1_androidstudio.cloud.PromotionCloudRepository;
+import com.example.do_an_hk1_androidstudio.cloud.TableCloudRepository;
 import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrder;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrderItem;
@@ -107,8 +108,13 @@ public class HoaDonBanActivity extends AppCompatActivity {
             backView.setOnClickListener(v -> finish());
         }
 
-        tvTitle.setText("Hóa đơn " + (TextUtils.isEmpty(tableName) ? "bàn" : tableName));
-        tvEmpty.setText((TextUtils.isEmpty(tableName) ? "Bàn này" : tableName) + " đang trống.");
+        if (TableCloudRepository.TAKEAWAY_TABLE_ID.equals(tableId)) {
+            tvTitle.setText("Hóa đơn mang về");
+            tvEmpty.setText("Chưa có đơn mang về đang mở.");
+        } else {
+            tvTitle.setText("Hóa đơn " + (TextUtils.isEmpty(tableName) ? "bàn" : tableName));
+            tvEmpty.setText((TextUtils.isEmpty(tableName) ? "Bàn này" : tableName) + " đang trống.");
+        }
 
         findViewById(R.id.btnApplyPromotion).setOnClickListener(v -> applyPromotionCode());
         findViewById(R.id.btnPrintBill).setOnClickListener(v -> {
@@ -280,6 +286,7 @@ public class HoaDonBanActivity extends AppCompatActivity {
         }
         Intent intent = new Intent(this, ThanhToanKhachActivity.class);
         intent.putExtra(ThanhToanKhachActivity.EXTRA_ORDER_ID, currentOrder.getOrderId());
+        intent.putExtra(ThanhToanKhachActivity.EXTRA_DISPLAY_ORDER_CODE, currentOrder.getDisplayOrderCode());
         intent.putExtra(ThanhToanKhachActivity.EXTRA_AMOUNT, currentOrder.getSubtotal());
         startActivity(intent);
     }
@@ -303,7 +310,7 @@ public class HoaDonBanActivity extends AppCompatActivity {
 
         dialogView.findViewById(R.id.btnDemoClose).setOnClickListener(v -> dialog.dismiss());
         dialogView.findViewById(R.id.btnDemoPrint).setOnClickListener(v -> {
-            Toast.makeText(this, "Đây là bản in demo, chưa kết nối máy in thật.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Đã mở bản xem trước hóa đơn. Chưa kết nối máy in thật.", Toast.LENGTH_SHORT).show();
             dialog.dismiss();
         });
 

@@ -1,74 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="6dp">
+    android:layout_marginRight="12dp"
+    app:cardBackgroundColor="@color/dashboard_card"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="5dp"
+    app:strokeWidth="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:padding="12dp">
 
-        <ImageButton
-            android:id="@+id/imageButton1"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:layout_gravity="center_horizontal"
-            android:adjustViewBounds="true"
-            android:background="@null"
-            android:clickable="false"
-            android:contentDescription="@string/anh_san_pham"
-            android:focusable="false"
-            android:scaleType="fitCenter" />
+            android:layout_height="136dp"
+            android:background="@drawable/manager_image_surface">
+
+            <ImageButton
+                android:id="@+id/imageButton1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                android:background="@null"
+                android:clickable="false"
+                android:contentDescription="@string/anh_san_pham"
+                android:focusable="false"
+                android:padding="10dp"
+                android:scaleType="fitCenter" />
+
+            <ImageButton
+                android:id="@+id/btnFavorite"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="end|top"
+                android:layout_margin="8dp"
+                android:background="@drawable/manager_back_chip"
+                android:contentDescription="Yêu thích"
+                android:padding="7dp"
+                android:src="@drawable/ic_heart_outline" />
+
+            <TextView
+                android:id="@+id/tvBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|bottom"
+                android:layout_margin="8dp"
+                android:background="@drawable/manager_soft_pill"
+                android:paddingHorizontal="9dp"
+                android:paddingVertical="5dp"
+                android:text="Gợi ý"
+                android:textColor="@color/dashboard_primary"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/tvTen"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="8dp"
-            android:paddingBottom="4dp"
+            android:layout_marginTop="10dp"
+            android:maxLines="2"
+            android:minLines="2"
             android:text="Tên sản phẩm"
-            android:textColor="#304FFE"
-            android:textSize="16sp"
+            android:textColor="@color/dashboard_text_primary"
+            android:textSize="15sp"
             android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/tvGia"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tvGia"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="2dp"
-                    android:text="Giá sản phẩm"
-                    android:textColor="#03A9F4"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                android:text="Giá sản phẩm"
+                android:textColor="@color/dashboard_primary"
+                android:textSize="17sp"
+                android:textStyle="bold" />
 
             <ImageButton
                 android:id="@+id/imageButton2"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="8dp"
-                android:background="@null"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/manager_back_chip"
                 android:contentDescription="Thêm vào giỏ"
                 android:scaleType="centerInside"
+                android:tint="@color/dashboard_primary"
                 app:srcCompat="@drawable/baseline_add_circle_outline_24" />
         </LinearLayout>
     </LinearLayout>
-
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

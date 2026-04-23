@@ -61,7 +61,11 @@ public class QuanLyDanhMucActivity extends AppCompatActivity {
             if (uri == null) {
                 return;
             }
-            getContentResolver().takePersistableUriPermission(uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            try {
+                getContentResolver().takePersistableUriPermission(uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            } catch (SecurityException ignored) {
+                // Some pickers only grant temporary access. Saving immediately still can upload the image.
+            }
             pendingImageUri = uri;
             if (pendingPickImageView != null) {
                 pendingPickImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
@@ -145,7 +149,11 @@ public class QuanLyDanhMucActivity extends AppCompatActivity {
                         Toast.makeText(this, "Tên danh mục không được trống", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    String imageUrl = pendingImageUri != null ? pendingImageUri.toString() : null;
+                    if (pendingImageUri != null) {
+                        saveCategory(null, name, swActive.isChecked());
+                        return;
+                    }
+                    String imageUrl = null;
                     catalogRepository.addCategory(name, imageUrl, swActive.isChecked(), (success, message) -> Toast.makeText(
                             this,
                             success ? "Đã thêm danh mục." : (message == null ? "Không thêm được danh mục." : message),
@@ -181,7 +189,11 @@ public class QuanLyDanhMucActivity extends AppCompatActivity {
                         Toast.makeText(this, "Tên danh mục không được trống", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    String imageUrl = pendingImageUri != null ? pendingImageUri.toString() : category.getImageUrl();
+                    if (pendingImageUri != null || parseLocalImageUri(category.getImageUrl()) != null) {
+                        saveCategory(category, name, swActive.isChecked());
+                        return;
+                    }
+                    String imageUrl = category.getImageUrl();
                     catalogRepository.updateCategory(category.getCategoryId(), name, imageUrl, swActive.isChecked(), (success, message) -> Toast.makeText(
                             this,
                             success ? "Đã cập nhật danh mục." : (message == null ? "Không cập nhật được danh mục." : message),
@@ -190,6 +202,56 @@ public class QuanLyDanhMucActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("Hủy", null)
                 .show();
+    }
+
+    private void saveCategory(@Nullable LocalCategory existing, String name, boolean active) {
+        String existingImageUrl = existing != null ? existing.getImageUrl() : null;
+        Uri uploadUri = pendingImageUri != null ? pendingImageUri : parseLocalImageUri(existingImageUrl);
+        if (uploadUri != null && pendingImageUri == null) {
+            Toast.makeText(this, "Ảnh cũ chỉ nằm trong máy ảo. Hãy chọn lại ảnh rồi lưu để đưa lên web.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (uploadUri != null) {
+            Toast.makeText(this, "Đang tải ảnh danh mục lên web...", Toast.LENGTH_SHORT).show();
+            catalogRepository.uploadCatalogImage(uploadUri, "categories", (success, uploadedUrl, message) -> {
+                if (!success || TextUtils.isEmpty(uploadedUrl)) {
+                    Toast.makeText(this, message == null ? "Không tải được ảnh. Hãy chọn lại ảnh hoặc kiểm tra mạng." : message, Toast.LENGTH_LONG).show();
+                    return;
+                }
+                persistCategory(existing, name, uploadedUrl, active);
+            });
+            return;
+        }
+
+        persistCategory(existing, name, existingImageUrl, active);
+    }
+
+    private void persistCategory(@Nullable LocalCategory existing,
+                                 String name,
+                                 @Nullable String imageUrl,
+                                 boolean active) {
+        if (existing == null) {
+            catalogRepository.addCategory(name, imageUrl, active, (success, message) -> Toast.makeText(
+                    this,
+                    success ? "Đã thêm danh mục." : (message == null ? "Không thêm được danh mục." : message),
+                    Toast.LENGTH_SHORT
+            ).show());
+        } else {
+            catalogRepository.updateCategory(existing.getCategoryId(), name, imageUrl, active, (success, message) -> Toast.makeText(
+                    this,
+                    success ? "Đã cập nhật danh mục." : (message == null ? "Không cập nhật được danh mục." : message),
+                    Toast.LENGTH_SHORT
+            ).show());
+        }
+    }
+
+    @Nullable
+    private Uri parseLocalImageUri(@Nullable String value) {
+        if (TextUtils.isEmpty(value)) {
+            return null;
+        }
+        Uri uri = Uri.parse(value);
+        return "content".equalsIgnoreCase(uri.getScheme()) ? uri : null;
     }
 
     private class CategoryAdapter extends RecyclerView.Adapter<CategoryVH> {

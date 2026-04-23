@@ -22,9 +22,12 @@ import com.example.do_an_hk1_androidstudio.local.model.LocalOrder;
 import com.example.do_an_hk1_androidstudio.ui.MoneyFormatter;
 import com.google.firebase.firestore.ListenerRegistration;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class FragmentManagerDashboard extends Fragment {
 
@@ -46,6 +49,7 @@ public class FragmentManagerDashboard extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_manager_dashboard, container, false);
         bindActions(rootView);
+        bindHeader(rootView);
         bindSummary(rootView);
         return rootView;
     }
@@ -103,12 +107,30 @@ public class FragmentManagerDashboard extends Fragment {
         int revenueToday = sumRevenueToday(allOrders);
         int lowStockCount = countLowStockIngredients(allIngredients);
 
-        ((TextView) rootView.findViewById(R.id.tvManagerMetricRevenue)).setText(MoneyFormatter.format(revenueToday));
-        ((TextView) rootView.findViewById(R.id.tvManagerMetricPaidOrders)).setText(String.valueOf(paidToday));
-        ((TextView) rootView.findViewById(R.id.tvManagerMetricTables)).setText(String.valueOf(activeTables));
-        ((TextView) rootView.findViewById(R.id.tvManagerMetricStaff)).setText(String.valueOf(staffCount));
-        ((TextView) rootView.findViewById(R.id.tvManagerMetricPromo)).setText(String.valueOf(promotionCount));
-        ((TextView) rootView.findViewById(R.id.tvManagerMetricStock)).setText(String.valueOf(lowStockCount));
+        setText(R.id.tvManagerMetricRevenue, MoneyFormatter.format(revenueToday));
+        setText(R.id.tvManagerMetricPaidOrders, String.valueOf(paidToday));
+        setText(R.id.tvManagerMetricStaff, String.valueOf(staffCount));
+        setText(R.id.tvManagerMetricPromo, String.valueOf(promotionCount));
+        setText(R.id.tvManagerMetricStock, String.valueOf(lowStockCount));
+    }
+
+    private void bindHeader(View view) {
+        TextView subtitle = view.findViewById(R.id.tvDashboardSubtitle);
+        if (subtitle == null) {
+            return;
+        }
+        String today = new SimpleDateFormat("EEEE, dd/MM/yyyy", new Locale("vi", "VN")).format(new Date());
+        subtitle.setText("Xin chào, hôm nay là " + today);
+    }
+
+    private void setText(int viewId, String value) {
+        if (rootView == null) {
+            return;
+        }
+        TextView textView = rootView.findViewById(viewId);
+        if (textView != null) {
+            textView.setText(value);
+        }
     }
 
     private int countPaidToday(List<LocalOrder> orders) {
@@ -165,8 +187,9 @@ public class FragmentManagerDashboard extends Fragment {
         setAction(view, R.id.cardQuanLyKhuyenMai, QuanLyKhuyenMaiActivity.class);
         setAction(view, R.id.cardQuanLyNhanVien, QuanLyNhanVienActivity.class);
         setAction(view, R.id.cardQuanLyKhachHang, QuanLyKhachHangActivity.class);
+        setAction(view, R.id.cardBarMode, KdsBarActivity.class);
+        setAction(view, R.id.cardActionLogs, OrderActionLogActivity.class);
         setAction(view, R.id.cardVnpaySandbox, VnpaySandboxConfigActivity.class);
-        setAction(view, R.id.cardSeedDuLieu, FirebaseSeederActivity.class);
     }
 
     private void setAction(View root, int viewId, Class<?> activityClass) {

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/app_screen_background"
+    android:background="@color/dashboard_background"
     android:orientation="vertical"
     android:padding="20dp">
 
@@ -10,66 +11,72 @@
         android:id="@+id/tvBack"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/rounded_background"
-        android:paddingLeft="14dp"
-        android:paddingTop="8dp"
-        android:paddingRight="14dp"
-        android:paddingBottom="8dp"
+        android:background="@drawable/manager_back_chip"
+        android:elevation="3dp"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="9dp"
         android:text="Trở về"
-        android:textColor="@color/coffee_dark"
+        android:textColor="@color/dashboard_primary"
         android:textSize="14sp"
         android:textStyle="bold" />
 
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:background="@drawable/app_card_background"
-        android:orientation="vertical"
-        android:padding="18dp">
+        app:cardBackgroundColor="@color/dashboard_card"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="7dp"
+        app:strokeWidth="0dp">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Quản lý khuyến mãi"
-            android:textColor="@color/coffee_dark"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:orientation="vertical"
+            android:padding="20dp">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="Tạo mã giảm giá, theo dõi điều kiện sử dụng và bật/tắt nhanh."
-            android:textColor="@color/coffee_muted"
-            android:textSize="14sp" />
-    </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Quản lý khuyến mãi"
+                android:textColor="@color/dashboard_text_primary"
+                android:textSize="26sp"
+                android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/btnAddPromo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/bg_color"
-        android:paddingLeft="18dp"
-        android:paddingTop="12dp"
-        android:paddingRight="18dp"
-        android:paddingBottom="12dp"
-        android:text="Thêm mã"
-        android:textColor="@android:color/white"
-        android:textStyle="bold" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Tạo mã giảm giá, theo dõi điều kiện và bật/tắt nhanh."
+                android:textColor="@color/dashboard_text_secondary"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/btnAddPromo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/manager_primary_pill"
+                android:paddingHorizontal="18dp"
+                android:paddingVertical="11dp"
+                android:text="Thêm mã"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <TextView
         android:id="@+id/tvEmptyPromos"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
-        android:background="@drawable/app_card_background"
+        android:background="@drawable/manager_search_background"
+        android:elevation="3dp"
         android:gravity="center"
         android:padding="24dp"
         android:text="Chưa có mã khuyến mãi nào."
-        android:textColor="@color/coffee_muted"
+        android:textColor="@color/dashboard_text_secondary"
         android:textSize="15sp"
         android:visibility="gone" />
 
@@ -77,7 +84,7 @@
         android:id="@+id/rvPromos"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="14dp"
         android:layout_weight="1"
         android:clipToPadding="false"
         android:paddingBottom="12dp" />

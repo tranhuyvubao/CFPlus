@@ -87,7 +87,11 @@ public class QuanLyMonActivity extends AppCompatActivity {
 
         pickImageLauncher = registerForActivityResult(new ActivityResultContracts.OpenDocument(), uri -> {
             if (uri == null) return;
-            getContentResolver().takePersistableUriPermission(uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            try {
+                getContentResolver().takePersistableUriPermission(uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            } catch (SecurityException ignored) {
+                // Some pickers only grant temporary access. Saving immediately still can upload the image.
+            }
             pendingImageUri = uri;
             if (pendingPickImageView != null) {
                 pendingPickImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
@@ -237,8 +241,28 @@ public class QuanLyMonActivity extends AppCompatActivity {
             return;
         }
 
-        String imageUrl = pendingImageUri != null ? pendingImageUri.toString() : (existing != null ? existing.getImageUrl() : null);
         String categoryId = categoryDocs.get(selectedIdx).getCategoryId();
+        String existingImageUrl = existing != null ? existing.getImageUrl() : null;
+        Uri uploadUri = pendingImageUri != null ? pendingImageUri : parseLocalImageUri(existingImageUrl);
+
+        if (uploadUri != null && pendingImageUri == null) {
+            Toast.makeText(this, "Ảnh cũ chỉ nằm trong máy ảo. Hãy chọn lại ảnh rồi lưu để đưa lên web.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if (uploadUri != null) {
+            Toast.makeText(this, "Đang tải ảnh món lên web...", Toast.LENGTH_SHORT).show();
+            catalogRepository.uploadCatalogImage(uploadUri, "products", (success, uploadedUrl, message) -> {
+                if (!success || TextUtils.isEmpty(uploadedUrl)) {
+                    Toast.makeText(this, message == null ? "Không tải được ảnh. Hãy chọn lại ảnh hoặc kiểm tra mạng." : message, Toast.LENGTH_LONG).show();
+                    return;
+                }
+                persistProduct(existing, name, basePrice, uploadedUrl, categoryId, swActive.isChecked());
+            });
+            return;
+        }
+
+        String imageUrl = existingImageUrl;
         if (existing == null) {
             catalogRepository.addProduct(name, basePrice, imageUrl, categoryId, swActive.isChecked(), (success, message) -> Toast.makeText(
                     this,
@@ -252,6 +276,36 @@ public class QuanLyMonActivity extends AppCompatActivity {
                     Toast.LENGTH_SHORT
             ).show());
         }
+    }
+
+    private void persistProduct(@Nullable LocalProduct existing,
+                                String name,
+                                int basePrice,
+                                @Nullable String imageUrl,
+                                String categoryId,
+                                boolean active) {
+        if (existing == null) {
+            catalogRepository.addProduct(name, basePrice, imageUrl, categoryId, active, (success, message) -> Toast.makeText(
+                    this,
+                    success ? "Thêm món thành công!" : (message == null ? "Không thêm được món." : message),
+                    Toast.LENGTH_SHORT
+            ).show());
+        } else {
+            catalogRepository.updateProduct(existing.getProductId(), name, basePrice, imageUrl, categoryId, active, (success, message) -> Toast.makeText(
+                    this,
+                    success ? "Cập nhật món thành công!" : (message == null ? "Không cập nhật được món." : message),
+                    Toast.LENGTH_SHORT
+            ).show());
+        }
+    }
+
+    @Nullable
+    private Uri parseLocalImageUri(@Nullable String value) {
+        if (TextUtils.isEmpty(value)) {
+            return null;
+        }
+        Uri uri = Uri.parse(value);
+        return "content".equalsIgnoreCase(uri.getScheme()) ? uri : null;
     }
 
     private class ProductAdapter extends RecyclerView.Adapter<ProductVH> {

@@ -50,6 +50,8 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.7.3"))
     implementation(libs.firebase.auth)
     implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-messaging")
+    implementation("com.google.firebase:firebase-storage")
 
     implementation("com.squareup.picasso:picasso:2.8") // Dùng để load ảnh từ URL
 
@@ -72,6 +74,8 @@ dependencies {
     // RecyclerView và CardView
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.cardview:cardview:1.0.0")
+    implementation("androidx.room:room-runtime:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

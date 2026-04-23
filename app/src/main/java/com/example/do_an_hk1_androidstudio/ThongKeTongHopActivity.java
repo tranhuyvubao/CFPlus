@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -17,12 +16,15 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.example.do_an_hk1_androidstudio.cloud.OrderCloudRepository;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrder;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrderItem;
+import com.example.do_an_hk1_androidstudio.ui.DonutChartView;
 import com.example.do_an_hk1_androidstudio.ui.InsetsHelper;
 import com.example.do_an_hk1_androidstudio.ui.MoneyFormatter;
+import com.example.do_an_hk1_androidstudio.ui.ReportExportHelper;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.text.SimpleDateFormat;
@@ -40,15 +42,20 @@ public class ThongKeTongHopActivity extends AppCompatActivity {
     private EditText edtEnd;
     private Spinner spOrderFilter;
     private TextView tvSummary;
+    private TextView tvPaymentSummary;
     private TextView tvTopProducts;
+    private TextView tvForecast;
     private TextView tvMetricTotalOrders;
     private TextView tvMetricPaidOrders;
     private TextView tvMetricRevenue;
     private TextView tvMetricAverage;
-    private LinearLayout chartContainerRange;
+    private DonutChartView donutOrderTypeRange;
+    private DonutChartView donutPaymentRange;
     private LinearLayout orderDetailContainer;
     private final List<LocalOrder> allOrders = new ArrayList<>();
     private ListenerRegistration ordersListener;
+    private String currentReportText = "";
+    private ReportExportHelper.ExportResult latestExportedReport;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,19 +74,26 @@ public class ThongKeTongHopActivity extends AppCompatActivity {
         edtEnd = findViewById(R.id.edtEndDate);
         spOrderFilter = findViewById(R.id.spOrderFilter);
         TextView btnLoad = findViewById(R.id.btnLoadStats);
+        TextView btnExportPdf = findViewById(R.id.btnExportPdf);
+        TextView btnShareReport = findViewById(R.id.btnShareReport);
         tvSummary = findViewById(R.id.tvSummary);
+        tvPaymentSummary = findViewById(R.id.tvPaymentSummary);
         tvTopProducts = findViewById(R.id.tvTopProducts);
+        tvForecast = findViewById(R.id.tvForecast);
         tvMetricTotalOrders = findViewById(R.id.tvMetricTotalOrders);
         tvMetricPaidOrders = findViewById(R.id.tvMetricPaidOrders);
         tvMetricRevenue = findViewById(R.id.tvMetricRevenue);
         tvMetricAverage = findViewById(R.id.tvMetricAverage);
-        chartContainerRange = findViewById(R.id.chartContainerRange);
+        donutOrderTypeRange = findViewById(R.id.donutOrderTypeRange);
+        donutPaymentRange = findViewById(R.id.donutPaymentRange);
         orderDetailContainer = findViewById(R.id.orderDetailContainer);
 
         bindDatePicker(edtStart);
         bindDatePicker(edtEnd);
         setupFilterSpinner();
         btnLoad.setOnClickListener(v -> loadStats());
+        btnExportPdf.setOnClickListener(v -> exportPdf());
+        btnShareReport.setOnClickListener(v -> shareReport());
 
         listenOrders();
     }
@@ -171,20 +185,28 @@ public class ThongKeTongHopActivity extends AppCompatActivity {
         }
 
         List<LocalOrder> filteredOrders = new ArrayList<>();
-        int tongDon = 0;
-        int tongDonPaid = 0;
-        int tongTien = 0;
+        int totalOrders = 0;
+        int paidOrders = 0;
+        int revenue = 0;
         int onlineCount = 0;
         int dineInCount = 0;
         int takeawayCount = 0;
+        int confirmedCount = 0;
+        int createdCount = 0;
         Map<String, Integer> productCount = new LinkedHashMap<>();
-        LinkedHashMap<String, Integer> revenueByDay = new LinkedHashMap<>();
 
         for (LocalOrder order : allOrders) {
             long createdAt = order.getCreatedAtMillis();
             if (createdAt < startMillis || createdAt > endMillis || "cancelled".equals(order.getStatus())) {
                 continue;
             }
+            if (!matchesFilter(order, spOrderFilter.getSelectedItemPosition())) {
+                continue;
+            }
+
+            filteredOrders.add(order);
+            totalOrders++;
+            revenue += order.getTotal();
 
             if ("online".equals(order.getOrderType()) || "customer_app".equals(order.getOrderChannel())) {
                 onlineCount++;
@@ -194,19 +216,13 @@ public class ThongKeTongHopActivity extends AppCompatActivity {
                 dineInCount++;
             }
 
-            if (!matchesFilter(order, spOrderFilter.getSelectedItemPosition())) {
-                continue;
-            }
-
-            filteredOrders.add(order);
-            tongDon++;
             if ("paid".equals(order.getStatus())) {
-                tongDonPaid++;
+                paidOrders++;
+            } else if ("confirmed".equals(order.getStatus())) {
+                confirmedCount++;
+            } else {
+                createdCount++;
             }
-            tongTien += order.getTotal();
-
-            String dayKey = new SimpleDateFormat("dd/MM", Locale.getDefault()).format(new Date(createdAt));
-            revenueByDay.put(dayKey, revenueByDay.getOrDefault(dayKey, 0) + order.getTotal());
 
             for (LocalOrderItem item : order.getItems()) {
                 String name = item.getProductName() == null ? "-" : item.getProductName();
@@ -214,18 +230,119 @@ public class ThongKeTongHopActivity extends AppCompatActivity {
             }
         }
 
-        tvMetricTotalOrders.setText(String.valueOf(tongDon));
-        tvMetricPaidOrders.setText(String.valueOf(tongDonPaid));
-        tvMetricRevenue.setText(formatMoney(tongTien));
-        tvMetricAverage.setText(formatMoney(tongTien / Math.max(1, tongDon)));
-        tvSummary.setText("Online: " + onlineCount
-                + " | Tại chỗ: " + dineInCount
-                + " | Mang về: " + takeawayCount
-                + " | Tỷ lệ thanh toán: " + (tongDon == 0 ? 0 : (tongDonPaid * 100 / tongDon)) + "%");
+        tvMetricTotalOrders.setText(String.valueOf(totalOrders));
+        tvMetricPaidOrders.setText(String.valueOf(paidOrders));
+        tvMetricRevenue.setText(MoneyFormatter.format(revenue));
+        tvMetricAverage.setText(MoneyFormatter.format(revenue / Math.max(1, totalOrders)));
+        tvSummary.setText("Online: " + onlineCount + "\nTại chỗ: " + dineInCount + "\nMang về: " + takeawayCount);
+        tvPaymentSummary.setText("Đã thanh toán: " + paidOrders + "\nĐang làm: " + confirmedCount + "\nChờ xác nhận: " + createdCount);
+
+        donutOrderTypeRange.setCenterText("Đơn lọc", String.valueOf(totalOrders));
+        donutOrderTypeRange.setSegments(buildSegments(
+                new DonutChartView.Segment("Online", onlineCount, ContextCompat.getColor(this, R.color.dashboard_success)),
+                new DonutChartView.Segment("Tại chỗ", dineInCount, ContextCompat.getColor(this, R.color.dashboard_primary)),
+                new DonutChartView.Segment("Mang về", takeawayCount, ContextCompat.getColor(this, R.color.dashboard_accent))
+        ));
+
+        donutPaymentRange.setCenterText("Đã thanh toán", DonutChartView.formatPercent(paidOrders, Math.max(1, totalOrders)));
+        donutPaymentRange.setSegments(buildSegments(
+                new DonutChartView.Segment("Đã thanh toán", paidOrders, ContextCompat.getColor(this, R.color.dashboard_success)),
+                new DonutChartView.Segment("Đang làm", confirmedCount, ContextCompat.getColor(this, R.color.dashboard_warning)),
+                new DonutChartView.Segment("Chờ xác nhận", createdCount, ContextCompat.getColor(this, R.color.dashboard_primary))
+        ));
 
         renderTopProducts(productCount);
-        renderBarChart(chartContainerRange, revenueByDay);
+        tvForecast.setText(buildForecast(productCount, startMillis, endMillis));
         renderOrderDetails(filteredOrders);
+        currentReportText = buildReportText(startMillis, endMillis, totalOrders, paidOrders, revenue, onlineCount, dineInCount, takeawayCount, productCount);
+    }
+
+    private void exportPdf() {
+        try {
+            latestExportedReport = ReportExportHelper.exportSimplePdf(
+                    this,
+                    "cfplus-report-" + System.currentTimeMillis() + ".pdf",
+                    "CFPLUS Report",
+                    currentReportText.isEmpty() ? "Chưa có dữ liệu để xuất." : currentReportText
+            );
+            Toast.makeText(this, "Đã lưu PDF vào " + latestExportedReport.displayPath, Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Không thể xuất PDF lúc này: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void shareReport() {
+        if (latestExportedReport == null) {
+            exportPdf();
+        }
+        if (latestExportedReport != null) {
+            ReportExportHelper.shareUri(this, latestExportedReport.uri, "application/pdf");
+        }
+    }
+
+    private String buildReportText(long startMillis,
+                                   long endMillis,
+                                   int totalOrders,
+                                   int paidOrders,
+                                   int revenue,
+                                   int onlineCount,
+                                   int dineInCount,
+                                   int takeawayCount,
+                                   Map<String, Integer> productCount) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Khoảng thời gian: ").append(formatDate(startMillis)).append(" - ").append(formatDate(endMillis)).append("\n");
+        builder.append("Tổng đơn: ").append(totalOrders).append("\n");
+        builder.append("Đơn đã thanh toán: ").append(paidOrders).append("\n");
+        builder.append("Doanh thu: ").append(MoneyFormatter.format(revenue)).append("\n");
+        builder.append("Online: ").append(onlineCount).append("\n");
+        builder.append("Tại chỗ: ").append(dineInCount).append("\n");
+        builder.append("Mang về: ").append(takeawayCount).append("\n\nTop món:\n");
+
+        List<Map.Entry<String, Integer>> entries = new ArrayList<>(productCount.entrySet());
+        entries.sort((a, b) -> Integer.compare(b.getValue(), a.getValue()));
+        int top = Math.min(5, entries.size());
+        for (int i = 0; i < top; i++) {
+            Map.Entry<String, Integer> entry = entries.get(i);
+            builder.append(i + 1).append(". ").append(entry.getKey()).append(" - ").append(entry.getValue()).append(" lượt\n");
+        }
+        builder.append("\n").append(buildForecast(productCount, startMillis, endMillis));
+        return builder.toString();
+    }
+
+    private String buildForecast(Map<String, Integer> productCount, long startMillis, long endMillis) {
+        int days = Math.max(1, (int) ((endMillis - startMillis) / (24L * 60L * 60L * 1000L)) + 1);
+        int coffeeBase = 0;
+        int milkBase = 0;
+        int teaBase = 0;
+        int iceBase = 0;
+        for (Map.Entry<String, Integer> entry : productCount.entrySet()) {
+            String lower = entry.getKey().toLowerCase(Locale.getDefault());
+            int qty = entry.getValue();
+            if (lower.contains("cà phê") || lower.contains("coffee") || lower.contains("latte") || lower.contains("cap")) {
+                coffeeBase += qty;
+            }
+            if (lower.contains("sữa") || lower.contains("latte") || lower.contains("cap")) {
+                milkBase += qty;
+            }
+            if (lower.contains("trà") || lower.contains("tea")) {
+                teaBase += qty;
+            }
+            if (lower.contains("đá") || lower.contains("ice") || lower.contains("trà")) {
+                iceBase += qty;
+            }
+        }
+
+        int nextWeekCoffee = Math.round((coffeeBase / (float) days) * 7f * 1.1f);
+        int nextWeekMilk = Math.round((milkBase / (float) days) * 7f * 1.1f);
+        int nextWeekTea = Math.round((teaBase / (float) days) * 7f * 1.1f);
+        int nextWeekIce = Math.round((iceBase / (float) days) * 7f * 1.1f);
+
+        return "Gợi ý nhập thêm tuần tới:\n"
+                + "- Cà phê nền: " + nextWeekCoffee + " ly dự kiến\n"
+                + "- Sữa / kem sữa: " + nextWeekMilk + " phần dự kiến\n"
+                + "- Trà nền: " + nextWeekTea + " ly dự kiến\n"
+                + "- Đá lạnh / đồ uống lạnh: " + nextWeekIce + " ly dự kiến\n"
+                + "Cách tính: moving average theo số bán trong khoảng lọc, cộng đệm 10%.";
     }
 
     private boolean matchesFilter(LocalOrder order, int filterPosition) {
@@ -244,7 +361,6 @@ public class ThongKeTongHopActivity extends AppCompatActivity {
     private void renderTopProducts(Map<String, Integer> productCount) {
         List<Map.Entry<String, Integer>> list = new ArrayList<>(productCount.entrySet());
         list.sort((a, b) -> Integer.compare(b.getValue(), a.getValue()));
-
         StringBuilder sb = new StringBuilder();
         int top = Math.min(5, list.size());
         for (int i = 0; i < top; i++) {
@@ -259,7 +375,7 @@ public class ThongKeTongHopActivity extends AppCompatActivity {
         if (orders.isEmpty()) {
             TextView emptyView = new TextView(this);
             emptyView.setText("Không có đơn hàng phù hợp với bộ lọc hiện tại.");
-            emptyView.setTextColor(getColor(R.color.coffee_muted));
+            emptyView.setTextColor(getColor(R.color.dashboard_text_secondary));
             emptyView.setTextSize(15f);
             orderDetailContainer.addView(emptyView);
             return;
@@ -268,45 +384,39 @@ public class ThongKeTongHopActivity extends AppCompatActivity {
         int limit = Math.min(20, orders.size());
         for (int i = 0; i < limit; i++) {
             LocalOrder order = orders.get(i);
-
             LinearLayout card = new LinearLayout(this);
             card.setOrientation(LinearLayout.VERTICAL);
-            card.setBackgroundResource(R.drawable.app_card_background);
+            card.setBackgroundResource(R.drawable.manager_search_background);
             card.setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16));
-            LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-            );
+            LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             cardParams.topMargin = dpToPx(i == 0 ? 0 : 12);
             card.setLayoutParams(cardParams);
 
             TextView tvCode = new TextView(this);
             tvCode.setText("Mã đơn: " + order.getDisplayOrderCode());
-            tvCode.setTextColor(getColor(R.color.coffee_dark));
+            tvCode.setTextColor(getColor(R.color.dashboard_text_primary));
             tvCode.setTextSize(17f);
             tvCode.setTypeface(tvCode.getTypeface(), Typeface.BOLD);
 
             TextView tvMeta = new TextView(this);
-            tvMeta.setText("Loại: " + mapOrderType(order.getOrderType())
-                    + " | Kênh: " + mapOrderChannel(order.getOrderChannel())
-                    + " | Trạng thái: " + mapOrderStatus(order.getStatus()));
-            tvMeta.setTextColor(getColor(R.color.coffee_muted));
+            tvMeta.setText("Loại: " + mapOrderType(order.getOrderType()) + " | Kênh: " + mapOrderChannel(order.getOrderChannel()) + " | Trạng thái: " + mapOrderStatus(order.getStatus()));
+            tvMeta.setTextColor(getColor(R.color.dashboard_text_secondary));
             tvMeta.setTextSize(14f);
 
             TextView tvTime = new TextView(this);
             tvTime.setText("Thời gian: " + new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date(order.getCreatedAtMillis())));
-            tvTime.setTextColor(getColor(R.color.coffee_muted));
+            tvTime.setTextColor(getColor(R.color.dashboard_text_secondary));
             tvTime.setTextSize(14f);
 
             TextView tvTotal = new TextView(this);
-            tvTotal.setText("Tổng tiền: " + formatMoney(order.getTotal()));
-            tvTotal.setTextColor(getColor(R.color.coffee_primary_dark));
+            tvTotal.setText("Tổng tiền: " + MoneyFormatter.format(order.getTotal()));
+            tvTotal.setTextColor(getColor(R.color.dashboard_primary));
             tvTotal.setTextSize(16f);
             tvTotal.setTypeface(tvTotal.getTypeface(), Typeface.BOLD);
 
             TextView tvItems = new TextView(this);
             tvItems.setText(buildOrderItemsText(order));
-            tvItems.setTextColor(getColor(R.color.coffee_text));
+            tvItems.setTextColor(getColor(R.color.dashboard_text_primary));
             tvItems.setTextSize(14f);
 
             card.addView(tvCode);
@@ -319,7 +429,7 @@ public class ThongKeTongHopActivity extends AppCompatActivity {
             if (!TextUtils.isEmpty(order.getDeliveryAddressText())) {
                 TextView tvAddress = new TextView(this);
                 tvAddress.setText("Địa chỉ giao: " + order.getDeliveryAddressText());
-                tvAddress.setTextColor(getColor(R.color.coffee_muted));
+                tvAddress.setTextColor(getColor(R.color.dashboard_text_secondary));
                 tvAddress.setTextSize(14f);
                 addMarginTop(tvAddress, 4);
                 card.addView(tvAddress);
@@ -331,10 +441,7 @@ public class ThongKeTongHopActivity extends AppCompatActivity {
     }
 
     private void addMarginTop(View view, int dp) {
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        );
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.topMargin = dpToPx(dp);
         view.setLayoutParams(params);
     }
@@ -345,12 +452,7 @@ public class ThongKeTongHopActivity extends AppCompatActivity {
         }
         StringBuilder builder = new StringBuilder("Chi tiết món:\n");
         for (LocalOrderItem item : order.getItems()) {
-            builder.append("- ")
-                    .append(item.getProductName())
-                    .append(" x")
-                    .append(item.getQty())
-                    .append(" | ")
-                    .append(formatMoney(item.getLineTotal()));
+            builder.append("- ").append(item.getProductName()).append(" x").append(item.getQty()).append(" | ").append(MoneyFormatter.format(item.getLineTotal()));
             if (!TextUtils.isEmpty(item.getVariantName())) {
                 builder.append(" (").append(item.getVariantName()).append(")");
             }
@@ -395,72 +497,20 @@ public class ThongKeTongHopActivity extends AppCompatActivity {
         return status;
     }
 
-    private void renderBarChart(LinearLayout container, LinkedHashMap<String, Integer> values) {
-        container.removeAllViews();
-        int max = 0;
-        for (int value : values.values()) {
-            max = Math.max(max, value);
+    private String formatDate(long millis) {
+        return new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date(millis));
+    }
+
+    private List<DonutChartView.Segment> buildSegments(DonutChartView.Segment... segments) {
+        List<DonutChartView.Segment> list = new ArrayList<>();
+        for (DonutChartView.Segment segment : segments) {
+            list.add(segment);
         }
-        int chartHeight = dpToPx(150);
-
-        for (Map.Entry<String, Integer> entry : values.entrySet()) {
-            LinearLayout column = new LinearLayout(this);
-            column.setOrientation(LinearLayout.VERTICAL);
-            column.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
-            LinearLayout.LayoutParams columnParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f);
-            columnParams.setMargins(dpToPx(4), 0, dpToPx(4), 0);
-            column.setLayoutParams(columnParams);
-
-            TextView valueView = new TextView(this);
-            valueView.setText(entry.getValue() == 0 ? "0" : shortMoney(entry.getValue()));
-            valueView.setTextColor(getColor(R.color.coffee_muted));
-            valueView.setTextSize(12f);
-
-            LinearLayout track = new LinearLayout(this);
-            track.setBackgroundResource(R.drawable.app_chart_bar_track);
-            track.setGravity(Gravity.BOTTOM);
-            LinearLayout.LayoutParams trackParams = new LinearLayout.LayoutParams(dpToPx(30), chartHeight);
-            trackParams.topMargin = dpToPx(8);
-            track.setLayoutParams(trackParams);
-            track.setPadding(dpToPx(4), dpToPx(4), dpToPx(4), dpToPx(4));
-
-            View bar = new View(this);
-            bar.setBackgroundResource(R.drawable.app_chart_bar_fill);
-            int barHeight = max == 0 ? dpToPx(8) : Math.max(dpToPx(8), (int) ((entry.getValue() / (float) max) * (chartHeight - dpToPx(8))));
-            bar.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, barHeight));
-            track.addView(bar);
-
-            TextView labelView = new TextView(this);
-            labelView.setText(entry.getKey());
-            labelView.setTextColor(getColor(R.color.coffee_dark));
-            labelView.setTextSize(12f);
-            labelView.setGravity(Gravity.CENTER);
-            LinearLayout.LayoutParams labelParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            labelParams.topMargin = dpToPx(8);
-            labelView.setLayoutParams(labelParams);
-
-            column.addView(valueView);
-            column.addView(track);
-            column.addView(labelView);
-            container.addView(column);
-        }
+        return list;
     }
 
     private int dpToPx(int dp) {
         return Math.round(dp * getResources().getDisplayMetrics().density);
     }
-
-    private String formatMoney(int amount) {
-        return MoneyFormatter.format(amount);
-    }
-
-    private String shortMoney(int amount) {
-        if (amount >= 1_000_000) {
-            return String.format(Locale.getDefault(), "%.1ftr", amount / 1_000_000f);
-        }
-        if (amount >= 1_000) {
-            return String.format(Locale.getDefault(), "%.0fk", amount / 1_000f);
-        }
-        return String.valueOf(amount);
-    }
 }
+

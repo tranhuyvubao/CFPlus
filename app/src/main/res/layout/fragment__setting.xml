@@ -1,265 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/app_screen_background">
+    android:background="@color/dashboard_background">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="20dp">
 
         <TextView
-            android:id="@+id/tvTaiKhoan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/round_background_3"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="Tài khoản"
-            android:textSize="20sp"
+            android:text="Cài đặt"
+            android:textColor="@color/dashboard_text_primary"
+            android:textSize="26sp"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/tvThongTinCuaHang"
+            android:id="@+id/tvSettingsHint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/round_background_3"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="Thông tin cửa hàng"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:layout_marginTop="6dp"
+            android:text="Thông tin ứng dụng, thông báo và phiên đăng nhập."
+            android:textColor="@color/dashboard_text_secondary"
+            android:textSize="14sp" />
 
-        <TextView
-            android:id="@+id/tvThongKeHomNay"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/round_background_3"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="Thống kê hôm nay"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:layout_marginTop="18dp"
+            app:cardBackgroundColor="@color/dashboard_card"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="7dp"
+            app:strokeWidth="0dp">
 
-        <TextView
-            android:id="@+id/tvNhanDonOnline"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Ứng dụng"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvThongBao"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:background="@drawable/manager_search_background"
+                    android:padding="14dp"
+                    android:text="Thông báo"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvThongTinCuaHang"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/manager_search_background"
+                    android:padding="14dp"
+                    android:text="Thông tin cửa hàng"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/round_background_3"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="Nhận đơn online"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:layout_marginTop="18dp"
+            app:cardBackgroundColor="@color/dashboard_card"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="7dp"
+            app:strokeWidth="0dp">
 
-        <TextView
-            android:id="@+id/tvNhanDonTaiBan"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/round_background_3"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="Nhận đơn tại bàn"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="18dp">
 
-        <TextView
-            android:id="@+id/tvQuanLyNhanVien"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/round_background_3"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="Quản lý nhân viên"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Phiên đăng nhập"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tvQuanLyMon"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/round_background_3"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="Quản lý món"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvQuanLyDanhMuc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/round_background_3"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="Quản lý danh mục"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvQuanLyBan"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/round_background_3"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="Quản lý bàn"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvQuanLyKho"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/round_background_3"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="Quản lý kho"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvQuanLyKhuyenMai"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/round_background_3"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="Quản lý khuyến mãi"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvSeedFirebase"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/round_background_3"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="Seed dữ liệu Firebase"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvDatBan"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/round_background_3"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="Đặt bàn"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvDonHangCuaToi"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/round_background_3"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="Đơn hàng của tôi"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvDatMonOnline"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/round_background_3"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="Đặt món qua app"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvDatMonTaiBan"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/round_background_3"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="Gọi món tại bàn (QR)"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvHoSoKhachHang"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/round_background_3"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="Hồ sơ khách hàng"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvChatboxAI"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/round_background_3"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="Chatbox AI"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvQuanLyKhachHang"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/round_background_3"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="Quản lý khách hàng"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvThongKeTongHop"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/round_background_3"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="Thống kê tổng hợp"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvDangXuat"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/round_background_3"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="Đăng xuất"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
+                <TextView
+                    android:id="@+id/tvDangXuat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:background="@drawable/manager_danger_pill"
+                    android:gravity="center"
+                    android:padding="14dp"
+                    android:text="Đăng xuất"
+                    android:textColor="#D32F2F"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 </ScrollView>

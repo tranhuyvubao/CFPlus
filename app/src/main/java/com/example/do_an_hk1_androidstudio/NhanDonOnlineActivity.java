@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -19,17 +20,21 @@ import com.example.do_an_hk1_androidstudio.local.model.LocalOrder;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrderItem;
 import com.example.do_an_hk1_androidstudio.ui.InsetsHelper;
 import com.example.do_an_hk1_androidstudio.ui.MoneyFormatter;
+import com.example.do_an_hk1_androidstudio.ui.NotificationCenter;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class NhanDonOnlineActivity extends AppCompatActivity {
 
     private final List<LocalOrder> orders = new ArrayList<>();
+    private final Map<String, Long> notifiedAttentionEvents = new HashMap<>();
 
     private OnlineOrderAdapter adapter;
     private TextView tvEmpty;
@@ -122,11 +127,12 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
                 }
             } else {
                 for (LocalOrder order : fetchedOrders) {
-                    if ("online".equals(order.getOrderType()) || "customer_app".equals(order.getOrderChannel())) {
+                    if (isOpenStatus(order.getStatus()) && isCustomerSubmittedOrder(order)) {
                         orders.add(order);
                     }
                 }
             }
+            notifyWhenCustomerAddsItems(orders);
             adapter.notifyDataSetChanged();
             if (hasSelectedTable()) {
                 tvEmpty.setText(orders.isEmpty()
@@ -143,6 +149,42 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
 
     private boolean isOpenStatus(String status) {
         return "created".equals(status) || "confirmed".equals(status);
+    }
+
+    private boolean isCustomerSubmittedOrder(LocalOrder order) {
+        String orderChannel = order.getOrderChannel();
+        return "customer_app".equals(orderChannel) || "customer_qr".equals(orderChannel);
+    }
+
+    private void notifyWhenCustomerAddsItems(List<LocalOrder> visibleOrders) {
+        for (LocalOrder order : visibleOrders) {
+            if (!order.needsStaffAttention()) {
+                continue;
+            }
+
+            long eventAt = order.getLastCustomerItemAddedAtMillis();
+            Long notifiedAt = notifiedAttentionEvents.get(order.getOrderId());
+            if (notifiedAt != null && notifiedAt == eventAt) {
+                continue;
+            }
+
+            int addedQty = Math.max(1, order.getLastCustomerItemAddedQty());
+            String title = "Khách vừa thêm món";
+            String tableLabel = order.getTableName() == null || order.getTableName().trim().isEmpty()
+                    ? "đơn " + order.getDisplayOrderCode()
+                    : order.getTableName();
+            String body = tableLabel + " vừa thêm " + addedQty + " món. Vui lòng kiểm tra đơn.";
+            Toast.makeText(this, body, Toast.LENGTH_LONG).show();
+            NotificationCenter.storeAndShow(
+                    this,
+                    title,
+                    body,
+                    "order_item_added",
+                    order.getOrderId(),
+                    order.getStatus()
+            );
+            notifiedAttentionEvents.put(order.getOrderId(), eventAt);
+        }
     }
 
     private class OnlineOrderAdapter extends RecyclerView.Adapter<OnlineOrderViewHolder> {
@@ -174,6 +216,7 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
         private final TextView tvMaDon;
         private final TextView tvBan;
         private final TextView tvTrangThai;
+        private final TextView tvNewItemsAlert;
         private final TextView tvTongTien;
         private final TextView tvChiTietMon;
         private final TextView tvThoiGian;
@@ -186,6 +229,7 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
             tvMaDon = itemView.findViewById(R.id.tvMaDon);
             tvBan = itemView.findViewById(R.id.tvBanOnline);
             tvTrangThai = itemView.findViewById(R.id.tvTrangThai);
+            tvNewItemsAlert = itemView.findViewById(R.id.tvNewItemsAlert);
             tvTongTien = itemView.findViewById(R.id.tvTongTien);
             tvChiTietMon = itemView.findViewById(R.id.tvChiTietMon);
             tvThoiGian = itemView.findViewById(R.id.tvThoiGian);
@@ -214,6 +258,14 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
                 tvTrangThai.setText("Trạng thái: Có khách - chưa thanh toán");
             } else {
                 tvTrangThai.setText("Trạng thái: " + mapOrderStatus(status));
+            }
+
+            if (order.needsStaffAttention()) {
+                int addedQty = Math.max(1, order.getLastCustomerItemAddedQty());
+                tvNewItemsAlert.setVisibility(View.VISIBLE);
+                tvNewItemsAlert.setText("Khách vừa thêm " + addedQty + " món - kiểm tra lại đơn");
+            } else {
+                tvNewItemsAlert.setVisibility(View.GONE);
             }
 
             tvTongTien.setText("Tổng tiền: " + MoneyFormatter.format(order.getTotal()));
@@ -349,7 +401,7 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
         bill.append("\nTổng cộng: ").append(MoneyFormatter.format(order.getTotal()));
 
         new AlertDialog.Builder(this)
-                .setTitle("In bill demo")
+                .setTitle("Xem hóa đơn")
                 .setMessage(bill.toString())
                 .setPositiveButton("Đóng", null)
                 .show();

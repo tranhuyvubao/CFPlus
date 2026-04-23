@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dashboard_background"
+    android:clipToPadding="false"
+    android:paddingBottom="18dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@color/dashboard_card"
+            app:cardCornerRadius="22dp"
+            app:cardElevation="7dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="18dp">
+
+                <ImageView
+                    android:layout_width="58dp"
+                    android:layout_height="58dp"
+                    android:background="@drawable/dashboard_icon_circle_accent"
+                    android:padding="13dp"
+                    android:src="@drawable/outline_account_circle_24"
+                    android:tint="@color/dashboard_accent" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="HỒ SƠ QUẢN LÝ"
+                        android:textAllCaps="true"
+                        android:textColor="@color/dashboard_text_secondary"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvManagerAccountName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Quản lý"
+                        android:textColor="@color/dashboard_text_primary"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvManagerAccountEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="manager@cfplus.vn"
+                        android:textColor="@color/dashboard_text_secondary"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardBackgroundColor="@color/dashboard_card"
+            app:cardCornerRadius="22dp"
+            app:cardElevation="7dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tác vụ quản lý"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/rowManagerAnalytics"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:background="@drawable/manager_search_background"
+                    android:drawableEnd="@drawable/baseline_keyboard_arrow_right_24"
+                    android:drawablePadding="10dp"
+                    android:padding="14dp"
+                    android:text="Thống kê tổng hợp"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/rowManagerProducts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/manager_search_background"
+                    android:drawableEnd="@drawable/baseline_keyboard_arrow_right_24"
+                    android:drawablePadding="10dp"
+                    android:padding="14dp"
+                    android:text="Quản lý món"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/rowManagerBanners"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/manager_search_background"
+                    android:drawableEnd="@drawable/baseline_keyboard_arrow_right_24"
+                    android:drawablePadding="10dp"
+                    android:padding="14dp"
+                    android:text="Slide banner khuyến mãi"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/rowManagerStock"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/manager_search_background"
+                    android:drawableEnd="@drawable/baseline_keyboard_arrow_right_24"
+                    android:drawablePadding="10dp"
+                    android:padding="14dp"
+                    android:text="Kho nguyên liệu"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/rowManagerStaff"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/manager_search_background"
+                    android:drawableEnd="@drawable/baseline_keyboard_arrow_right_24"
+                    android:drawablePadding="10dp"
+                    android:padding="14dp"
+                    android:text="Nhân viên"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/rowManagerLogs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/manager_search_background"
+                    android:drawableEnd="@drawable/baseline_keyboard_arrow_right_24"
+                    android:drawablePadding="10dp"
+                    android:padding="14dp"
+                    android:text="Nhật ký thao tác"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/rowManagerStoreSettings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/manager_search_background"
+                    android:drawableEnd="@drawable/baseline_keyboard_arrow_right_24"
+                    android:drawablePadding="10dp"
+                    android:padding="14dp"
+                    android:text="Thiết lập cửa hàng &amp; chi nhánh"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardBackgroundColor="@color/dashboard_card"
+            app:cardCornerRadius="22dp"
+            app:cardElevation="7dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tài khoản"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/rowManagerEditProfile"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:background="@drawable/manager_search_background"
+                    android:drawableEnd="@drawable/baseline_keyboard_arrow_right_24"
+                    android:drawablePadding="10dp"
+                    android:padding="14dp"
+                    android:text="Thông tin cá nhân"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+</ScrollView>

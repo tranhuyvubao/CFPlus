@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.do_an_hk1_androidstudio.cloud.OrderCloudRepository;
 import com.example.do_an_hk1_androidstudio.cloud.PromotionCloudRepository;
+import com.example.do_an_hk1_androidstudio.cloud.VnpayConfigCloudRepository;
 import com.example.do_an_hk1_androidstudio.local.model.LocalPromotion;
 import com.example.do_an_hk1_androidstudio.payment.VnpayPaymentSessionStore;
 import com.example.do_an_hk1_androidstudio.payment.VnpaySettingsStore;
@@ -29,8 +30,10 @@ import java.util.List;
 public class ThanhToanKhachActivity extends AppCompatActivity {
 
     public static final String EXTRA_ORDER_ID = "order_id";
+    public static final String EXTRA_DISPLAY_ORDER_CODE = "display_order_code";
     public static final String EXTRA_AMOUNT = "amount";
     public static final String EXTRA_CUSTOMER_ONLINE_ONLY = "customer_online_only";
+    public static final String EXTRA_INITIAL_PAYMENT_METHOD = "initial_payment_method";
 
     private final List<LocalPromotion> promotions = new ArrayList<>();
     private TextView tvDiscountPreview;
@@ -39,12 +42,15 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
     private EditText edtBankRef;
     private EditText edtPromoCode;
     private String orderId;
+    private String displayOrderCode;
+    private String initialPaymentMethod;
     private int amount;
     private boolean customerOnlineOnly;
     private OrderCloudRepository orderCloudRepository;
     private ListenerRegistration promotionsListener;
     private VnpayPaymentSessionStore paymentSessionStore;
     private VnpaySettingsStore vnpaySettingsStore;
+    private VnpayConfigCloudRepository vnpayConfigCloudRepository;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,6 +61,7 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
         orderCloudRepository = new OrderCloudRepository(this);
         paymentSessionStore = new VnpayPaymentSessionStore(this);
         vnpaySettingsStore = new VnpaySettingsStore(this);
+        vnpayConfigCloudRepository = new VnpayConfigCloudRepository(this);
         listenPromotions();
 
         View tvBack = findViewById(R.id.tvBack);
@@ -72,10 +79,12 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
         TextView btnPay = findViewById(R.id.btnPayNow);
 
         orderId = getIntent().getStringExtra(EXTRA_ORDER_ID);
+        displayOrderCode = getIntent().getStringExtra(EXTRA_DISPLAY_ORDER_CODE);
+        initialPaymentMethod = getIntent().getStringExtra(EXTRA_INITIAL_PAYMENT_METHOD);
         amount = getIntent().getIntExtra(EXTRA_AMOUNT, 0);
         customerOnlineOnly = getIntent().getBooleanExtra(EXTRA_CUSTOMER_ONLINE_ONLY, false);
 
-        tvOrder.setText("Đơn: " + (orderId != null ? orderId : "-"));
+        tvOrder.setText("Đơn: " + buildDisplayOrderCode());
         tvAmount.setText("Số tiền: " + MoneyFormatter.format(amount));
         tvDiscountPreview.setText("Giảm: " + MoneyFormatter.format(0));
 
@@ -88,7 +97,11 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
             if (rbPayBank != null) {
                 rbPayBank.setVisibility(View.GONE);
             }
-            rgMethod.check(R.id.rbPayCash);
+            rgMethod.check("vnpay".equals(initialPaymentMethod) ? R.id.rbPayVnpay : R.id.rbPayCash);
+        } else if ("vnpay".equals(initialPaymentMethod)) {
+            rgMethod.check(R.id.rbPayVnpay);
+        } else if ("bank".equals(initialPaymentMethod)) {
+            rgMethod.check(R.id.rbPayBank);
         }
 
         rgMethod.setOnCheckedChangeListener((group, checkedId) -> updateMethodState());
@@ -196,24 +209,44 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
     }
 
     private void startVnpayPayment(PromotionResult promotionResult) {
-        if (!vnpaySettingsStore.isConfigured()) {
-            Toast.makeText(this, "Hãy cấu hình TMN code, hash secret và return URL VNPAY sandbox trước.", Toast.LENGTH_LONG).show();
-            startActivity(new Intent(this, VnpaySandboxConfigActivity.class));
-            return;
-        }
+        vnpayConfigCloudRepository.getConfig((cloudConfig, message) -> runOnUiThread(() -> {
+            VnpaySettingsStore.MerchantConfig merchantConfig = isConfigured(cloudConfig)
+                    ? cloudConfig
+                    : vnpaySettingsStore.read();
+            if (!isConfigured(merchantConfig)) {
+                Toast.makeText(this, "Hãy cấu hình TMN code, hash secret và return URL VNPAY sandbox trước.", Toast.LENGTH_LONG).show();
+                startActivity(new Intent(this, VnpaySandboxConfigActivity.class));
+                return;
+            }
+            settingsCacheSave(merchantConfig);
+            launchVnpayPayment(promotionResult, merchantConfig);
+        }));
+    }
 
-        VnpaySettingsStore.MerchantConfig merchantConfig = vnpaySettingsStore.read();
+    private void launchVnpayPayment(PromotionResult promotionResult,
+                                    VnpaySettingsStore.MerchantConfig merchantConfig) {
         int finalAmount = Math.max(0, amount - promotionResult.discountAmount);
         paymentSessionStore.save(orderId, amount, promotionResult.discountAmount, promotionResult.promoCode);
         String paymentUrl = VnpayUtils.buildPaymentUrl(
                 orderId,
                 finalAmount,
-                "Thanh toán đơn " + orderId,
+                "Thanh toán đơn " + buildDisplayOrderCode(),
                 merchantConfig.tmnCode,
                 merchantConfig.hashSecret,
                 merchantConfig.returnUrl
         );
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(paymentUrl)));
+    }
+
+    private boolean isConfigured(@Nullable VnpaySettingsStore.MerchantConfig config) {
+        return config != null
+                && !TextUtils.isEmpty(config.tmnCode)
+                && !TextUtils.isEmpty(config.hashSecret)
+                && !TextUtils.isEmpty(config.returnUrl);
+    }
+
+    private void settingsCacheSave(VnpaySettingsStore.MerchantConfig config) {
+        vnpaySettingsStore.save(config.tmnCode, config.hashSecret, config.returnUrl);
     }
 
     private void payWithDiscount(String method, String bankRef, int discountAmount, @Nullable String promoCode) {
@@ -233,6 +266,31 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
                     finish();
                 })
         );
+    }
+
+    private String buildDisplayOrderCode() {
+        if (!TextUtils.isEmpty(displayOrderCode)) {
+            return displayOrderCode.trim();
+        }
+        if (TextUtils.isEmpty(orderId)) {
+            return "-";
+        }
+        String normalized = orderId.trim();
+        if (normalized.startsWith("online_order_")) {
+            normalized = normalized.substring("online_order_".length());
+        } else if (normalized.startsWith("cloud_order_")) {
+            normalized = normalized.substring("cloud_order_".length());
+        } else if (normalized.startsWith("web_order_")) {
+            normalized = normalized.substring("web_order_".length());
+        } else if (normalized.startsWith("wb_order_")) {
+            normalized = normalized.substring("wb_order_".length());
+        } else if (normalized.startsWith("order_")) {
+            normalized = normalized.substring("order_".length());
+        }
+        if (normalized.length() > 10) {
+            normalized = normalized.substring(normalized.length() - 10);
+        }
+        return "#" + normalized.toUpperCase();
     }
 
     private static class PromotionResult {

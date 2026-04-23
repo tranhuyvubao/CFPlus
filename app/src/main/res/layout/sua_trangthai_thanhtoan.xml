@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/dashboard_card">
 
     <CheckBox
         android:id="@+id/checkBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:buttonTint="@color/dashboard_primary"
         android:text="Đã thanh toán"
-        android:textColor="#00C853"
+        android:textColor="@color/dashboard_primary"
         android:textSize="20sp"
-        android:textStyle="normal|bold" />
+        android:textStyle="bold" />
 </FrameLayout>
