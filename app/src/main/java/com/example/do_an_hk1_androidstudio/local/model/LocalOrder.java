@@ -24,6 +24,7 @@ public class LocalOrder {
     private final boolean needsStaffAttention;
     private final int lastCustomerItemAddedQty;
     private final long lastCustomerItemAddedAtMillis;
+    private final List<LocalOrderItem> lastCustomerAddedItems;
     private final List<LocalOrderItem> items;
 
     public LocalOrder(String orderId,
@@ -58,6 +59,7 @@ public class LocalOrder {
                 false,
                 0,
                 0L,
+                null,
                 items);
     }
 
@@ -78,6 +80,7 @@ public class LocalOrder {
                       boolean needsStaffAttention,
                       int lastCustomerItemAddedQty,
                       long lastCustomerItemAddedAtMillis,
+                      List<LocalOrderItem> lastCustomerAddedItems,
                       List<LocalOrderItem> items) {
         this.orderId = orderId;
         this.orderCode = orderCode;
@@ -96,6 +99,7 @@ public class LocalOrder {
         this.needsStaffAttention = needsStaffAttention;
         this.lastCustomerItemAddedQty = lastCustomerItemAddedQty;
         this.lastCustomerItemAddedAtMillis = lastCustomerItemAddedAtMillis;
+        this.lastCustomerAddedItems = lastCustomerAddedItems == null ? new ArrayList<>() : new ArrayList<>(lastCustomerAddedItems);
         this.items = items == null ? new ArrayList<>() : new ArrayList<>(items);
     }
 
@@ -177,6 +181,10 @@ public class LocalOrder {
 
     public long getLastCustomerItemAddedAtMillis() {
         return lastCustomerItemAddedAtMillis;
+    }
+
+    public List<LocalOrderItem> getLastCustomerAddedItems() {
+        return Collections.unmodifiableList(lastCustomerAddedItems);
     }
 
     public List<LocalOrderItem> getItems() {

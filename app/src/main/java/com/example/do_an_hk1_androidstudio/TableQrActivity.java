@@ -20,7 +20,7 @@ public class TableQrActivity extends AppCompatActivity {
     public static final String EXTRA_TABLE_NAME = "table_name";
     public static final String EXTRA_TABLE_CODE = "table_code";
     private static final String WEB_ORDER_BASE_URL = "https://cafeplus-1fd32.web.app/menu.html";
-    private static final String WEB_CACHE_BUSTER = "web-20260409";
+    private static final String WEB_CACHE_BUSTER = "web-20260428-sizefirebase";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

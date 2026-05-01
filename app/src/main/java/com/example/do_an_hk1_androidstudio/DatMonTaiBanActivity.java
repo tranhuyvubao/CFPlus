@@ -5,7 +5,11 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.Window;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -179,22 +183,43 @@ public class DatMonTaiBanActivity extends AppCompatActivity {
             return;
         }
 
-        List<String> labels = new ArrayList<>();
-        for (LocalProduct product : activeProducts) {
-            labels.add(product.getName() + " - " + product.getBasePrice() + "đ");
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_option_picker, null, false);
+        TextView tvTitle = dialogView.findViewById(R.id.tvPickerTitle);
+        TextView tvSubtitle = dialogView.findViewById(R.id.tvPickerSubtitle);
+        LinearLayout layoutOptions = dialogView.findViewById(R.id.layoutPickerOptions);
+
+        tvTitle.setText("Chọn món");
+        tvSubtitle.setText("Chọn nhanh món từ menu để nhân viên nhập đơn tại bàn gọn và chính xác hơn.");
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
         }
 
-        new AlertDialog.Builder(this)
-                .setTitle("Chọn món")
-                .setItems(labels.toArray(new String[0]), (dialog, which) -> {
-                    LocalProduct product = activeProducts.get(which);
-                    selectedProductId = product.getProductId();
-                    edtTenMon.setText(product.getName());
-                    edtGia.setText(String.valueOf(product.getBasePrice()));
-                    edtImageUrl.setText(product.getImageUrl() != null ? product.getImageUrl() : "");
-                })
-                .setNegativeButton("Hủy", null)
-                .show();
+        LayoutInflater inflater = LayoutInflater.from(this);
+        for (LocalProduct product : activeProducts) {
+            View itemView = inflater.inflate(R.layout.item_picker_option, layoutOptions, false);
+            TextView tvOptionTitle = itemView.findViewById(R.id.tvPickerOptionTitle);
+            TextView tvOptionSubtitle = itemView.findViewById(R.id.tvPickerOptionSubtitle);
+            TextView btnPick = itemView.findViewById(R.id.btnPickOption);
+
+            tvOptionTitle.setText(product.getName());
+            tvOptionSubtitle.setText(product.getBasePrice() + "đ");
+            btnPick.setOnClickListener(v -> {
+                selectedProductId = product.getProductId();
+                edtTenMon.setText(product.getName());
+                edtGia.setText(String.valueOf(product.getBasePrice()));
+                edtImageUrl.setText(product.getImageUrl() != null ? product.getImageUrl() : "");
+                dialog.dismiss();
+            });
+            layoutOptions.addView(itemView);
+        }
+
+        dialogView.findViewById(R.id.btnClosePicker).setOnClickListener(v -> dialog.dismiss());
+        dialog.show();
     }
 
     private void submitTableOrder() {

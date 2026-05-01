@@ -1,81 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_margin="20dp"
+    app:cardBackgroundColor="@color/dashboard_card"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="8dp"
+    app:strokeWidth="0dp">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/tvBranchDialogTitle"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Chi nhánh"
-            android:textColor="@color/dashboard_text_primary"
-            android:textSize="22sp"
-            android:textStyle="bold" />
+            android:orientation="vertical"
+            android:padding="20dp">
 
-        <EditText
-            android:id="@+id/edtBranchName"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="14dp"
-            android:hint="Tên chi nhánh"
-            android:singleLine="true" />
+            <TextView
+                android:id="@+id/tvBranchDialogTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Chi nhánh"
+                android:textColor="@color/dashboard_text_primary"
+                android:textSize="24sp"
+                android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/edtBranchAddress"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_marginTop="10dp"
-            android:gravity="top|start"
-            android:hint="Địa chỉ"
-            android:inputType="textMultiLine"
-            android:paddingTop="10dp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Cập nhật thông tin chi nhánh, thời gian hoạt động và tọa độ để quản lý nhiều cơ sở gọn hơn."
+                android:textColor="@color/dashboard_text_secondary"
+                android:textSize="14sp" />
 
-        <EditText
-            android:id="@+id/edtBranchPhone"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="10dp"
-            android:hint="Số điện thoại"
-            android:inputType="phone"
-            android:singleLine="true" />
+            <EditText
+                android:id="@+id/edtBranchName"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/manager_search_background"
+                android:hint="Tên chi nhánh"
+                android:paddingHorizontal="14dp"
+                android:singleLine="true" />
 
-        <EditText
-            android:id="@+id/edtBranchHours"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="10dp"
-            android:hint="Giờ mở cửa, ví dụ 07:00 - 22:00"
-            android:singleLine="true" />
+            <EditText
+                android:id="@+id/edtBranchAddress"
+                android:layout_width="match_parent"
+                android:layout_height="92dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/manager_search_background"
+                android:gravity="top|start"
+                android:hint="Địa chỉ"
+                android:inputType="textMultiLine"
+                android:padding="14dp" />
 
-        <EditText
-            android:id="@+id/edtBranchLat"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="10dp"
-            android:hint="Vĩ độ GPS"
-            android:inputType="numberDecimal|numberSigned"
-            android:singleLine="true" />
+            <EditText
+                android:id="@+id/edtBranchPhone"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/manager_search_background"
+                android:hint="Số điện thoại"
+                android:inputType="phone"
+                android:paddingHorizontal="14dp"
+                android:singleLine="true" />
 
-        <EditText
-            android:id="@+id/edtBranchLng"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="10dp"
-            android:hint="Kinh độ GPS"
-            android:inputType="numberDecimal|numberSigned"
-            android:singleLine="true" />
+            <EditText
+                android:id="@+id/edtBranchHours"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/manager_search_background"
+                android:hint="Giờ mở cửa, ví dụ 07:00 - 22:00"
+                android:paddingHorizontal="14dp"
+                android:singleLine="true" />
 
-        <Switch
-            android:id="@+id/switchBranchActive"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="Đang hoạt động" />
-    </LinearLayout>
-</ScrollView>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/edtBranchLat"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/manager_search_background"
+                    android:hint="Vĩ độ GPS"
+                    android:inputType="numberDecimal|numberSigned"
+                    android:paddingHorizontal="14dp"
+                    android:singleLine="true" />
+
+                <EditText
+                    android:id="@+id/edtBranchLng"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/manager_search_background"
+                    android:hint="Kinh độ GPS"
+                    android:inputType="numberDecimal|numberSigned"
+                    android:paddingHorizontal="14dp"
+                    android:singleLine="true" />
+            </LinearLayout>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switchBranchActive"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="Đang hoạt động"
+                android:textColor="@color/dashboard_text_primary" />
+        </LinearLayout>
+    </ScrollView>
+</com.google.android.material.card.MaterialCardView>

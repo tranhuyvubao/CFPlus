@@ -22,8 +22,14 @@ public class NotificationInboxEntity {
     @ColumnInfo(name = "type")
     public String type;
 
+    @ColumnInfo(name = "user_id")
+    public String userId;
+
     @ColumnInfo(name = "order_id")
     public String orderId;
+
+    @ColumnInfo(name = "event_key")
+    public String eventKey;
 
     @ColumnInfo(name = "status")
     public String status;

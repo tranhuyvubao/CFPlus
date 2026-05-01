@@ -1,17 +1,24 @@
 import cors from "cors";
 import "dotenv/config";
 import express from "express";
+import admin from "firebase-admin";
 
 const app = express();
 const port = process.env.PORT || 3000;
 const allowedOrigin = process.env.ALLOWED_ORIGIN || "*";
 const aiProvider = (process.env.AI_PROVIDER || "openrouter").toLowerCase();
+const staffTopic = process.env.STAFF_FCM_TOPIC || "staff_only";
+const dispatcherIntervalMs = Number(process.env.STAFF_NOTIFICATION_POLL_MS || 5000);
+let dispatcherHandle = null;
 
 const SYSTEM_PROMPT =
   "Ban la tro ly AI cua CFPLUS, mot ung dung dat ca phe. Tra loi bang tieng Viet co dau, tu nhien, ngan gon nhung huu ich. Hay tu van nhu nhan vien quan ca phe cao cap: hoi khau vi khi can, goi y theo do ngot, do dam, sua, da, nong/lanh, caffeine va ngan sach. Chi ho tro khach ve menu, goi y mon, gio mo cua, khuyen mai, dia chi, dat hang va thanh toan. Khong bia gia, ma giam gia, ton kho hay chinh sach neu backend chua cung cap du lieu. Neu khong chac du lieu thuc te, noi ro va huong dan khach kiem tra trong app hoac lien he nhan vien.";
 
 app.use(cors({ origin: allowedOrigin }));
 app.use(express.json({ limit: "64kb" }));
+
+const adminApp = initFirebaseAdmin();
+const adminDb = adminApp ? admin.firestore(adminApp) : null;
 
 app.get("/health", (req, res) => {
   res.json({
@@ -226,4 +233,104 @@ function extractChatCompletionsReply(data) {
 
 app.listen(port, () => {
   console.log(`CFPLUS backend listening on port ${port} with provider ${aiProvider}`);
+  startStaffNotificationDispatcher();
 });
+
+function initFirebaseAdmin() {
+  try {
+    if (admin.apps.length > 0) {
+      return admin.app();
+    }
+    const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+    let credential;
+    if (serviceAccountJson) {
+      credential = admin.credential.cert(JSON.parse(serviceAccountJson));
+    } else if (
+      process.env.FIREBASE_PROJECT_ID &&
+      process.env.FIREBASE_CLIENT_EMAIL &&
+      process.env.FIREBASE_PRIVATE_KEY
+    ) {
+      credential = admin.credential.cert({
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n")
+      });
+    } else {
+      console.warn("Staff notification dispatcher disabled: missing Firebase Admin credentials.");
+      return null;
+    }
+    return admin.initializeApp({ credential });
+  } catch (error) {
+    console.error("Could not initialize Firebase Admin:", error?.message || error);
+    return null;
+  }
+}
+
+function startStaffNotificationDispatcher() {
+  if (!adminDb || dispatcherHandle) {
+    return;
+  }
+  dispatchPendingStaffNotifications().catch(() => {});
+  dispatcherHandle = setInterval(() => {
+    dispatchPendingStaffNotifications().catch((error) => {
+      console.error("Staff notification dispatcher tick failed:", error?.message || error);
+    });
+  }, dispatcherIntervalMs);
+}
+
+async function dispatchPendingStaffNotifications() {
+  if (!adminDb) {
+    return;
+  }
+  const snapshot = await adminDb
+    .collection("staff_notifications")
+    .where("targetRole", "==", "staff")
+    .where("pushDispatchedAt", "==", null)
+    .limit(20)
+    .get();
+
+  for (const document of snapshot.docs) {
+    const data = document.data() || {};
+    try {
+      const response = await admin.messaging().send({
+        topic: staffTopic,
+        notification: {
+          title: String(data.title || "CFPLUS"),
+          body: String(data.body || "Có cập nhật mới cho nhân viên.")
+        },
+        data: {
+          notificationId: String(data.id || document.id),
+          eventKey: String(data.eventKey || document.id),
+          type: String(data.type || "staff_notification"),
+          title: String(data.title || "CFPLUS"),
+          body: String(data.body || "Có cập nhật mới cho nhân viên."),
+          orderId: String(data.orderId || ""),
+          status: String(data.status || ""),
+          orderChannel: String(data.orderChannel || ""),
+          tableId: String(data.tableId || ""),
+          tableName: String(data.tableName || "")
+        },
+        android: {
+          priority: "high"
+        }
+      });
+
+      await document.ref.set(
+        {
+          pushDispatchedAt: admin.firestore.FieldValue.serverTimestamp(),
+          pushMessageId: response
+        },
+        { merge: true }
+      );
+    } catch (error) {
+      console.error("Could not dispatch staff notification:", error?.message || error);
+      await document.ref.set(
+        {
+          pushError: error?.message || String(error),
+          pushLastTriedAt: admin.firestore.FieldValue.serverTimestamp()
+        },
+        { merge: true }
+      );
+    }
+  }
+}

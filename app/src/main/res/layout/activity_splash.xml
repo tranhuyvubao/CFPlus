@@ -2,11 +2,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dashboard_background">
+    android:background="@color/kem"> <!-- Hình nền hoặc màu nền -->
 
     <ImageView
+        android:id="@+id/imgSplashLoading"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:src="@drawable/cfplus4"
+        android:src="@drawable/pageload_frame_animation"
         android:layout_centerInParent="true"/>
 </RelativeLayout>

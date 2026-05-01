@@ -12,7 +12,7 @@ import androidx.room.RoomDatabase;
                 NotificationInboxEntity.class,
                 PendingSyncActionEntity.class
         },
-        version = 1,
+        version = 2,
         exportSchema = false
 )
 public abstract class CfPlusLocalDatabase extends RoomDatabase {

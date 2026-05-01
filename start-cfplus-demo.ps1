@@ -2,6 +2,7 @@ param(
     [switch]$InstallApp,
     [switch]$LaunchApp,
     [switch]$OpenWeb,
+    [switch]$DeployHosting,
     [switch]$VisibleLogs,
     [int]$BackendPort = 3000,
     [int]$WebPort = 5173
@@ -45,6 +46,24 @@ function Test-PortOpen {
     } finally {
         $client.Close()
     }
+}
+
+function Invoke-HostingDeploy {
+    if (-not (Test-CommandExists "firebase")) {
+        throw "Khong tim thay Firebase CLI trong PATH. Hay cai firebase-tools va dang nhap `firebase login` truoc."
+    }
+
+    Write-Step "Dang deploy web-order len Firebase Hosting..."
+    Push-Location $Root
+    try {
+        & firebase deploy --only hosting
+        if ($LASTEXITCODE -ne 0) {
+            throw "Firebase Hosting deploy that bai voi ma $LASTEXITCODE."
+        }
+    } finally {
+        Pop-Location
+    }
+    Write-Step "Deploy Hosting thanh cong."
 }
 
 function Save-Pid {
@@ -166,6 +185,10 @@ if (-not (Test-CommandExists "node")) {
     throw "Chua cai Node.js hoac node khong co trong PATH. Can Node de chay backend chat va web-order local."
 }
 
+if ($DeployHosting) {
+    Invoke-HostingDeploy
+}
+
 $envPath = Join-Path $BackendDir ".env"
 if (-not (Test-Path $envPath)) {
     Write-Warn "Chua co cfplus-backend\.env. Chat AI se khong goi duoc OpenRouter neu thieu key."
@@ -214,5 +237,8 @@ Write-Host ""
 Write-Host "San sang demo:" -ForegroundColor Green
 Write-Host "- Backend chat: http://127.0.0.1:$BackendPort/health"
 Write-Host "- Web order:    http://127.0.0.1:$WebPort/menu.html?table=BAN01"
+if ($DeployHosting) {
+    Write-Host "- Hosting live: https://cafeplus-1fd32.web.app/menu.html?table=BAN01"
+}
 Write-Host "- Logs:         $LogsDir"
 Write-Host "- Tat service:  .\STOP_CFPLUS_DEMO.bat"

@@ -1,7 +1,12 @@
 package com.example.do_an_hk1_androidstudio;
 
+import android.content.BroadcastReceiver;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -10,14 +15,19 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.example.do_an_hk1_androidstudio.cloud.StoreCloudRepository;
 import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
+import com.example.do_an_hk1_androidstudio.local.room.CfPlusLocalDatabase;
 import com.example.do_an_hk1_androidstudio.ui.InsetsHelper;
+import com.example.do_an_hk1_androidstudio.ui.NotificationCenter;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
@@ -34,6 +44,16 @@ public class trangchu extends AppCompatActivity implements FragmentHistory.OnThe
     private ListenerRegistration storeProfileListener;
     private boolean customerCanUseChat;
     private int activeNavItemId = View.NO_ID;
+    private FrameLayout btnHeaderNotifications;
+    private TextView tvHeaderNotificationBadge;
+    private final ActivityResultLauncher<String> notificationPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), granted -> bindHeaderNotificationBadge());
+    private final BroadcastReceiver inboxUpdatedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            bindHeaderNotificationBadge();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +65,8 @@ public class trangchu extends AppCompatActivity implements FragmentHistory.OnThe
         storeRepository = new StoreCloudRepository(this);
         LinearLayout headerContainer = findViewById(R.id.headerContainer);
         ImageView headerLogo = findViewById(R.id.hinh1);
+        btnHeaderNotifications = findViewById(R.id.btnHeaderNotifications);
+        tvHeaderNotificationBadge = findViewById(R.id.tvHeaderNotificationBadge);
         bottomNavigationView = findViewById(R.id.bottomNav);
         frameLayout = findViewById(R.id.frameLayout);
         sideMenuOverlay = findViewById(R.id.sideMenuOverlay);
@@ -55,6 +77,7 @@ public class trangchu extends AppCompatActivity implements FragmentHistory.OnThe
         String role = normalizeRole(sessionManager.getCurrentUserRole());
         applyBottomNavForRole(role);
         setupCustomerChatBubble(role);
+        setupStaffNotificationBell(role);
         setupSidebar(role);
         setupStoreBranding(headerLogo);
 
@@ -80,6 +103,23 @@ public class trangchu extends AppCompatActivity implements FragmentHistory.OnThe
         if (storeProfileListener != null) {
             storeProfileListener.remove();
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        registerReceiver(
+                inboxUpdatedReceiver,
+                new IntentFilter(NotificationCenter.ACTION_INBOX_UPDATED),
+                Context.RECEIVER_NOT_EXPORTED
+        );
+        bindHeaderNotificationBadge();
+    }
+
+    @Override
+    protected void onStop() {
+        unregisterReceiver(inboxUpdatedReceiver);
+        super.onStop();
     }
 
     @Override
@@ -125,6 +165,20 @@ public class trangchu extends AppCompatActivity implements FragmentHistory.OnThe
         customerCanUseChat = "customer".equals(role);
         updateChatBubbleVisibility(false);
         chatBubble.setOnClickListener(v -> startActivity(new Intent(this, ChatboxActivity.class)));
+    }
+
+    private void setupStaffNotificationBell(String role) {
+        boolean visible = "staff".equals(normalizeRole(role));
+        if (btnHeaderNotifications == null) {
+            return;
+        }
+        btnHeaderNotifications.setVisibility(visible ? View.VISIBLE : View.GONE);
+        if (!visible) {
+            return;
+        }
+        requestNotificationPermissionIfNeeded();
+        btnHeaderNotifications.setOnClickListener(v -> startActivity(new Intent(this, NotificationInboxActivity.class)));
+        bindHeaderNotificationBadge();
     }
 
     private void setupSidebar(String role) {
@@ -242,6 +296,31 @@ public class trangchu extends AppCompatActivity implements FragmentHistory.OnThe
             return;
         }
         chatBubble.setVisibility(customerCanUseChat && onHomeTab ? LinearLayout.VISIBLE : LinearLayout.GONE);
+    }
+
+    private void bindHeaderNotificationBadge() {
+        if (tvHeaderNotificationBadge == null) {
+            return;
+        }
+        String userId = sessionManager == null ? null : sessionManager.getCurrentUserId();
+        int unreadCount = userId == null
+                ? 0
+                : CfPlusLocalDatabase.getInstance(this).notificationInboxDao().countUnreadForUser(userId);
+        tvHeaderNotificationBadge.setVisibility(unreadCount > 0 ? View.VISIBLE : View.GONE);
+        if (unreadCount > 0) {
+            tvHeaderNotificationBadge.setText(unreadCount > 99 ? "99+" : String.valueOf(unreadCount));
+        }
+    }
+
+    private void requestNotificationPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            return;
+        }
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
+                == PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        notificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS);
     }
 
     private void showFragment(Fragment fragment) {

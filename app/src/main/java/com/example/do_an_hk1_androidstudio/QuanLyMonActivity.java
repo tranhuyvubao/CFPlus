@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -164,6 +165,9 @@ public class QuanLyMonActivity extends AppCompatActivity {
         EditText edtName = view.findViewById(R.id.edtProductName);
         EditText edtPrice = view.findViewById(R.id.edtProductBasePrice);
         Spinner spCategory = view.findViewById(R.id.spProductCategory);
+        CheckBox checkSizeS = view.findViewById(R.id.checkProductSizeS);
+        CheckBox checkSizeM = view.findViewById(R.id.checkProductSizeM);
+        CheckBox checkSizeL = view.findViewById(R.id.checkProductSizeL);
         ImageView imgPick = view.findViewById(R.id.imgPickProduct);
         androidx.appcompat.widget.SwitchCompat swActive = view.findViewById(R.id.swProductActive);
         swActive.setChecked(true);
@@ -176,7 +180,7 @@ public class QuanLyMonActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle("Thêm món")
                 .setView(view)
-                .setPositiveButton("Lưu", (d, which) -> saveProduct(null, edtName, edtPrice, spCategory, swActive))
+                .setPositiveButton("Lưu", (d, which) -> saveProduct(null, edtName, edtPrice, spCategory, swActive, checkSizeS, checkSizeM, checkSizeL))
                 .setNegativeButton("Hủy", null)
                 .show();
     }
@@ -186,12 +190,18 @@ public class QuanLyMonActivity extends AppCompatActivity {
         EditText edtName = view.findViewById(R.id.edtProductName);
         EditText edtPrice = view.findViewById(R.id.edtProductBasePrice);
         Spinner spCategory = view.findViewById(R.id.spProductCategory);
+        CheckBox checkSizeS = view.findViewById(R.id.checkProductSizeS);
+        CheckBox checkSizeM = view.findViewById(R.id.checkProductSizeM);
+        CheckBox checkSizeL = view.findViewById(R.id.checkProductSizeL);
         ImageView imgPick = view.findViewById(R.id.imgPickProduct);
         androidx.appcompat.widget.SwitchCompat swActive = view.findViewById(R.id.swProductActive);
 
         edtName.setText(product.getName());
         edtPrice.setText(String.valueOf(product.getBasePrice()));
         swActive.setChecked(product.isActive());
+        checkSizeS.setChecked(product.getAvailableSizes().contains("S"));
+        checkSizeM.setChecked(product.getAvailableSizes().contains("M"));
+        checkSizeL.setChecked(product.getAvailableSizes().contains("L"));
         pendingImageUri = null;
         pendingPickImageView = imgPick;
         imgPick.setOnClickListener(v -> pickImageLauncher.launch(new String[]{"image/*"}));
@@ -204,7 +214,7 @@ public class QuanLyMonActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle("Sửa món")
                 .setView(view)
-                .setPositiveButton("Lưu", (d, which) -> saveProduct(product, edtName, edtPrice, spCategory, swActive))
+                .setPositiveButton("Lưu", (d, which) -> saveProduct(product, edtName, edtPrice, spCategory, swActive, checkSizeS, checkSizeM, checkSizeL))
                 .setNegativeButton("Hủy", null)
                 .show();
     }
@@ -213,7 +223,10 @@ public class QuanLyMonActivity extends AppCompatActivity {
                              EditText edtName,
                              EditText edtPrice,
                              Spinner spCategory,
-                             androidx.appcompat.widget.SwitchCompat swActive) {
+                             androidx.appcompat.widget.SwitchCompat swActive,
+                             CheckBox checkSizeS,
+                             CheckBox checkSizeM,
+                             CheckBox checkSizeL) {
         String name = edtName.getText().toString().trim();
         String basePriceStr = edtPrice.getText().toString().trim();
 
@@ -242,6 +255,10 @@ public class QuanLyMonActivity extends AppCompatActivity {
         }
 
         String categoryId = categoryDocs.get(selectedIdx).getCategoryId();
+        List<String> selectedSizes = new ArrayList<>();
+        if (checkSizeS.isChecked()) selectedSizes.add("S");
+        if (checkSizeM.isChecked()) selectedSizes.add("M");
+        if (checkSizeL.isChecked()) selectedSizes.add("L");
         String existingImageUrl = existing != null ? existing.getImageUrl() : null;
         Uri uploadUri = pendingImageUri != null ? pendingImageUri : parseLocalImageUri(existingImageUrl);
 
@@ -257,20 +274,20 @@ public class QuanLyMonActivity extends AppCompatActivity {
                     Toast.makeText(this, message == null ? "Không tải được ảnh. Hãy chọn lại ảnh hoặc kiểm tra mạng." : message, Toast.LENGTH_LONG).show();
                     return;
                 }
-                persistProduct(existing, name, basePrice, uploadedUrl, categoryId, swActive.isChecked());
+                persistProduct(existing, name, basePrice, uploadedUrl, categoryId, swActive.isChecked(), selectedSizes);
             });
             return;
         }
 
         String imageUrl = existingImageUrl;
         if (existing == null) {
-            catalogRepository.addProduct(name, basePrice, imageUrl, categoryId, swActive.isChecked(), (success, message) -> Toast.makeText(
+            catalogRepository.addProduct(name, basePrice, imageUrl, categoryId, swActive.isChecked(), selectedSizes, (success, message) -> Toast.makeText(
                     this,
                     success ? "Thêm món thành công!" : (message == null ? "Không thêm được món." : message),
                     Toast.LENGTH_SHORT
             ).show());
         } else {
-            catalogRepository.updateProduct(existing.getProductId(), name, basePrice, imageUrl, categoryId, swActive.isChecked(), (success, message) -> Toast.makeText(
+            catalogRepository.updateProduct(existing.getProductId(), name, basePrice, imageUrl, categoryId, swActive.isChecked(), selectedSizes, (success, message) -> Toast.makeText(
                     this,
                     success ? "Cập nhật món thành công!" : (message == null ? "Không cập nhật được món." : message),
                     Toast.LENGTH_SHORT
@@ -283,15 +300,16 @@ public class QuanLyMonActivity extends AppCompatActivity {
                                 int basePrice,
                                 @Nullable String imageUrl,
                                 String categoryId,
-                                boolean active) {
+                                boolean active,
+                                @NonNull List<String> selectedSizes) {
         if (existing == null) {
-            catalogRepository.addProduct(name, basePrice, imageUrl, categoryId, active, (success, message) -> Toast.makeText(
+            catalogRepository.addProduct(name, basePrice, imageUrl, categoryId, active, selectedSizes, (success, message) -> Toast.makeText(
                     this,
                     success ? "Thêm món thành công!" : (message == null ? "Không thêm được món." : message),
                     Toast.LENGTH_SHORT
             ).show());
         } else {
-            catalogRepository.updateProduct(existing.getProductId(), name, basePrice, imageUrl, categoryId, active, (success, message) -> Toast.makeText(
+            catalogRepository.updateProduct(existing.getProductId(), name, basePrice, imageUrl, categoryId, active, selectedSizes, (success, message) -> Toast.makeText(
                     this,
                     success ? "Cập nhật món thành công!" : (message == null ? "Không cập nhật được món." : message),
                     Toast.LENGTH_SHORT

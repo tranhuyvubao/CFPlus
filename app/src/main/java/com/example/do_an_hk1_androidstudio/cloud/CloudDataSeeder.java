@@ -8,10 +8,13 @@ import androidx.annotation.Nullable;
 import com.example.do_an_hk1_androidstudio.local.DataHelper;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CloudDataSeeder {
@@ -76,6 +79,42 @@ public class CloudDataSeeder {
 
             batch.commit()
                     .addOnSuccessListener(unused -> callback.onComplete(true, null))
+                    .addOnFailureListener(e -> callback.onComplete(false, e.getMessage()));
+        });
+    }
+
+    public void backfillProductSizes(@NonNull CompletionCallback callback) {
+        FirebaseProvider.ensureAuthenticated(appContext, (success, message) -> {
+            if (!success) {
+                callback.onComplete(false, fallbackMessage(message));
+                return;
+            }
+            firestore.collection("products")
+                    .get()
+                    .addOnSuccessListener(snapshot -> {
+                        WriteBatch batch = firestore.batch();
+                        int updated = 0;
+                        for (QueryDocumentSnapshot document : snapshot) {
+                            Object rawSizes = document.get("available_sizes");
+                            if (rawSizes instanceof List && !((List<?>) rawSizes).isEmpty()) {
+                                continue;
+                            }
+                            String categoryId = document.getString("category_id");
+                            Map<String, Object> updates = new HashMap<>();
+                            updates.put("available_sizes", defaultSizesByCategory(categoryId));
+                            updates.put("updated_at", FieldValue.serverTimestamp());
+                            batch.set(document.getReference(), updates, SetOptions.merge());
+                            updated++;
+                        }
+                        if (updated == 0) {
+                            callback.onComplete(true, "Không có sản phẩm nào cần cập nhật size.");
+                            return;
+                        }
+                        final int updatedCount = updated;
+                        batch.commit()
+                                .addOnSuccessListener(unused -> callback.onComplete(true, "Đã cập nhật size cho " + updatedCount + " sản phẩm."))
+                                .addOnFailureListener(e -> callback.onComplete(false, e.getMessage()));
+                    })
                     .addOnFailureListener(e -> callback.onComplete(false, e.getMessage()));
         });
     }
@@ -187,6 +226,7 @@ public class CloudDataSeeder {
         values.put("description", description);
         values.put("base_price", basePrice);
         values.put("image_url", imageUrl);
+        values.put("available_sizes", defaultSizesByCategory(categoryId));
         values.put("is_active", true);
         values.put("created_at", now);
         values.put("updated_at", now);
@@ -220,5 +260,13 @@ public class CloudDataSeeder {
 
     private String fallbackMessage(@Nullable String value) {
         return value == null ? "Firebase chưa sẵn sàng" : value;
+    }
+
+    @NonNull
+    private List<String> defaultSizesByCategory(@Nullable String categoryId) {
+        if ("an_vat".equals(categoryId)) {
+            return Arrays.asList("M");
+        }
+        return Arrays.asList("S", "M", "L");
     }
 }

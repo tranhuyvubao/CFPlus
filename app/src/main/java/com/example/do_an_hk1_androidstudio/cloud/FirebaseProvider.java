@@ -20,6 +20,12 @@ public final class FirebaseProvider {
     private FirebaseProvider() {
     }
 
+    public static void ensureInitialized(Context context) {
+        Context appContext = context.getApplicationContext();
+        getOrInitDefaultApp(appContext);
+        getOrInitApp(appContext);
+    }
+
     public static FirebaseFirestore getFirestore(Context context) {
         FirebaseApp app = getOrInitApp(context.getApplicationContext());
         return FirebaseFirestore.getInstance(app);
@@ -48,15 +54,25 @@ public final class FirebaseProvider {
                 return app;
             }
         }
+        return FirebaseApp.initializeApp(context, buildOptions(), APP_NAME);
+    }
 
-        FirebaseOptions options = new FirebaseOptions.Builder()
+    private static FirebaseApp getOrInitDefaultApp(Context context) {
+        try {
+            return FirebaseApp.getInstance();
+        } catch (IllegalStateException ignored) {
+            return FirebaseApp.initializeApp(context, buildOptions());
+        }
+    }
+
+    private static FirebaseOptions buildOptions() {
+        return new FirebaseOptions.Builder()
                 .setApiKey("AIzaSyAkS5x8aqlgEi0EAfCJQxG2iQISA1IxRso")
                 .setApplicationId("1:105381932857:android:4c76bed4adbd5ebb4002e8")
                 .setProjectId("cafeplus-1fd32")
                 .setStorageBucket(STORAGE_BUCKET)
                 .setGcmSenderId("105381932857")
                 .build();
-        return FirebaseApp.initializeApp(context, options, APP_NAME);
     }
 
 }

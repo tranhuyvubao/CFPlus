@@ -94,38 +94,6 @@ public class WishlistCloudRepository {
         });
     }
 
-    public void migrateLocalFavorites(@NonNull String customerId,
-                                      @NonNull Set<String> productIds,
-                                      @NonNull CompletionCallback callback) {
-        if (productIds.isEmpty()) {
-            callback.onComplete(true, null);
-            return;
-        }
-        FirebaseProvider.ensureAuthenticated(appContext, (success, message) -> {
-            if (!success) {
-                callback.onComplete(false, fallbackMessage(message));
-                return;
-            }
-            com.google.firebase.firestore.WriteBatch batch = firestore.batch();
-            for (String productId : productIds) {
-                Map<String, Object> values = new HashMap<>();
-                values.put("customer_id", customerId);
-                values.put("product_id", productId);
-                values.put("created_at", FieldValue.serverTimestamp());
-                batch.set(
-                        firestore.collection("users")
-                                .document(customerId)
-                                .collection("favorites")
-                                .document(productId),
-                        values
-                );
-            }
-            batch.commit()
-                    .addOnSuccessListener(unused -> callback.onComplete(true, null))
-                    .addOnFailureListener(e -> callback.onComplete(false, friendlyMessage(e.getMessage())));
-        });
-    }
-
     private String fallbackMessage(@Nullable String value) {
         return value == null ? "Firebase auth chưa sẵn sàng" : value;
     }

@@ -1,45 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/dashboard_card">
+    android:layout_margin="20dp"
+    app:cardBackgroundColor="@color/dashboard_card"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="8dp"
+    app:strokeWidth="0dp">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="wrap_content">
 
-        <Spinner
-            android:id="@+id/spTxnIngredient"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <Spinner
-            android:id="@+id/spTxnType"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp" />
+            android:orientation="vertical"
+            android:padding="18dp">
 
-        <EditText
-            android:id="@+id/edtTxnQty"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/manager_search_background"
-            android:hint="Số lượng"
-            android:inputType="numberDecimal"
-            android:minHeight="52dp"
-            android:paddingHorizontal="14dp" />
+            <Spinner
+                android:id="@+id/spTxnIngredient"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-        <EditText
-            android:id="@+id/edtTxnNote"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/manager_search_background"
-            android:hint="Ghi chú (tùy chọn)"
-            android:minHeight="52dp"
-            android:paddingHorizontal="14dp" />
-    </LinearLayout>
-</ScrollView>
+            <Spinner
+                android:id="@+id/spTxnType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp" />
+
+            <EditText
+                android:id="@+id/edtTxnQty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/manager_search_background"
+                android:hint="Số lượng"
+                android:inputType="numberDecimal"
+                android:minHeight="52dp"
+                android:paddingHorizontal="14dp" />
+
+            <EditText
+                android:id="@+id/edtTxnNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/manager_search_background"
+                android:hint="Ghi chú (tùy chọn)"
+                android:minHeight="52dp"
+                android:paddingHorizontal="14dp" />
+        </LinearLayout>
+    </ScrollView>
+</com.google.android.material.card.MaterialCardView>

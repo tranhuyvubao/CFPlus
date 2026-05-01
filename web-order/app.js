@@ -241,8 +241,18 @@ function mapProductDocument(snapshot) {
     categoryId: snapshot.get("category_id") || snapshot.get("categoryId") || "",
     imageUrl: readAssetUrl(snapshot, ["image_url", "imageUrl", "image", "photo_url", "photoUrl", "thumbnail_url", "thumbnailUrl", "download_url", "downloadUrl"]),
     description: snapshot.get("description") || "Món được chuẩn bị ngay sau khi quầy nhận đơn.",
+    availableSizes: parseSizes(snapshot.get("available_sizes") ?? snapshot.get("availableSizes")),
     active: (activeValue !== undefined ? activeValue : legacyActiveValue) !== false
   };
+}
+
+function parseSizes(rawValue) {
+  if (!Array.isArray(rawValue)) {
+    return [];
+  }
+  return rawValue
+    .map((item) => String(item || "").trim().toUpperCase())
+    .filter((item, index, values) => ["S", "M", "L"].includes(item) && values.indexOf(item) === index);
 }
 
 function rebuildCatalogState() {
@@ -354,27 +364,40 @@ function renderMenu() {
         <div class="product-footer">
           <div class="qty-box">
             <span>SL</span>
-            <input class="qty-input" type="number" min="1" value="1" aria-label="Số lượng ${escapeHtml(item.name)}">
+            <input class="qty-input form-control form-control-sm" type="number" min="1" value="1" aria-label="Số lượng ${escapeHtml(item.name)}">
           </div>
-          <button class="add-btn" type="button" aria-label="Thêm ${escapeHtml(item.name)}">+</button>
+          <div class="qty-box">
+            <span>Size</span>
+            <select class="size-select form-select form-select-sm" aria-label="Chọn size ${escapeHtml(item.name)}">
+              <option value="">Chọn</option>
+              ${(item.availableSizes || []).map((size) => `<option value="${escapeAttribute(size)}">${escapeHtml(size)}</option>`).join("")}
+            </select>
+          </div>
+          <button class="add-btn btn btn-warning shadow-sm" type="button" aria-label="Thêm ${escapeHtml(item.name)}">+</button>
         </div>
       </div>
     `;
 
     const qtyInput = card.querySelector(".qty-input");
+    const sizeSelect = card.querySelector(".size-select");
     const addButton = card.querySelector(".add-btn");
     bindImageFallback(card);
     addButton.addEventListener("click", () => {
       const qty = Math.max(1, parseInt(qtyInput.value || "1", 10));
-      addToCart(item, qty);
+      const selectedSize = sizeSelect ? (sizeSelect.value || "").trim().toUpperCase() : "";
+      if (sizeSelect && !selectedSize) {
+        showError(`Vui lòng chọn size cho ${item.name}.`);
+        return;
+      }
+      addToCart(item, qty, selectedSize);
     });
 
     menuGrid.appendChild(card);
   });
 }
 
-function addToCart(item, qty) {
-  const existing = cart.find((entry) => entry.productId === item.productId);
+function addToCart(item, qty, size = "") {
+  const existing = cart.find((entry) => entry.productId === item.productId && (entry.size || "") === size);
   if (existing) {
     existing.qty += qty;
   } else {
@@ -383,6 +406,8 @@ function addToCart(item, qty) {
       name: item.name,
       unitPrice: item.price,
       qty,
+      size: size || null,
+      variantName: size ? `Size ${size}` : null,
       note: "",
       categoryId: item.categoryId,
       category: item.category,
@@ -416,7 +441,7 @@ function renderCart() {
         <div class="cart-thumb" style="${thumbStyle}"></div>
         <div>
           <div class="cart-title">${escapeHtml(item.name)}</div>
-          <div class="cart-sub">${formatMoney(item.unitPrice)} x ${item.qty}</div>
+          <div class="cart-sub">${formatMoney(item.unitPrice)} x ${item.qty}${item.size ? ` • Size ${escapeHtml(item.size)}` : ""}</div>
         </div>
         <div class="cart-price">${formatMoney(item.unitPrice * item.qty)}</div>
       </div>
@@ -477,6 +502,7 @@ submitOrderBtn.addEventListener("click", async () => {
     const incomingItems = cart.map((item) => ({
       productId: item.productId,
       productName: item.name,
+      variantName: item.variantName || null,
       qty: item.qty,
       unitPrice: item.unitPrice,
       lineTotal: item.unitPrice * item.qty,
@@ -499,6 +525,7 @@ submitOrderBtn.addEventListener("click", async () => {
         lastCustomerAction: "item_added",
         lastCustomerItemAddedAt: Date.now(),
         lastCustomerItemAddedQty: addedQty,
+        lastCustomerAddedItems: incomingItems,
         needsStaffAttention: true,
         note: commonNote || existingOrder.note || null,
         customerName: existingOrder.customerName || null,
@@ -510,6 +537,19 @@ submitOrderBtn.addEventListener("click", async () => {
         qty: primaryItem?.qty || 0,
         variantName: null,
         imageUrl: primaryItem?.imageUrl || null
+      });
+      const notificationId = `table_order_item_added_${existingOrder.orderId}_${Date.now()}`;
+      await tryWriteStaffNotification(notificationId, {
+        eventKey: notificationId,
+        type: "table_order_item_added",
+        title: "Bàn vừa thêm món",
+        body: `${currentTable.name} vừa thêm ${addedQty} món vào đơn đang mở.`,
+        orderId: existingOrder.orderId,
+        orderCode: existingOrder.orderCode || null,
+        orderChannel: "customer_qr",
+        tableId: currentTable.tableId,
+        tableName: currentTable.name,
+        status: "created"
       });
       showSuccess(`Đã cộng thêm món vào đơn đang mở của ${currentTable.name}.`);
     } else {
@@ -545,6 +585,18 @@ submitOrderBtn.addEventListener("click", async () => {
         variantName: null,
         imageUrl: primaryItem.imageUrl || null
       });
+      await tryWriteStaffNotification(`new_table_order_${orderId}`, {
+        eventKey: `new_table_order_${orderId}`,
+        type: "new_table_order",
+        title: "Đơn tại bàn mới",
+        body: `${currentTable.name} vừa tạo đơn mới (${orderCode}).`,
+        orderId,
+        orderCode,
+        orderChannel: "customer_qr",
+        tableId: currentTable.tableId,
+        tableName: currentTable.name,
+        status: "created"
+      });
       showSuccess(`Đã gửi đơn cho ${currentTable.name}. Nhân viên sẽ nhận được ngay.`);
     }
 
@@ -571,10 +623,12 @@ function openMobileCart() {
     return;
   }
   document.body.classList.add("cart-open");
+  mobileCartBar.setAttribute("aria-expanded", "true");
 }
 
 function closeMobileCart() {
   document.body.classList.remove("cart-open");
+  mobileCartBar.setAttribute("aria-expanded", "false");
 }
 
 window.addEventListener("resize", () => {
@@ -613,12 +667,32 @@ async function findOpenOrderForTable(tableId) {
   return snapshot.docs[0].data();
 }
 
+async function writeStaffNotification(notificationId, payload) {
+  await setDoc(doc(db, "staff_notifications", notificationId), {
+    id: notificationId,
+    targetRole: "staff",
+    createdAt: Date.now(),
+    updatedAt: serverTimestamp(),
+    pushDispatchedAt: null,
+    ...payload
+  });
+}
+
+async function tryWriteStaffNotification(notificationId, payload) {
+  try {
+    await writeStaffNotification(notificationId, payload);
+  } catch (error) {
+    console.warn("Skip staff_notifications write:", normalizeError(error));
+  }
+}
+
 function mergeItems(existingItems, incomingItems) {
   const merged = existingItems.map((item) => ({ ...item }));
 
   incomingItems.forEach((incoming) => {
     const existing = merged.find((item) =>
       item.productId === incoming.productId &&
+      (item.variantName || "") === (incoming.variantName || "") &&
       (item.note || "") === (incoming.note || "")
     );
     if (existing) {

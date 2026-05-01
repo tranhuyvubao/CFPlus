@@ -21,7 +21,6 @@ import androidx.core.content.ContextCompat;
 import com.bumptech.glide.Glide;
 import com.example.do_an_hk1_androidstudio.cloud.CatalogCloudRepository;
 import com.example.do_an_hk1_androidstudio.config.ChatBackendConfig;
-import com.example.do_an_hk1_androidstudio.local.CustomerCartStore;
 import com.example.do_an_hk1_androidstudio.local.model.LocalCategory;
 import com.example.do_an_hk1_androidstudio.local.model.LocalProduct;
 import com.example.do_an_hk1_androidstudio.ui.InsetsHelper;
@@ -61,7 +60,6 @@ public class ChatboxActivity extends AppCompatActivity {
     private TextView thinkingBubble;
     private View latestSuggestionView;
     private CatalogCloudRepository catalogRepository;
-    private CustomerCartStore cartStore;
     private ListenerRegistration productsListener;
     private ListenerRegistration categoriesListener;
     private final ExecutorService chatExecutor = Executors.newSingleThreadExecutor();
@@ -85,7 +83,6 @@ public class ChatboxActivity extends AppCompatActivity {
         edtMessage = findViewById(R.id.edtChatMessage);
         btnSend = findViewById(R.id.btnChatSend);
         catalogRepository = new CatalogCloudRepository(this);
-        cartStore = new CustomerCartStore(this);
 
         listenMenuData();
 
@@ -338,17 +335,12 @@ public class ChatboxActivity extends AppCompatActivity {
                     .into(image);
 
             add.setOnClickListener(v -> {
-                cartStore.addItem(
-                        product.getProductId(),
-                        product.getName(),
-                        product.getBasePrice(),
-                        1,
-                        null,
-                        null,
-                        null,
-                        product.getImageUrl()
-                );
-                Toast.makeText(this, "\u0110\u00e3 th\u00eam " + product.getName() + " v\u00e0o gi\u1ecf", Toast.LENGTH_SHORT).show();
+                android.content.Intent intent = new android.content.Intent(this, chitiet_sanpham.class);
+                intent.putExtra("Ten", product.getName());
+                intent.putExtra("Gia", String.valueOf(product.getBasePrice()));
+                intent.putExtra("hinhAnh", product.getImageUrl());
+                intent.putExtra("productId", product.getProductId());
+                startActivity(intent);
             });
 
             suggestionRow.addView(itemView);

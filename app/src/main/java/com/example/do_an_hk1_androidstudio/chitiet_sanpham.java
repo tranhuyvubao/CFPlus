@@ -15,17 +15,19 @@ import androidx.core.view.ViewCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.do_an_hk1_androidstudio.cloud.WishlistCloudRepository;
 import com.example.do_an_hk1_androidstudio.local.CustomerCartStore;
 import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
-import com.example.do_an_hk1_androidstudio.local.WishlistStore;
 import com.example.do_an_hk1_androidstudio.ui.InsetsHelper;
 import com.example.do_an_hk1_androidstudio.ui.MoneyFormatter;
 import com.example.do_an_hk1_androidstudio.ui.UiMotion;
 import com.google.firebase.firestore.ListenerRegistration;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class chitiet_sanpham extends AppCompatActivity {
 
@@ -47,10 +49,10 @@ public class chitiet_sanpham extends AppCompatActivity {
     private String productId;
     private String tenSanPham;
     private CustomerCartStore cartStore;
-    private WishlistStore wishlistStore;
     private WishlistCloudRepository wishlistCloudRepository;
     private LocalSessionManager sessionManager;
     private ListenerRegistration favoritesListener;
+    private final Set<String> favoriteIds = new LinkedHashSet<>();
     private ImageButton btnFavoriteTop;
     private ImageView imageButton1;
 
@@ -62,7 +64,6 @@ public class chitiet_sanpham extends AppCompatActivity {
         InsetsHelper.applyActivityRootPadding(this);
 
         cartStore = new CustomerCartStore(this);
-        wishlistStore = new WishlistStore(this);
         wishlistCloudRepository = new WishlistCloudRepository(this);
         sessionManager = new LocalSessionManager(this);
 
@@ -214,13 +215,13 @@ public class chitiet_sanpham extends AppCompatActivity {
 
     private void addToCart() {
         if (TextUtils.isEmpty(productId)) {
-            Toast.makeText(this, "Không tìm thấy sản phẩm để thêm vào giỏ.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Khong tim thay san pham de them vao gio.", Toast.LENGTH_SHORT).show();
             return;
         }
         String size = getSelectedSize();
         String da = getSelectedIce();
         if (size == null || da == null) {
-            Toast.makeText(this, "Vui lòng chọn size và mức đá.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Vui long chon size va muc da.", Toast.LENGTH_SHORT).show();
             return;
         }
         cartStore.addItem(productId, tenSanPham, giaSanPham, soLuong, size, da, null, hinhAnh);
@@ -229,7 +230,7 @@ public class chitiet_sanpham extends AppCompatActivity {
         if (tvCartCount != null && tvCartCount.getVisibility() == android.view.View.VISIBLE) {
             UiMotion.pulse(tvCartCount);
         }
-        Toast.makeText(this, "Đã thêm vào giỏ hàng online.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Da them vao gio hang online.", Toast.LENGTH_SHORT).show();
     }
 
     private void openCart() {
@@ -246,7 +247,7 @@ public class chitiet_sanpham extends AppCompatActivity {
         if (btnFavoriteTop == null || TextUtils.isEmpty(productId)) {
             return;
         }
-        btnFavoriteTop.setImageResource(wishlistStore.isFavorite(productId)
+        btnFavoriteTop.setImageResource(favoriteIds.contains(productId)
                 ? R.drawable.ic_heart_filled
                 : R.drawable.ic_heart_outline);
     }
@@ -255,21 +256,38 @@ public class chitiet_sanpham extends AppCompatActivity {
         if (TextUtils.isEmpty(productId)) {
             return;
         }
-        boolean nextFavorite = !wishlistStore.isFavorite(productId);
-        wishlistStore.setFavorite(productId, nextFavorite);
+        boolean nextFavorite = !favoriteIds.contains(productId);
+        if (nextFavorite) {
+            favoriteIds.add(productId);
+        } else {
+            favoriteIds.remove(productId);
+        }
         bindFavoriteState();
         UiMotion.pulse(btnFavoriteTop);
         Toast.makeText(this,
-                wishlistStore.isFavorite(productId) ? "Đã lưu vào yêu thích." : "Đã xóa khỏi yêu thích.",
+                nextFavorite ? "Da luu vao yeu thich." : "Da xoa khoi yeu thich.",
                 Toast.LENGTH_SHORT).show();
 
         String customerId = sessionManager.getCurrentUserId();
         if (TextUtils.isEmpty(customerId)) {
+            if (nextFavorite) {
+                favoriteIds.remove(productId);
+            } else {
+                favoriteIds.add(productId);
+            }
+            bindFavoriteState();
+            Toast.makeText(this, "Vui long dang nhap de dong bo mon yeu thich.", Toast.LENGTH_SHORT).show();
             return;
         }
         wishlistCloudRepository.setFavorite(customerId, productId, nextFavorite, (success, message) -> runOnUiThread(() -> {
             if (!success) {
-                Toast.makeText(this, message == null ? "Chưa đồng bộ được món yêu thích lên Firebase." : message, Toast.LENGTH_SHORT).show();
+                if (nextFavorite) {
+                    favoriteIds.remove(productId);
+                } else {
+                    favoriteIds.add(productId);
+                }
+                bindFavoriteState();
+                Toast.makeText(this, message == null ? "Chua dong bo duoc mon yeu thich len Firebase." : message, Toast.LENGTH_SHORT).show();
             }
         }));
     }
@@ -277,6 +295,7 @@ public class chitiet_sanpham extends AppCompatActivity {
     private void listenFavorites() {
         String customerId = sessionManager.getCurrentUserId();
         if (TextUtils.isEmpty(customerId)) {
+            favoriteIds.clear();
             bindFavoriteState();
             return;
         }
@@ -284,7 +303,8 @@ public class chitiet_sanpham extends AppCompatActivity {
             favoritesListener.remove();
         }
         favoritesListener = wishlistCloudRepository.listenFavoriteIds(customerId, ids -> runOnUiThread(() -> {
-            wishlistStore.replaceAll(ids);
+            favoriteIds.clear();
+            favoriteIds.addAll(ids);
             bindFavoriteState();
         }));
     }
@@ -292,7 +312,7 @@ public class chitiet_sanpham extends AppCompatActivity {
     private void capNhatSoLuong() {
         tvSo.setText(String.valueOf(soLuong));
         int tongTien = giaSanPham * soLuong;
-        tvGia.setText("Tổng tiền: " + MoneyFormatter.format(tongTien));
+        tvGia.setText("Tong tien: " + MoneyFormatter.format(tongTien));
         updateOptionPreview();
     }
 
@@ -302,10 +322,10 @@ public class chitiet_sanpham extends AppCompatActivity {
         }
         String size = getSelectedSize();
         String da = getSelectedIce();
-        String preview = "Lựa chọn: "
-                + (size == null ? "chưa chọn size" : "size " + size)
+        String preview = "Lua chon: "
+                + (size == null ? "chua chon size" : "size " + size)
                 + " | "
-                + (da == null ? "chưa chọn mức đá" : da.toLowerCase())
+                + (da == null ? "chua chon muc da" : da.toLowerCase())
                 + " | SL " + soLuong;
         tvOptionPreview.setText(preview);
     }
@@ -318,10 +338,10 @@ public class chitiet_sanpham extends AppCompatActivity {
     }
 
     private String getSelectedIce() {
-        if (checkDaNhieu.isChecked()) return "Đá bình thường";
-        if (checkItDa.isChecked()) return "Ít đá";
-        if (checkDaRieng.isChecked()) return "Đá riêng";
-        if (checkKhongDa.isChecked()) return "Không đá";
+        if (checkDaNhieu.isChecked()) return "Da binh thuong";
+        if (checkItDa.isChecked()) return "It da";
+        if (checkDaRieng.isChecked()) return "Da rieng";
+        if (checkKhongDa.isChecked()) return "Khong da";
         return null;
     }
 

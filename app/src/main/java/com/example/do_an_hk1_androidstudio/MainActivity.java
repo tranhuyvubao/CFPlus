@@ -24,7 +24,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.do_an_hk1_androidstudio.cloud.UserCloudRepository;
+import com.example.do_an_hk1_androidstudio.cloud.StaffPushTokenRepository;
 import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
+import com.example.do_an_hk1_androidstudio.ui.StaffNotificationSyncManager;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -131,6 +133,10 @@ public class MainActivity extends AppCompatActivity {
                 failedAttempts = 0;
                 editor.putInt("failedAttempts", failedAttempts).apply();
                 sessionManager.saveUser(user);
+                if ("staff".equalsIgnoreCase(user.getRole())) {
+                    new StaffPushTokenRepository(this).syncForCurrentSession();
+                    StaffNotificationSyncManager.getInstance(this).startIfNeeded();
+                }
 
                 if (autofill.isChecked()) {
                     saveCredentials(email, pass);

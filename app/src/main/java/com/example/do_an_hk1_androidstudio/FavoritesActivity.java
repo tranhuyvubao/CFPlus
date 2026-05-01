@@ -17,9 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.do_an_hk1_androidstudio.cloud.CatalogCloudRepository;
 import com.example.do_an_hk1_androidstudio.cloud.WishlistCloudRepository;
-import com.example.do_an_hk1_androidstudio.local.CustomerCartStore;
 import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
-import com.example.do_an_hk1_androidstudio.local.WishlistStore;
 import com.example.do_an_hk1_androidstudio.local.model.LocalProduct;
 import com.example.do_an_hk1_androidstudio.ui.InsetsHelper;
 import com.example.do_an_hk1_androidstudio.ui.MoneyFormatter;
@@ -37,9 +35,7 @@ public class FavoritesActivity extends AppCompatActivity {
     private final Set<String> favoriteIds = new LinkedHashSet<>();
     private CatalogCloudRepository catalogRepository;
     private WishlistCloudRepository wishlistCloudRepository;
-    private WishlistStore wishlistStore;
     private LocalSessionManager sessionManager;
-    private CustomerCartStore cartStore;
     private ListenerRegistration productsListener;
     private ListenerRegistration favoritesListener;
     private FavoriteAdapter adapter;
@@ -53,10 +49,7 @@ public class FavoritesActivity extends AppCompatActivity {
 
         catalogRepository = new CatalogCloudRepository(this);
         wishlistCloudRepository = new WishlistCloudRepository(this);
-        wishlistStore = new WishlistStore(this);
         sessionManager = new LocalSessionManager(this);
-        cartStore = new CustomerCartStore(this);
-        favoriteIds.addAll(wishlistStore.getFavoriteIds());
 
         findViewById(R.id.tvBack).setOnClickListener(v -> finish());
         tvEmpty = findViewById(R.id.tvFavoritesEmpty);
@@ -82,11 +75,11 @@ public class FavoritesActivity extends AppCompatActivity {
             favoritesListener = wishlistCloudRepository.listenFavoriteIds(customerId, ids -> runOnUiThread(() -> {
                 favoriteIds.clear();
                 favoriteIds.addAll(ids);
-                wishlistStore.replaceAll(ids);
                 bindFavorites();
             }));
-            wishlistCloudRepository.migrateLocalFavorites(customerId, wishlistStore.getFavoriteIds(), (success, message) -> {
-            });
+        } else {
+            favoriteIds.clear();
+            bindFavorites();
         }
     }
 
@@ -154,7 +147,7 @@ public class FavoritesActivity extends AppCompatActivity {
         void bind(LocalProduct product) {
             tvName.setText(product.getName());
             tvPrice.setText(MoneyFormatter.format(product.getBasePrice()));
-            tvBadge.setText("Yêu thích");
+            tvBadge.setText("Yeu thich");
             Glide.with(FavoritesActivity.this)
                     .load(product.getImageUrl())
                     .placeholder(R.drawable.cfplus4)
@@ -167,23 +160,41 @@ public class FavoritesActivity extends AppCompatActivity {
                 if (position == RecyclerView.NO_POSITION) {
                     return;
                 }
-                favoriteIds.remove(product.getProductId());
-                wishlistStore.setFavorite(product.getProductId(), false);
                 String customerId = sessionManager.getCurrentUserId();
-                if (customerId != null) {
-                    wishlistCloudRepository.setFavorite(customerId, product.getProductId(), false, (success, message) -> runOnUiThread(() -> {
-                        if (!success) {
-                            android.widget.Toast.makeText(FavoritesActivity.this,
-                                    message == null ? "Chưa đồng bộ được món yêu thích lên Firebase." : message,
-                                    android.widget.Toast.LENGTH_SHORT).show();
-                        }
-                    }));
+                if (customerId == null) {
+                    android.widget.Toast.makeText(
+                            FavoritesActivity.this,
+                            "Vui long dang nhap de dong bo mon yeu thich.",
+                            android.widget.Toast.LENGTH_SHORT
+                    ).show();
+                    return;
                 }
+
+                favoriteIds.remove(product.getProductId());
                 favorites.remove(position);
                 adapter.notifyItemRemoved(position);
                 tvEmpty.setVisibility(favorites.isEmpty() ? View.VISIBLE : View.GONE);
+
+                wishlistCloudRepository.setFavorite(customerId, product.getProductId(), false, (success, message) -> runOnUiThread(() -> {
+                    if (!success) {
+                        favoriteIds.add(product.getProductId());
+                        bindFavorites();
+                        android.widget.Toast.makeText(
+                                FavoritesActivity.this,
+                                message == null ? "Chua dong bo duoc mon yeu thich len Firebase." : message,
+                                android.widget.Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                }));
             });
-            btnAdd.setOnClickListener(v -> cartStore.addItem(product.getProductId(), product.getName(), product.getBasePrice(), 1, null, null, null, product.getImageUrl()));
+            btnAdd.setOnClickListener(v -> {
+                Intent intent = new Intent(FavoritesActivity.this, chitiet_sanpham.class);
+                intent.putExtra("Ten", product.getName());
+                intent.putExtra("Gia", String.valueOf(product.getBasePrice()));
+                intent.putExtra("hinhAnh", product.getImageUrl());
+                intent.putExtra("productId", product.getProductId());
+                startActivity(intent);
+            });
             itemView.setOnClickListener(v -> {
                 Intent intent = new Intent(FavoritesActivity.this, chitiet_sanpham.class);
                 intent.putExtra("Ten", product.getName());

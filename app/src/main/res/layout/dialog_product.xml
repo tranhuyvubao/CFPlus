@@ -1,80 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/dashboard_card">
+    android:layout_margin="20dp"
+    app:cardBackgroundColor="@color/dashboard_card"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="8dp"
+    app:strokeWidth="0dp">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="wrap_content">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Hình ảnh"
-            android:textColor="@color/dashboard_text_primary"
-            android:textStyle="bold" />
+            android:orientation="vertical"
+            android:padding="18dp">
 
-        <FrameLayout
-            android:id="@+id/framePickImage"
-            android:layout_width="match_parent"
-            android:layout_height="160dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/manager_image_surface">
-
-            <ImageView
-                android:id="@+id/imgPickProduct"
+            <TextView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:adjustViewBounds="true"
-                android:contentDescription="Chọn ảnh"
-                android:scaleType="fitCenter"
-                android:src="@android:drawable/ic_menu_gallery" />
-        </FrameLayout>
+                android:layout_height="wrap_content"
+                android:text="Hình ảnh"
+                android:textColor="@color/dashboard_text_primary"
+                android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/edtProductName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/manager_search_background"
-            android:hint="Tên món"
-            android:imeOptions="flagNoExtractUi"
-            android:inputType="textCapSentences|textMultiLine"
-            android:paddingHorizontal="14dp" />
+            <FrameLayout
+                android:id="@+id/framePickImage"
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/manager_image_surface">
 
-        <EditText
-            android:id="@+id/edtProductBasePrice"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/manager_search_background"
-            android:hint="Giá cơ bản (VND)"
-            android:inputType="number"
-            android:paddingHorizontal="14dp" />
+                <ImageView
+                    android:id="@+id/imgPickProduct"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:adjustViewBounds="true"
+                    android:contentDescription="Chọn ảnh"
+                    android:scaleType="fitCenter"
+                    android:src="@android:drawable/ic_menu_gallery" />
+            </FrameLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="Danh mục"
-            android:textColor="@color/dashboard_text_primary"
-            android:textStyle="bold" />
+            <EditText
+                android:id="@+id/edtProductName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/manager_search_background"
+                android:hint="Tên món"
+                android:imeOptions="flagNoExtractUi"
+                android:inputType="textCapSentences|textMultiLine"
+                android:paddingHorizontal="14dp" />
 
-        <Spinner
-            android:id="@+id/spProductCategory"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
+            <EditText
+                android:id="@+id/edtProductBasePrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/manager_search_background"
+                android:hint="Giá cơ bản (VND)"
+                android:inputType="number"
+                android:paddingHorizontal="14dp" />
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/swProductActive"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="Đang bán"
-            android:textColor="@color/dashboard_text_primary" />
-    </LinearLayout>
-</ScrollView>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Danh mục"
+                android:textColor="@color/dashboard_text_primary"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/spProductCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Size áp dụng"
+                android:textColor="@color/dashboard_text_primary"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/checkProductSizeS"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="S" />
+
+                <CheckBox
+                    android:id="@+id/checkProductSizeM"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="M" />
+
+                <CheckBox
+                    android:id="@+id/checkProductSizeL"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="L" />
+            </LinearLayout>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/swProductActive"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Đang bán"
+                android:textColor="@color/dashboard_text_primary" />
+        </LinearLayout>
+    </ScrollView>
+</com.google.android.material.card.MaterialCardView>

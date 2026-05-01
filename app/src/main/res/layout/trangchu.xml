@@ -42,6 +42,41 @@
                 android:layout_height="30dp"
                 android:adjustViewBounds="true"
                 android:src="@drawable/cfplus2" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <FrameLayout
+                android:id="@+id/btnHeaderNotifications"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:background="@drawable/manager_back_chip"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_notifications_24" />
+
+                <TextView
+                    android:id="@+id/tvHeaderNotificationBadge"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="end|top"
+                    android:background="@drawable/notification_badge_background"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="@android:color/white"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </FrameLayout>
         </LinearLayout>
 
         <FrameLayout

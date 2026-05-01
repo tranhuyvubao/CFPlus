@@ -51,7 +51,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Theo dõi món đã gọi, áp dụng mã giảm giá và thanh toán ngay tại bàn."
+            android:text="Theo dõi món đã gọi, chỉnh sửa nhanh và thanh toán ngay tại bàn."
             android:textColor="@color/dashboard_text_secondary"
             android:textSize="14sp" />
     </LinearLayout>
@@ -118,16 +118,38 @@
                         android:textSize="14sp" />
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/tvTableStatus"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/manager_accent_pill"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="8dp"
-                    android:text="Đang phục vụ"
-                    android:textColor="@color/dashboard_accent"
-                    android:textStyle="bold" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvTableStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/manager_accent_pill"
+                        android:gravity="center"
+                        android:minWidth="96dp"
+                        android:paddingHorizontal="14dp"
+                        android:paddingVertical="9dp"
+                        android:text="Đang phục vụ"
+                        android:textColor="@color/dashboard_accent"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/btnMoveTable"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/manager_primary_pill"
+                        android:gravity="center"
+                        android:minWidth="96dp"
+                        android:paddingHorizontal="14dp"
+                        android:paddingVertical="9dp"
+                        android:text="Đổi bàn"
+                        android:textColor="@android:color/white"
+                        android:textStyle="bold" />
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -316,15 +338,28 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/btnPrintBill"
+                    android:id="@+id/btnEditBill"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="6dp"
                     android:layout_weight="1"
+                    android:background="@drawable/manager_soft_pill"
+                    android:gravity="center"
+                    android:padding="14dp"
+                    android:text="Sửa món"
+                    android:textColor="@color/dashboard_primary"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/btnPrintBill"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="6dp"
+                    android:layout_weight="1"
                     android:background="@drawable/manager_back_chip"
                     android:gravity="center"
                     android:padding="14dp"
-                    android:text="Xem hóa đơn"
+                    android:text="Tạm tính"
                     android:textColor="@color/dashboard_primary"
                     android:textStyle="bold" />
 

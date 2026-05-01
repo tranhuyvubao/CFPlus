@@ -36,13 +36,23 @@ public class FirebaseSeederActivity extends AppCompatActivity {
 
     private void seedAll() {
         seeder.seedBaseData((success, message) -> {
-            if (success) {
-                tvLog.setText("Đã seed dữ liệu mẫu lên Firebase: tài khoản, danh mục, món, bàn, kho, khuyến mãi.\nTài khoản quản lý mặc định: admin@cfplus.app / 01020304.");
-                Toast.makeText(this, "Seed Firebase thành công!", Toast.LENGTH_SHORT).show();
+            if (!success) {
+                tvLog.setText("Seed Firebase thất bại: " + (message == null ? "Không rõ nguyên nhân" : message));
+                Toast.makeText(this, "Seed Firebase thất bại", Toast.LENGTH_SHORT).show();
                 return;
             }
-            tvLog.setText("Seed Firebase thất bại: " + (message == null ? "Không rõ nguyên nhân" : message));
-            Toast.makeText(this, "Seed Firebase thất bại", Toast.LENGTH_SHORT).show();
+            seeder.backfillProductSizes((sizeSuccess, sizeMessage) -> runOnUiThread(() -> {
+                if (!sizeSuccess) {
+                    tvLog.setText("Seed dữ liệu xong nhưng cập nhật size thất bại: "
+                            + (sizeMessage == null ? "Không rõ nguyên nhân" : sizeMessage));
+                    Toast.makeText(this, "Cập nhật size thất bại", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                tvLog.setText("Đã seed dữ liệu mẫu + đồng bộ size món lên Firebase.\n"
+                        + (sizeMessage == null ? "" : sizeMessage + "\n")
+                        + "Tài khoản quản lý mặc định: admin@cfplus.app / 01020304.");
+                Toast.makeText(this, "Seed + đồng bộ size thành công!", Toast.LENGTH_SHORT).show();
+            }));
         });
     }
 }

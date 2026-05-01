@@ -1,107 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_margin="20dp"
+    app:cardBackgroundColor="@color/dashboard_card"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="8dp"
+    app:strokeWidth="0dp">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/tvBannerDialogTitle"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Banner"
-            android:textColor="@color/dashboard_text_primary"
-            android:textSize="22sp"
-            android:textStyle="bold" />
+            android:orientation="vertical"
+            android:padding="20dp">
 
-        <ImageView
-            android:id="@+id/imgBannerPreview"
-            android:layout_width="match_parent"
-            android:layout_height="130dp"
-            android:layout_marginTop="14dp"
-            android:background="@drawable/manager_image_surface"
-            android:scaleType="centerCrop" />
+            <TextView
+                android:id="@+id/tvBannerDialogTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Banner"
+                android:textColor="@color/dashboard_text_primary"
+                android:textSize="24sp"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/btnChooseBannerImage"
-            android:layout_width="wrap_content"
-            android:layout_height="42dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/manager_accent_pill"
-            android:gravity="center"
-            android:paddingHorizontal="14dp"
-            android:text="Chọn ảnh"
-            android:textColor="@color/dashboard_accent"
-            android:textStyle="bold" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Tạo slide nổi bật cho khách hàng, có thể gắn nhiều món liên kết để đẩy bán combo hoặc chiến dịch."
+                android:textColor="@color/dashboard_text_secondary"
+                android:textSize="14sp" />
 
-        <EditText
-            android:id="@+id/edtBannerTitle"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="12dp"
-            android:hint="Tiêu đề, ví dụ: Mùa hè tươi mát"
-            android:singleLine="true" />
+            <ImageView
+                android:id="@+id/imgBannerPreview"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/manager_image_surface"
+                android:scaleType="centerCrop" />
 
-        <EditText
-            android:id="@+id/edtBannerSubtitle"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="10dp"
-            android:hint="Mô tả ngắn"
-            android:singleLine="true" />
+            <TextView
+                android:id="@+id/btnChooseBannerImage"
+                android:layout_width="wrap_content"
+                android:layout_height="42dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/manager_accent_pill"
+                android:gravity="center"
+                android:paddingHorizontal="14dp"
+                android:text="Chọn ảnh"
+                android:textColor="@color/dashboard_accent"
+                android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/edtBannerAction"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="10dp"
-            android:hint="Nút hiển thị, ví dụ: Xem combo"
-            android:singleLine="true" />
+            <EditText
+                android:id="@+id/edtBannerTitle"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/manager_search_background"
+                android:hint="Tiêu đề, ví dụ: Mùa hè tươi mát"
+                android:paddingHorizontal="14dp"
+                android:singleLine="true" />
 
-        <TextView
-            android:id="@+id/tvSelectedBannerProduct"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/manager_search_background"
-            android:drawableEnd="@android:drawable/ic_menu_search"
-            android:gravity="center_vertical"
-            android:paddingHorizontal="14dp"
-            android:text="Chọn các món liên kết"
-            android:textColor="@color/dashboard_text_secondary"
-            android:textSize="15sp" />
+            <EditText
+                android:id="@+id/edtBannerSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/manager_search_background"
+                android:hint="Mô tả ngắn"
+                android:paddingHorizontal="14dp"
+                android:singleLine="true" />
 
-        <TextView
-            android:id="@+id/btnClearBannerProduct"
-            android:layout_width="wrap_content"
-            android:layout_height="38dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/manager_accent_pill"
-            android:gravity="center"
-            android:paddingHorizontal="12dp"
-            android:text="Bỏ liên kết món"
-            android:textColor="@color/dashboard_primary"
-            android:textSize="13sp"
-            android:textStyle="bold" />
+            <EditText
+                android:id="@+id/edtBannerAction"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/manager_search_background"
+                android:hint="Nút hiển thị, ví dụ: Xem combo"
+                android:paddingHorizontal="14dp"
+                android:singleLine="true" />
 
-        <EditText
-            android:id="@+id/edtBannerSortOrder"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="10dp"
-            android:hint="Thứ tự hiển thị"
-            android:inputType="numberSigned"
-            android:singleLine="true" />
+            <TextView
+                android:id="@+id/tvSelectedBannerProduct"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/manager_search_background"
+                android:drawableEnd="@android:drawable/ic_menu_search"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="14dp"
+                android:text="Chọn các món liên kết"
+                android:textColor="@color/dashboard_text_secondary"
+                android:textSize="15sp" />
 
-        <Switch
-            android:id="@+id/switchBannerActive"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="Đang hiển thị" />
-    </LinearLayout>
-</ScrollView>
+            <TextView
+                android:id="@+id/btnClearBannerProduct"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/manager_back_chip"
+                android:gravity="center"
+                android:paddingHorizontal="12dp"
+                android:text="Bỏ liên kết món"
+                android:textColor="@color/dashboard_primary"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/edtBannerSortOrder"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/manager_search_background"
+                android:hint="Thứ tự hiển thị"
+                android:inputType="numberSigned"
+                android:paddingHorizontal="14dp"
+                android:singleLine="true" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switchBannerActive"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="Đang hiển thị"
+                android:textColor="@color/dashboard_text_primary" />
+        </LinearLayout>
+    </ScrollView>
+</com.google.android.material.card.MaterialCardView>

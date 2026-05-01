@@ -51,6 +51,7 @@ public class OrderCloudRepository {
     private final PendingSyncRepository pendingSyncRepository;
     private final LocalSessionManager sessionManager;
     private final OrderActionLogRepository actionLogRepository;
+    private final StaffNotificationCloudRepository staffNotificationRepository;
     private final android.os.Handler mainHandler = new android.os.Handler(android.os.Looper.getMainLooper());
 
     public OrderCloudRepository(Context context) {
@@ -59,6 +60,7 @@ public class OrderCloudRepository {
         pendingSyncRepository = new PendingSyncRepository(appContext);
         sessionManager = new LocalSessionManager(appContext);
         actionLogRepository = new OrderActionLogRepository(appContext);
+        staffNotificationRepository = new StaffNotificationCloudRepository(appContext);
     }
 
     public void createCustomerOrder(String orderType,
@@ -238,6 +240,17 @@ public class OrderCloudRepository {
                         handled[0] = true;
                         mainHandler.removeCallbacks(timeoutRunnable[0]);
                         Log.d(TAG, "createOnlineCartOrder success orderId=" + orderId);
+                        emitStaffNotification(
+                                "new_online_order",
+                                "new_online_order_" + orderId,
+                                "Đơn online mới",
+                                "Đơn " + orderCode + " vừa được tạo từ khách đặt qua app.",
+                                orderId,
+                                "customer_app",
+                                null,
+                                null,
+                                "created"
+                        );
                         callback.onComplete(true, orderId, null);
                     })
                     .addOnFailureListener(e -> {
@@ -265,6 +278,34 @@ public class OrderCloudRepository {
             return "Không kết nối được Firestore (firestore.googleapis.com). Kiểm tra DNS/mạng của emulator rồi thử lại.";
         }
         return message;
+    }
+
+    private void emitStaffNotification(@NonNull String type,
+                                       @NonNull String eventKey,
+                                       @NonNull String title,
+                                       @NonNull String body,
+                                       @Nullable String orderId,
+                                       @Nullable String orderChannel,
+                                       @Nullable String tableId,
+                                       @Nullable String tableName,
+                                       @Nullable String status) {
+        staffNotificationRepository.createNotification(
+                eventKey,
+                eventKey,
+                type,
+                title,
+                body,
+                orderId,
+                orderChannel,
+                tableId,
+                tableName,
+                status,
+                (success, message) -> {
+                    if (!success) {
+                        Log.w(TAG, "Could not emit staff notification: " + message);
+                    }
+                }
+        );
     }
 
     public void createTableQrOrder(String customerId,
@@ -346,6 +387,10 @@ public class OrderCloudRepository {
             updates.put("status", nextStatus);
             updates.put("updatedAt", FieldValue.serverTimestamp());
             updates.put("needsStaffAttention", false);
+            updates.put("lastCustomerAction", null);
+            updates.put("lastCustomerItemAddedQty", 0);
+            updates.put("lastCustomerItemAddedAt", 0L);
+            updates.put("lastCustomerAddedItems", new ArrayList<>());
             if (!TextUtils.isEmpty(staffId)) {
                 updates.put("staffId", staffId);
             }
@@ -375,6 +420,85 @@ public class OrderCloudRepository {
         });
     }
 
+    public void updateOrderItems(@NonNull String orderId,
+                                 @NonNull List<LocalOrderItem> items,
+                                 int discountAmount,
+                                 @Nullable String staffId,
+                                 @NonNull CompletionCallback callback) {
+        if (items.isEmpty()) {
+            callback.onComplete(false, "Đơn hiện không còn món nào để lưu.");
+            return;
+        }
+
+        FirebaseProvider.ensureAuthenticated(appContext, (authSuccess, authMessage) -> {
+            if (!authSuccess) {
+                callback.onComplete(false, authMessage == null ? "Firebase auth chua san sang" : authMessage);
+                return;
+            }
+
+            List<Map<String, Object>> orderItems = new ArrayList<>();
+            int subtotal = 0;
+            for (LocalOrderItem item : items) {
+                int qty = Math.max(1, item.getQty());
+                int unitPrice = Math.max(0, item.getUnitPrice());
+                int lineTotal = qty * unitPrice;
+                subtotal += lineTotal;
+
+                Map<String, Object> itemData = new HashMap<>();
+                itemData.put("itemId", nullableTrim(item.getItemId()));
+                itemData.put("productId", nullableTrim(item.getProductId()));
+                itemData.put("productName", nullableTrim(item.getProductName()));
+                itemData.put("variantName", nullableTrim(item.getVariantName()));
+                itemData.put("qty", qty);
+                itemData.put("unitPrice", unitPrice);
+                itemData.put("note", nullableTrim(item.getNote()));
+                itemData.put("lineTotal", lineTotal);
+                itemData.put("imageUrl", nullableTrim(item.getImageUrl()));
+                orderItems.add(itemData);
+            }
+
+            LocalOrderItem firstItem = items.get(0);
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("items", orderItems);
+            updates.put("productId", nullableTrim(firstItem.getProductId()));
+            updates.put("productName", nullableTrim(firstItem.getProductName()));
+            updates.put("unitPrice", Math.max(0, firstItem.getUnitPrice()));
+            updates.put("qty", Math.max(1, firstItem.getQty()));
+            updates.put("variantName", nullableTrim(firstItem.getVariantName()));
+            updates.put("note", nullableTrim(firstItem.getNote()));
+            updates.put("imageUrl", nullableTrim(firstItem.getImageUrl()));
+            updates.put("subtotal", subtotal);
+            updates.put("discountAmount", Math.max(0, discountAmount));
+            updates.put("total", Math.max(0, subtotal - Math.max(0, discountAmount)));
+            updates.put("updatedAt", FieldValue.serverTimestamp());
+            updates.put("needsStaffAttention", false);
+            updates.put("lastCustomerAction", null);
+            updates.put("lastCustomerItemAddedQty", 0);
+            updates.put("lastCustomerItemAddedAt", 0L);
+            updates.put("lastCustomerAddedItems", new ArrayList<>());
+            if (!TextUtils.isEmpty(staffId)) {
+                updates.put("staffId", staffId);
+            }
+
+            firestore.collection("orders")
+                    .document(orderId)
+                    .update(updates)
+                    .addOnSuccessListener(unused -> {
+                        actionLogRepository.log(orderId, "Sửa món trong đơn", staffId, buildActorName(), null);
+                        NotificationCenter.storeAndShow(
+                                appContext,
+                                "Đơn hàng đã được chỉnh sửa",
+                                "Nhân viên vừa cập nhật lại món trong đơn " + orderId + ".",
+                                "order_update",
+                                orderId,
+                                null
+                        );
+                        callback.onComplete(true, null);
+                    })
+                    .addOnFailureListener(e -> callback.onComplete(false, e.getMessage()));
+        });
+    }
+
     public void updateOrderTable(String orderId,
                                  @Nullable String tableName,
                                  @NonNull CompletionCallback callback) {
@@ -389,13 +513,105 @@ public class OrderCloudRepository {
             firestore.collection("orders")
                     .document(orderId)
                     .update(updates)
-                    .addOnSuccessListener(unused -> callback.onComplete(true, null))
+                    .addOnSuccessListener(unused -> {
+                        emitStaffNotification(
+                                "customer_support_request",
+                                "customer_support_request_" + orderId,
+                                "Khách cần hỗ trợ",
+                                "Đơn " + orderId + " vừa gửi yêu cầu nhân viên kiểm tra và hỗ trợ sửa món.",
+                                orderId,
+                                null,
+                                null,
+                                null,
+                                "created"
+                        );
+                        callback.onComplete(true, null);
+                    })
+                    .addOnFailureListener(e -> callback.onComplete(false, e.getMessage()));
+        });
+    }
+
+    public void reassignOrderTable(String orderId,
+                                   @Nullable String oldTableId,
+                                   @Nullable String newTableId,
+                                   @Nullable String newTableName,
+                                   @Nullable String staffId,
+                                   @NonNull CompletionCallback callback) {
+        FirebaseProvider.ensureAuthenticated(appContext, (authSuccess, authMessage) -> {
+            if (!authSuccess) {
+                callback.onComplete(false, authMessage == null ? "Firebase auth chua san sang" : authMessage);
+                return;
+            }
+
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("tableId", nullableTrim(newTableId));
+            updates.put("tableName", nullableTrim(newTableName));
+            updates.put("updatedAt", FieldValue.serverTimestamp());
+            if (!TextUtils.isEmpty(staffId)) {
+                updates.put("staffId", staffId);
+            }
+
+            firestore.collection("orders")
+                    .document(orderId)
+                    .update(updates)
+                    .addOnSuccessListener(unused -> {
+                        if (!TextUtils.isEmpty(oldTableId)
+                                && !TableCloudRepository.TAKEAWAY_TABLE_ID.equals(oldTableId)
+                                && !oldTableId.equals(newTableId)) {
+                            Map<String, Object> sourceTable = new HashMap<>();
+                            sourceTable.put("status", "free");
+                            sourceTable.put("updatedAt", System.currentTimeMillis());
+                            firestore.collection("tables").document(oldTableId).update(sourceTable);
+                        }
+                        if (!TextUtils.isEmpty(newTableId)
+                                && !TableCloudRepository.TAKEAWAY_TABLE_ID.equals(newTableId)) {
+                            Map<String, Object> targetTable = new HashMap<>();
+                            targetTable.put("status", "occupied");
+                            targetTable.put("updatedAt", System.currentTimeMillis());
+                            firestore.collection("tables").document(newTableId).update(targetTable);
+                        }
+                        actionLogRepository.log(orderId, "Doi ban cho khach", staffId, buildActorName(), nullableTrim(newTableName));
+                        emitStaffNotification(
+                                "table_changed",
+                                "table_changed_" + orderId + "_" + String.valueOf(newTableId),
+                                "Da doi ban cho khach",
+                                "Don " + orderId + " vua duoc chuyen sang " + String.valueOf(newTableName) + ".",
+                                orderId,
+                                null,
+                                newTableId,
+                                newTableName,
+                                "created"
+                        );
+                        callback.onComplete(true, null);
+                    })
                     .addOnFailureListener(e -> callback.onComplete(false, e.getMessage()));
         });
     }
 
     public void cancelOrder(String orderId, @NonNull CompletionCallback callback) {
         updateOrderStatus(orderId, "cancelled", null, callback);
+    }
+
+    public void requestStaffSupport(String orderId, @Nullable String requestNote, @NonNull CompletionCallback callback) {
+        FirebaseProvider.ensureAuthenticated(appContext, (authSuccess, authMessage) -> {
+            if (!authSuccess) {
+                callback.onComplete(false, authMessage == null ? "Firebase auth chua san sang" : authMessage);
+                return;
+            }
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("needsStaffAttention", true);
+            updates.put("lastCustomerAction", "support_request");
+            updates.put("lastCustomerItemAddedAt", System.currentTimeMillis());
+            updates.put("updatedAt", FieldValue.serverTimestamp());
+            if (!TextUtils.isEmpty(requestNote)) {
+                updates.put("note", requestNote.trim());
+            }
+            firestore.collection("orders")
+                    .document(orderId)
+                    .update(updates)
+                    .addOnSuccessListener(unused -> callback.onComplete(true, null))
+                    .addOnFailureListener(e -> callback.onComplete(false, e.getMessage()));
+        });
     }
 
     public void setOrderPaymentStatus(String orderId,
@@ -462,7 +678,7 @@ public class OrderCloudRepository {
                         NotificationCenter.storeAndShow(
                                 appContext,
                                 "Thanh toán thành công",
-                                "Đơn " + orderId + " đã được ghi nhận thanh toán.",
+                                "Đơn hàng đã được ghi nhận thanh toán.",
                                 "payment",
                                 orderId,
                                 "paid"
@@ -578,6 +794,7 @@ public class OrderCloudRepository {
                 Boolean.TRUE.equals(doc.getBoolean("needsStaffAttention")),
                 intValue(doc.getLong("lastCustomerItemAddedQty")),
                 longValueOrZero(doc.get("lastCustomerItemAddedAt")),
+                mapSnapshotItems(doc.get("lastCustomerAddedItems"), valueOf(doc.getString("orderId"))),
                 mapOrderItems(doc)
         );
     }
@@ -640,6 +857,39 @@ public class OrderCloudRepository {
             }
             items.add(new LocalOrderItem(
                     orderId + "_item_" + index++,
+                    orderId,
+                    stringValue(itemMap.get("productId")),
+                    stringValue(itemMap.get("productName")),
+                    stringValue(itemMap.get("variantName")),
+                    qty,
+                    unitPrice,
+                    stringValue(itemMap.get("note")),
+                    lineTotal,
+                    stringValue(itemMap.get("imageUrl"))
+            ));
+        }
+        return items;
+    }
+
+    private List<LocalOrderItem> mapSnapshotItems(@Nullable Object rawItems, @NonNull String orderId) {
+        List<LocalOrderItem> items = new ArrayList<>();
+        if (!(rawItems instanceof List<?>)) {
+            return items;
+        }
+        int index = 0;
+        for (Object rawItem : (List<?>) rawItems) {
+            if (!(rawItem instanceof Map<?, ?>)) {
+                continue;
+            }
+            Map<?, ?> itemMap = (Map<?, ?>) rawItem;
+            int unitPrice = intValue(numberToLong(itemMap.get("unitPrice")));
+            int qty = intValue(numberToLong(itemMap.get("qty")));
+            int lineTotal = intValue(numberToLong(itemMap.get("lineTotal")));
+            if (lineTotal <= 0) {
+                lineTotal = unitPrice * qty;
+            }
+            items.add(new LocalOrderItem(
+                    orderId + "_added_" + index++,
                     orderId,
                     stringValue(itemMap.get("productId")),
                     stringValue(itemMap.get("productName")),

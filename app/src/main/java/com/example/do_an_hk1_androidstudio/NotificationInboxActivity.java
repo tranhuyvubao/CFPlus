@@ -1,15 +1,21 @@
 package com.example.do_an_hk1_androidstudio;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.do_an_hk1_androidstudio.local.DataHelper;
+import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
 import com.example.do_an_hk1_androidstudio.local.room.CfPlusLocalDatabase;
 import com.example.do_an_hk1_androidstudio.local.room.NotificationInboxEntity;
+import com.example.do_an_hk1_androidstudio.ui.InsetsHelper;
+import com.example.do_an_hk1_androidstudio.ui.NotificationCenter;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -19,22 +25,38 @@ public class NotificationInboxActivity extends AppCompatActivity {
 
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
 
+    private RecyclerView recyclerView;
+    private TextView tvEmpty;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_notification_inbox);
+        InsetsHelper.applyStatusBarPadding(findViewById(R.id.headerNotificationInbox));
+        InsetsHelper.applyNavigationBarPadding(findViewById(R.id.rootNotificationInbox));
 
-        RecyclerView recyclerView = findViewById(R.id.rvNotificationInbox);
-        TextView tvEmpty = findViewById(R.id.tvNotificationInboxEmpty);
-        findViewById(R.id.btnNotificationBack).setOnClickListener(v -> finish());
-
-        List<NotificationInboxEntity> notifications = CfPlusLocalDatabase.getInstance(this)
-                .notificationInboxDao()
-                .getAll();
-
+        recyclerView = findViewById(R.id.rvNotificationInbox);
+        tvEmpty = findViewById(R.id.tvNotificationInboxEmpty);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        findViewById(R.id.btnNotificationBack).setOnClickListener(v -> finish());
+        bindNotifications();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        bindNotifications();
+    }
+
+    private void bindNotifications() {
+        String userId = new LocalSessionManager(this).getCurrentUserId();
+        List<NotificationInboxEntity> notifications = userId == null
+                ? CfPlusLocalDatabase.getInstance(this).notificationInboxDao().getAll()
+                : CfPlusLocalDatabase.getInstance(this).notificationInboxDao().getAllForUser(userId);
         recyclerView.setAdapter(new InboxAdapter(notifications));
-        tvEmpty.setVisibility(notifications.isEmpty() ? TextView.VISIBLE : TextView.GONE);
+        tvEmpty.setVisibility(notifications.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     private class InboxAdapter extends RecyclerView.Adapter<InboxViewHolder> {
@@ -79,20 +101,39 @@ public class NotificationInboxActivity extends AppCompatActivity {
             tvBody.setText(item.body);
             String meta = timeFormat.format(item.createdAt);
             if (item.orderId != null && !item.orderId.isEmpty()) {
-                meta += "  •  " + item.orderId;
+                meta += " • Mã đơn " + toDisplayOrderCode(item.orderId, item.createdAt);
             }
             tvMeta.setText(meta);
-            itemView.setAlpha(item.read ? 0.74f : 1f);
+            itemView.setAlpha(item.read ? 0.76f : 1f);
             itemView.setOnClickListener(v -> {
                 CfPlusLocalDatabase.getInstance(NotificationInboxActivity.this)
                         .notificationInboxDao()
                         .markRead(item.id);
                 item.read = true;
+                sendBroadcast(new android.content.Intent(NotificationCenter.ACTION_INBOX_UPDATED)
+                        .setPackage(getPackageName()));
                 RecyclerView.Adapter<?> adapter = getBindingAdapter();
                 if (adapter != null && getBindingAdapterPosition() != RecyclerView.NO_POSITION) {
                     adapter.notifyItemChanged(getBindingAdapterPosition());
                 }
             });
         }
+    }
+
+    private String toDisplayOrderCode(@NonNull String orderId, long fallbackTimestamp) {
+        String normalized = orderId.trim();
+        if (normalized.isEmpty()) {
+            return DataHelper.newOrderCode(fallbackTimestamp);
+        }
+        if (normalized.startsWith("web_order_")
+                || normalized.startsWith("cloud_order_")
+                || normalized.startsWith("online_order_")
+                || normalized.startsWith("order_")) {
+            return DataHelper.newOrderCode(fallbackTimestamp);
+        }
+        if (normalized.length() > 28) {
+            return normalized.substring(0, 28) + "...";
+        }
+        return normalized;
     }
 }

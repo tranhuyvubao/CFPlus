@@ -71,6 +71,35 @@
                         android:textColor="@color/dashboard_text_secondary"
                         android:textSize="14sp" />
                 </LinearLayout>
+
+                <FrameLayout
+                    android:id="@+id/btnStaffNotifications"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/manager_back_chip"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackgroundBorderless">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_notifications_24" />
+
+                    <TextView
+                        android:id="@+id/tvStaffNotificationBadge"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_gravity="end|top"
+                        android:background="@drawable/notification_badge_background"
+                        android:gravity="center"
+                        android:text="0"
+                        android:textColor="@android:color/white"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
+                </FrameLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

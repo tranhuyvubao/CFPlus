@@ -14,13 +14,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.do_an_hk1_androidstudio.cloud.CatalogCloudRepository;
 import com.example.do_an_hk1_androidstudio.cloud.OrderCloudRepository;
 import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrder;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrderItem;
+import com.example.do_an_hk1_androidstudio.local.model.LocalProduct;
 import com.example.do_an_hk1_androidstudio.ui.InsetsHelper;
 import com.example.do_an_hk1_androidstudio.ui.MoneyFormatter;
-import com.example.do_an_hk1_androidstudio.ui.NotificationCenter;
+import com.example.do_an_hk1_androidstudio.ui.StaffOrderEditorDialog;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.text.SimpleDateFormat;
@@ -34,6 +36,7 @@ import java.util.Map;
 public class NhanDonOnlineActivity extends AppCompatActivity {
 
     private final List<LocalOrder> orders = new ArrayList<>();
+    private final List<LocalProduct> editableProducts = new ArrayList<>();
     private final Map<String, Long> notifiedAttentionEvents = new HashMap<>();
 
     private OnlineOrderAdapter adapter;
@@ -43,6 +46,7 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
     private OrderCloudRepository orderRepository;
     private LocalSessionManager sessionManager;
     private ListenerRegistration orderListener;
+    private ListenerRegistration productListener;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,6 +68,7 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
         selectedTableName = getIntent().getStringExtra("tableName");
 
         TextView tvTitle = findViewById(R.id.tvTitleOnline);
+        TextView tvSubtitle = findViewById(R.id.tvOnlineSubtitle);
         View tvBack = findViewById(R.id.tvBack);
         tvEmpty = findViewById(R.id.tvEmpty);
 
@@ -75,6 +80,9 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
             if (tvTitle != null) {
                 tvTitle.setText("Hóa đơn bàn");
             }
+            if (tvSubtitle != null) {
+                tvSubtitle.setText("Theo dõi đơn đang mở tại bàn, chỉnh sửa món và thanh toán ngay khi khách đổi yêu cầu.");
+            }
             if (selectedTableName != null && !selectedTableName.trim().isEmpty()) {
                 tvEmpty.setText(selectedTableName + " đang trống.");
             }
@@ -82,8 +90,8 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
             if (tvTitle != null) {
                 tvTitle.setText("Nhận đơn online");
             }
-            if (selectedTableName != null && !selectedTableName.trim().isEmpty()) {
-                tvEmpty.setText("Chưa có đơn nào cho " + selectedTableName + ".");
+            if (tvSubtitle != null) {
+                tvSubtitle.setText("Xác nhận, chỉnh sửa và hoàn tất đơn khách đặt qua app hoặc QR.");
             }
         }
 
@@ -97,6 +105,7 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         loadOnlineOrders();
+        listenProducts();
     }
 
     @Override
@@ -106,6 +115,20 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
             orderListener.remove();
             orderListener = null;
         }
+        if (productListener != null) {
+            productListener.remove();
+            productListener = null;
+        }
+    }
+
+    private void listenProducts() {
+        if (productListener != null) {
+            productListener.remove();
+        }
+        productListener = new CatalogCloudRepository(this).listenProducts(products -> runOnUiThread(() -> {
+            editableProducts.clear();
+            editableProducts.addAll(products);
+        }));
     }
 
     private void loadOnlineOrders() {
@@ -138,6 +161,8 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
                 tvEmpty.setText(orders.isEmpty()
                         ? (selectedTableName == null ? "Bàn này đang trống." : selectedTableName + " đang trống.")
                         : "");
+            } else {
+                tvEmpty.setText("Chưa có đơn online nào đang mở.");
             }
             tvEmpty.setVisibility(orders.isEmpty() ? View.VISIBLE : View.GONE);
         }));
@@ -147,16 +172,16 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
         return selectedTableId != null && !selectedTableId.trim().isEmpty();
     }
 
-    private boolean isOpenStatus(String status) {
+    private boolean isOpenStatus(@Nullable String status) {
         return "created".equals(status) || "confirmed".equals(status);
     }
 
-    private boolean isCustomerSubmittedOrder(LocalOrder order) {
+    private boolean isCustomerSubmittedOrder(@NonNull LocalOrder order) {
         String orderChannel = order.getOrderChannel();
         return "customer_app".equals(orderChannel) || "customer_qr".equals(orderChannel);
     }
 
-    private void notifyWhenCustomerAddsItems(List<LocalOrder> visibleOrders) {
+    private void notifyWhenCustomerAddsItems(@NonNull List<LocalOrder> visibleOrders) {
         for (LocalOrder order : visibleOrders) {
             if (!order.needsStaffAttention()) {
                 continue;
@@ -169,22 +194,60 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
             }
 
             int addedQty = Math.max(1, order.getLastCustomerItemAddedQty());
-            String title = "Khách vừa thêm món";
             String tableLabel = order.getTableName() == null || order.getTableName().trim().isEmpty()
                     ? "đơn " + order.getDisplayOrderCode()
                     : order.getTableName();
             String body = tableLabel + " vừa thêm " + addedQty + " món. Vui lòng kiểm tra đơn.";
             Toast.makeText(this, body, Toast.LENGTH_LONG).show();
-            NotificationCenter.storeAndShow(
-                    this,
-                    title,
-                    body,
-                    "order_item_added",
-                    order.getOrderId(),
-                    order.getStatus()
-            );
             notifiedAttentionEvents.put(order.getOrderId(), eventAt);
         }
+    }
+
+    private void openOrderEditor(@NonNull LocalOrder order) {
+        StaffOrderEditorDialog.show(
+                this,
+                order.getDisplayOrderCode(),
+                order.getItems(),
+                editableProducts,
+                true,
+                updatedItems -> {
+                    if (updatedItems.isEmpty()) {
+                        confirmCancelOrder(order);
+                        return;
+                    }
+                    orderRepository.updateOrderItems(
+                            order.getOrderId(),
+                            updatedItems,
+                            order.getDiscountAmount(),
+                            sessionManager.getCurrentUserId(),
+                            (success, message) -> runOnUiThread(() -> {
+                                if (success) {
+                                    Toast.makeText(this, "Đã cập nhật lại món trong đơn.", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(this, message == null ? "Không thể lưu thay đổi đơn." : message, Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                    );
+                }
+        );
+    }
+
+    private void confirmCancelOrder(@NonNull LocalOrder order) {
+        new AlertDialog.Builder(this)
+                .setTitle("Hủy đơn?")
+                .setMessage("Nếu xóa hết món, đơn sẽ được hủy. Bạn có muốn tiếp tục không?")
+                .setNegativeButton("Giữ lại", null)
+                .setPositiveButton("Hủy đơn", (dialog, which) -> orderRepository.cancelOrder(
+                        order.getOrderId(),
+                        (success, message) -> runOnUiThread(() -> {
+                            if (success) {
+                                Toast.makeText(this, "Đơn đã được hủy.", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(this, message == null ? "Không thể hủy đơn." : message, Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                ))
+                .show();
     }
 
     private class OnlineOrderAdapter extends RecyclerView.Adapter<OnlineOrderViewHolder> {
@@ -221,6 +284,7 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
         private final TextView tvChiTietMon;
         private final TextView tvThoiGian;
         private final TextView tvDiaChiGiao;
+        private final TextView tvSuaDon;
         private final TextView tvHanhDong;
         private final TextView tvInBill;
 
@@ -234,6 +298,7 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
             tvChiTietMon = itemView.findViewById(R.id.tvChiTietMon);
             tvThoiGian = itemView.findViewById(R.id.tvThoiGian);
             tvDiaChiGiao = itemView.findViewById(R.id.tvDiaChiGiao);
+            tvSuaDon = itemView.findViewById(R.id.tvSuaDon);
             tvHanhDong = itemView.findViewById(R.id.tvHanhDong);
             tvInBill = itemView.findViewById(R.id.tvInBill);
         }
@@ -263,7 +328,18 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
             if (order.needsStaffAttention()) {
                 int addedQty = Math.max(1, order.getLastCustomerItemAddedQty());
                 tvNewItemsAlert.setVisibility(View.VISIBLE);
-                tvNewItemsAlert.setText("Khách vừa thêm " + addedQty + " món - kiểm tra lại đơn");
+                StringBuilder alert = new StringBuilder("Khách vừa thêm ")
+                        .append(addedQty)
+                        .append(" món");
+                List<LocalOrderItem> addedItems = order.getLastCustomerAddedItems();
+                if (!addedItems.isEmpty()) {
+                    alert.append(": ").append(addedItems.get(0).getProductName());
+                    if (addedItems.size() > 1) {
+                        alert.append(" +").append(addedItems.size() - 1).append(" món khác");
+                    }
+                }
+                alert.append(" - kiểm tra lại đơn");
+                tvNewItemsAlert.setText(alert.toString());
             } else {
                 tvNewItemsAlert.setVisibility(View.GONE);
             }
@@ -277,6 +353,15 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
             } else {
                 tvDiaChiGiao.setVisibility(View.GONE);
             }
+
+            boolean canEdit = isOpenStatus(status);
+            tvSuaDon.setEnabled(canEdit);
+            tvSuaDon.setAlpha(canEdit ? 1f : 0.45f);
+            tvSuaDon.setOnClickListener(v -> {
+                if (canEdit) {
+                    openOrderEditor(order);
+                }
+            });
 
             if (hasSelectedTable()) {
                 if (isOpenStatus(status)) {
@@ -307,13 +392,14 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
                 } else {
                     nextStatus = "created".equals(status) ? "confirmed" : "paid";
                 }
-                orderRepository.updateOrderStatus(
+                        orderRepository.updateOrderStatus(
                         order.getOrderId(),
                         nextStatus,
                         sessionManager.getCurrentUserId(),
                         (success, message) -> runOnUiThread(() -> {
                             if (!success) {
                                 tvHanhDong.setText("Thử lại");
+                                Toast.makeText(NhanDonOnlineActivity.this, message == null ? "Không thể cập nhật đơn." : message, Toast.LENGTH_SHORT).show();
                             }
                         })
                 );
@@ -323,7 +409,7 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
         }
     }
 
-    private String mapOrderChannel(String orderChannel) {
+    private String mapOrderChannel(@Nullable String orderChannel) {
         if ("customer_qr".equals(orderChannel)) {
             return "Khách QR";
         }
@@ -336,7 +422,7 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
         return "Khác";
     }
 
-    private String mapOrderStatus(String status) {
+    private String mapOrderStatus(@Nullable String status) {
         if ("created".equals(status)) {
             return "Chờ xác nhận";
         }
@@ -349,16 +435,28 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
         if ("cancelled".equals(status)) {
             return "Đã hủy";
         }
-        return status;
+        return status == null ? "-" : status;
     }
 
-    private String buildOrderDetails(LocalOrder order) {
+    private String buildOrderDetails(@NonNull LocalOrder order) {
         List<LocalOrderItem> items = order.getItems();
-        if (items == null || items.isEmpty()) {
+        if (items.isEmpty()) {
             return "Món: " + order.getDisplayOrderCode();
         }
 
-        StringBuilder builder = new StringBuilder("Món đã gọi:\n");
+        StringBuilder builder = new StringBuilder();
+        List<LocalOrderItem> addedItems = order.getLastCustomerAddedItems();
+        if (order.needsStaffAttention() && !addedItems.isEmpty()) {
+            builder.append("Món vừa thêm:\n");
+            appendOrderItems(builder, addedItems);
+            builder.append("\n\n");
+        }
+        builder.append("Món đã gọi:\n");
+        appendOrderItems(builder, items);
+        return builder.toString().trim();
+    }
+
+    private void appendOrderItems(@NonNull StringBuilder builder, @NonNull List<LocalOrderItem> items) {
         for (LocalOrderItem item : items) {
             builder.append("- ")
                     .append(item.getProductName())
@@ -374,10 +472,9 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
             }
             builder.append("\n");
         }
-        return builder.toString().trim();
     }
 
-    private void showDemoBill(LocalOrder order) {
+    private void showDemoBill(@NonNull LocalOrder order) {
         StringBuilder bill = new StringBuilder();
         bill.append("CFPLUS\n\n");
         if (hasSelectedTable()) {

@@ -21,23 +21,29 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.do_an_hk1_androidstudio.cloud.CatalogCloudRepository;
 import com.example.do_an_hk1_androidstudio.cloud.OrderCloudRepository;
 import com.example.do_an_hk1_androidstudio.cloud.PromotionCloudRepository;
 import com.example.do_an_hk1_androidstudio.cloud.TableCloudRepository;
 import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
+import com.example.do_an_hk1_androidstudio.local.model.LocalCafeTable;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrder;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrderItem;
+import com.example.do_an_hk1_androidstudio.local.model.LocalProduct;
 import com.example.do_an_hk1_androidstudio.local.model.LocalPromotion;
 import com.example.do_an_hk1_androidstudio.ui.InsetsHelper;
 import com.example.do_an_hk1_androidstudio.ui.MoneyFormatter;
+import com.example.do_an_hk1_androidstudio.ui.StaffOrderEditorDialog;
+import com.example.do_an_hk1_androidstudio.ui.CfPlusImageLoader;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 public class HoaDonBanActivity extends AppCompatActivity {
 
@@ -46,12 +52,15 @@ public class HoaDonBanActivity extends AppCompatActivity {
 
     private final List<LocalOrderItem> billItems = new ArrayList<>();
     private final List<LocalPromotion> promotions = new ArrayList<>();
+    private final List<LocalProduct> editableProducts = new ArrayList<>();
 
     private HoaDonItemAdapter adapter;
     private OrderCloudRepository orderRepository;
+    private TableCloudRepository tableRepository;
     private LocalSessionManager sessionManager;
     private ListenerRegistration orderListener;
     private ListenerRegistration promotionsListener;
+    private ListenerRegistration productListener;
 
     private String tableId;
     private String tableName;
@@ -87,6 +96,7 @@ public class HoaDonBanActivity extends AppCompatActivity {
         tableId = getIntent().getStringExtra(EXTRA_TABLE_ID);
         tableName = getIntent().getStringExtra(EXTRA_TABLE_NAME);
         orderRepository = new OrderCloudRepository(this);
+        tableRepository = new TableCloudRepository(this);
 
         tvTitle = findViewById(R.id.tvTitle);
         tvEmpty = findViewById(R.id.tvEmptyBill);
@@ -117,6 +127,12 @@ public class HoaDonBanActivity extends AppCompatActivity {
         }
 
         findViewById(R.id.btnApplyPromotion).setOnClickListener(v -> applyPromotionCode());
+        findViewById(R.id.btnEditBill).setOnClickListener(v -> openOrderEditor());
+        View btnMoveTable = findViewById(R.id.btnMoveTable);
+        if (btnMoveTable != null) {
+            btnMoveTable.setVisibility(TableCloudRepository.TAKEAWAY_TABLE_ID.equals(tableId) ? View.GONE : View.VISIBLE);
+            btnMoveTable.setOnClickListener(v -> openMoveTableDialogModern());
+        }
         findViewById(R.id.btnPrintBill).setOnClickListener(v -> {
             if (currentOrder == null) {
                 Toast.makeText(this, "Bàn này chưa có hóa đơn.", Toast.LENGTH_SHORT).show();
@@ -128,6 +144,7 @@ public class HoaDonBanActivity extends AppCompatActivity {
 
         renderOrder(null);
         listenPromotions();
+        listenProducts();
     }
 
     @Override
@@ -151,6 +168,9 @@ public class HoaDonBanActivity extends AppCompatActivity {
         if (promotionsListener != null) {
             promotionsListener.remove();
         }
+        if (productListener != null) {
+            productListener.remove();
+        }
     }
 
     private void listenPromotions() {
@@ -158,6 +178,14 @@ public class HoaDonBanActivity extends AppCompatActivity {
             promotions.clear();
             promotions.addAll(fetched);
         });
+    }
+
+    private void listenProducts() {
+        productListener = new CatalogCloudRepository(this).listenProducts(products -> runOnUiThread(() -> {
+            editableProducts.clear();
+            editableProducts.addAll(products);
+            adapter.notifyDataSetChanged();
+        }));
     }
 
     private void listenTableOrder() {
@@ -207,6 +235,294 @@ public class HoaDonBanActivity extends AppCompatActivity {
         tvOrderTime.setText("Thời gian: " + new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date(order.getCreatedAtMillis())));
         tvTableStatus.setText("Đang phục vụ");
         recalculateTotals();
+    }
+
+    private void openOrderEditor() {
+        if (currentOrder == null) {
+            Toast.makeText(this, "Bàn này chưa có hóa đơn để chỉnh.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        StaffOrderEditorDialog.show(
+                this,
+                currentOrder.getDisplayOrderCode(),
+                currentOrder.getItems(),
+                editableProducts,
+                false,
+                updatedItems -> {
+                    if (updatedItems.isEmpty()) {
+                        confirmCancelCurrentOrder();
+                        return;
+                    }
+                    orderRepository.updateOrderItems(
+                            currentOrder.getOrderId(),
+                            updatedItems,
+                            appliedDiscountAmount,
+                            sessionManager.getCurrentUserId(),
+                            (success, message) -> runOnUiThread(() -> {
+                                if (success) {
+                                    Toast.makeText(this, "Đã cập nhật hóa đơn tại bàn.", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(this, message == null ? "Không thể cập nhật hóa đơn." : message, Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                    );
+                }
+        );
+    }
+
+    private void openMoveTableDialog() {
+        if (currentOrder == null) {
+            Toast.makeText(this, "Bàn này chưa có hóa đơn để đổi bàn.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        tableRepository.getActiveTables((tables, message) -> runOnUiThread(() -> {
+            if (tables.isEmpty()) {
+                Toast.makeText(this, message == null ? "Chưa có bàn khả dụng để chuyển." : message, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            List<LocalCafeTable> availableTables = new ArrayList<>();
+            List<String> labels = new ArrayList<>();
+            for (LocalCafeTable table : tables) {
+                if (table == null || table.getTableId() == null) {
+                    continue;
+                }
+                if (table.getTableId().equals(tableId)) {
+                    continue;
+                }
+                if ("occupied".equalsIgnoreCase(table.getStatus())) {
+                    continue;
+                }
+                availableTables.add(table);
+                StringBuilder label = new StringBuilder(table.getName());
+                if (!TextUtils.isEmpty(table.getArea())) {
+                    label.append(" • ").append(table.getArea());
+                }
+                if (!TextUtils.isEmpty(table.getStatus())) {
+                    label.append(" • ").append(mapTableStatus(table.getStatus()));
+                }
+                labels.add(label.toString());
+            }
+
+            if (availableTables.isEmpty()) {
+                Toast.makeText(this, "Không còn bàn trống phù hợp để chuyển.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Đổi bàn cho khách")
+                    .setItems(labels.toArray(new CharSequence[0]), (dialog, which) ->
+                            showMoveTableConfirmation(availableTables.get(which)))
+                    .setNegativeButton("Đóng", null)
+                    .show();
+        }));
+    }
+
+    private void openMoveTableDialogModern() {
+        if (currentOrder == null) {
+            Toast.makeText(this, "Bàn này chưa có hóa đơn để đổi bàn.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        tableRepository.getActiveTables((tables, message) -> runOnUiThread(() -> {
+            if (tables == null || tables.isEmpty()) {
+                Toast.makeText(this, message == null ? "Chưa có bàn khả dụng để chuyển." : message, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            loadOpenOrdersForMoveTable(tables);
+        }));
+    }
+
+    private void loadOpenOrdersForMoveTable(@NonNull List<LocalCafeTable> tables) {
+        final ListenerRegistration[] listenerHolder = new ListenerRegistration[1];
+        listenerHolder[0] = orderRepository.listenAllOrders(fetchedOrders -> runOnUiThread(() -> {
+            if (listenerHolder[0] != null) {
+                listenerHolder[0].remove();
+                listenerHolder[0] = null;
+            }
+
+            Set<String> occupiedTableIds = new HashSet<>();
+            for (LocalOrder order : fetchedOrders) {
+                if (order == null || TextUtils.isEmpty(order.getTableId())) {
+                    continue;
+                }
+                boolean isOpenOrder = "created".equals(order.getStatus()) || "confirmed".equals(order.getStatus());
+                if (!isOpenOrder) {
+                    continue;
+                }
+                if (currentOrder != null && order.getOrderId().equals(currentOrder.getOrderId())) {
+                    continue;
+                }
+                occupiedTableIds.add(order.getTableId());
+            }
+
+            List<LocalCafeTable> availableTables = new ArrayList<>();
+            for (LocalCafeTable table : tables) {
+                if (table == null || TextUtils.isEmpty(table.getTableId())) {
+                    continue;
+                }
+                if (table.getTableId().equals(tableId)) {
+                    continue;
+                }
+                if (TableCloudRepository.TAKEAWAY_TABLE_ID.equals(table.getTableId())) {
+                    continue;
+                }
+                if ("occupied".equalsIgnoreCase(table.getStatus())) {
+                    continue;
+                }
+                if (occupiedTableIds.contains(table.getTableId())) {
+                    continue;
+                }
+                availableTables.add(table);
+            }
+
+            if (availableTables.isEmpty()) {
+                Toast.makeText(this, "Không còn bàn trống phù hợp để chuyển.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            showMoveTablePickerDialog(availableTables);
+        }));
+    }
+
+    private void showMoveTablePickerDialog(@NonNull List<LocalCafeTable> availableTables) {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_select_table_for_order, null, false);
+        TextView tvSummary = dialogView.findViewById(R.id.tvMoveTableSummary);
+        LinearLayout layoutOptions = dialogView.findViewById(R.id.layoutMoveTableOptions);
+
+        tvSummary.setText("Bàn hiện tại: " + safe(tableName, "Bàn không tên")
+                + " • Còn " + availableTables.size() + " bàn sẵn sàng chuyển.");
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+        for (LocalCafeTable table : availableTables) {
+            View itemView = inflater.inflate(R.layout.item_move_table_option, layoutOptions, false);
+            TextView tvName = itemView.findViewById(R.id.tvMoveTableOptionName);
+            TextView tvMeta = itemView.findViewById(R.id.tvMoveTableOptionMeta);
+            TextView btnChoose = itemView.findViewById(R.id.btnChooseMoveTable);
+
+            tvName.setText(table.getName());
+            StringBuilder meta = new StringBuilder();
+            if (!TextUtils.isEmpty(table.getArea())) {
+                meta.append(table.getArea());
+            }
+            if (!TextUtils.isEmpty(table.getCode())) {
+                if (meta.length() > 0) {
+                    meta.append(" • ");
+                }
+                meta.append("Mã ").append(table.getCode());
+            }
+            if (!TextUtils.isEmpty(table.getStatus())) {
+                if (meta.length() > 0) {
+                    meta.append(" • ");
+                }
+                meta.append(mapTableStatus(table.getStatus()));
+            }
+            tvMeta.setText(meta.length() == 0 ? "Sẵn sàng nhận khách" : meta.toString());
+            btnChoose.setOnClickListener(v -> {
+                dialog.dismiss();
+                showMoveTableConfirmation(table);
+            });
+            layoutOptions.addView(itemView);
+        }
+
+        dialogView.findViewById(R.id.btnCloseMoveTablePicker).setOnClickListener(v -> dialog.dismiss());
+        dialog.show();
+    }
+
+    private void showMoveTableConfirmation(@NonNull LocalCafeTable selectedTable) {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_confirm_move_table, null, false);
+        TextView tvMoveFromTable = dialogView.findViewById(R.id.tvMoveFromTable);
+        TextView tvMoveFromArea = dialogView.findViewById(R.id.tvMoveFromArea);
+        TextView tvMoveToTable = dialogView.findViewById(R.id.tvMoveToTable);
+        TextView tvMoveToArea = dialogView.findViewById(R.id.tvMoveToArea);
+
+        tvMoveFromTable.setText(TextUtils.isEmpty(tableName) ? "Bàn hiện tại" : tableName);
+        tvMoveFromArea.setText(TextUtils.isEmpty(currentOrder == null ? null : currentOrder.getTableId())
+                ? "Không có mã bàn"
+                : "Mã bàn: " + currentOrder.getTableId());
+        tvMoveToTable.setText(selectedTable.getName());
+        StringBuilder toArea = new StringBuilder();
+        if (!TextUtils.isEmpty(selectedTable.getArea())) {
+            toArea.append(selectedTable.getArea());
+        }
+        if (!TextUtils.isEmpty(selectedTable.getStatus())) {
+            if (toArea.length() > 0) {
+                toArea.append(" • ");
+            }
+            toArea.append(mapTableStatus(selectedTable.getStatus()));
+        }
+        tvMoveToArea.setText(toArea.length() == 0 ? "Sẵn sàng nhận khách" : toArea.toString());
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        dialogView.findViewById(R.id.btnCancelMoveTable).setOnClickListener(v -> dialog.dismiss());
+        dialogView.findViewById(R.id.btnConfirmMoveTable).setOnClickListener(v -> {
+            dialog.dismiss();
+            orderRepository.reassignOrderTable(
+                    currentOrder.getOrderId(),
+                    tableId,
+                    selectedTable.getTableId(),
+                    selectedTable.getName(),
+                    sessionManager.getCurrentUserId(),
+                    (success, callbackMessage) -> runOnUiThread(() -> {
+                        if (success) {
+                            tableId = selectedTable.getTableId();
+                            tableName = selectedTable.getName();
+                            tvTitle.setText("Hóa đơn " + selectedTable.getName());
+                            tvEmpty.setText(selectedTable.getName() + " đang trống.");
+                            Toast.makeText(this, "Đã chuyển khách sang " + selectedTable.getName() + ".", Toast.LENGTH_SHORT).show();
+                            listenTableOrder();
+                        } else {
+                            Toast.makeText(this, callbackMessage == null ? "Không thể đổi bàn." : callbackMessage, Toast.LENGTH_SHORT).show();
+                        }
+                    })
+            );
+        });
+        dialog.show();
+    }
+
+    @NonNull
+    private String mapTableStatus(@Nullable String status) {
+        if ("reserved".equalsIgnoreCase(status)) {
+            return "Đã đặt";
+        }
+        if ("occupied".equalsIgnoreCase(status)) {
+            return "Đang dùng";
+        }
+        return "Trống";
+    }
+
+    private void confirmCancelCurrentOrder() {
+        if (currentOrder == null) {
+            return;
+        }
+        new AlertDialog.Builder(this)
+                .setTitle("Hủy hóa đơn?")
+                .setMessage("Nếu xóa hết món thì hóa đơn sẽ bị hủy. Bạn có muốn tiếp tục không?")
+                .setNegativeButton("Giữ lại", null)
+                .setPositiveButton("Hủy đơn", (dialog, which) -> orderRepository.cancelOrder(
+                        currentOrder.getOrderId(),
+                        (success, message) -> runOnUiThread(() -> {
+                            if (success) {
+                                Toast.makeText(this, "Đã hủy hóa đơn hiện tại.", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(this, message == null ? "Không thể hủy hóa đơn." : message, Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                ))
+                .show();
     }
 
     private void applyPromotionCode() {
@@ -288,6 +604,7 @@ public class HoaDonBanActivity extends AppCompatActivity {
         intent.putExtra(ThanhToanKhachActivity.EXTRA_ORDER_ID, currentOrder.getOrderId());
         intent.putExtra(ThanhToanKhachActivity.EXTRA_DISPLAY_ORDER_CODE, currentOrder.getDisplayOrderCode());
         intent.putExtra(ThanhToanKhachActivity.EXTRA_AMOUNT, currentOrder.getSubtotal());
+        intent.putExtra(ThanhToanKhachActivity.EXTRA_TABLE_NAME, tableName);
         startActivity(intent);
     }
 
@@ -428,15 +745,24 @@ public class HoaDonBanActivity extends AppCompatActivity {
                 tvNote.setText("Ghi chú: " + item.getNote());
             }
 
-            if (TextUtils.isEmpty(item.getImageUrl())) {
-                imgProduct.setImageResource(R.drawable.cfplus4);
-            } else {
-                Picasso.get()
-                        .load(item.getImageUrl())
-                        .placeholder(R.drawable.cfplus4)
-                        .error(R.drawable.cfplus4)
-                        .into(imgProduct);
+            String resolvedImageUrl = resolveProductImageUrl(item);
+            CfPlusImageLoader.load(imgProduct, resolvedImageUrl, R.drawable.cfplus4);
+        }
+    }
+
+    @Nullable
+    private String resolveProductImageUrl(@NonNull LocalOrderItem item) {
+        if (!TextUtils.isEmpty(item.getImageUrl())) {
+            return item.getImageUrl();
+        }
+        for (LocalProduct product : editableProducts) {
+            boolean sameId = !TextUtils.isEmpty(item.getProductId()) && item.getProductId().equals(product.getProductId());
+            boolean sameName = !TextUtils.isEmpty(item.getProductName())
+                    && item.getProductName().trim().equalsIgnoreCase(product.getName() == null ? "" : product.getName().trim());
+            if ((sameId || sameName) && !TextUtils.isEmpty(product.getImageUrl())) {
+                return product.getImageUrl();
             }
         }
+        return null;
     }
 }

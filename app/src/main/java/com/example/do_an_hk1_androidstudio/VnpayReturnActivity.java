@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.do_an_hk1_androidstudio.cloud.OrderCloudRepository;
 import com.example.do_an_hk1_androidstudio.cloud.VnpayConfigCloudRepository;
 import com.example.do_an_hk1_androidstudio.payment.VnpayPaymentSessionStore;
-import com.example.do_an_hk1_androidstudio.payment.VnpaySettingsStore;
 import com.example.do_an_hk1_androidstudio.payment.VnpayUtils;
 import com.example.do_an_hk1_androidstudio.ui.InsetsHelper;
 
@@ -22,7 +21,6 @@ public class VnpayReturnActivity extends AppCompatActivity {
     private TextView tvDetail;
     private OrderCloudRepository orderRepository;
     private VnpayPaymentSessionStore paymentSessionStore;
-    private VnpaySettingsStore settingsStore;
     private VnpayConfigCloudRepository cloudConfigRepository;
 
     @Override
@@ -35,7 +33,6 @@ public class VnpayReturnActivity extends AppCompatActivity {
         tvDetail = findViewById(R.id.tvVnpayDetail);
         orderRepository = new OrderCloudRepository(this);
         paymentSessionStore = new VnpayPaymentSessionStore(this);
-        settingsStore = new VnpaySettingsStore(this);
         cloudConfigRepository = new VnpayConfigCloudRepository(this);
 
         findViewById(R.id.btnVnpayClose).setOnClickListener(v -> openHome());
@@ -44,53 +41,62 @@ public class VnpayReturnActivity extends AppCompatActivity {
 
     private void handleReturnIntent(@Nullable Uri data) {
         if (data == null) {
-            showResult("Không nhận được dữ liệu trả về", "VNPAY chưa trả kết quả về ứng dụng.");
+            showResult("Khong nhan duoc du lieu tra ve", "VNPAY chua tra ket qua ve ung dung.");
+            return;
+        }
+        VnpayPaymentSessionStore.PendingPayment pendingPayment = paymentSessionStore.read();
+        if (pendingPayment != null && pendingPayment.hasMerchantConfig()) {
+            continueHandleReturn(data, new VnpayConfigCloudRepository.MerchantConfig(
+                    pendingPayment.tmnCode,
+                    pendingPayment.hashSecret,
+                    pendingPayment.returnUrl
+            ));
             return;
         }
         cloudConfigRepository.getConfig((cloudConfig, message) -> runOnUiThread(() -> {
-            VnpaySettingsStore.MerchantConfig merchantConfig = isConfigured(cloudConfig)
-                    ? cloudConfig
-                    : settingsStore.read();
-            if (!isConfigured(merchantConfig)) {
-                showResult("Thiếu cấu hình VNPAY", "Hãy cập nhật TMN code, hash secret và return URL trong cấu hình sandbox.");
+            if (message != null) {
+                showResult("Khong doc duoc cau hinh VNPAY", message);
                 return;
             }
-            settingsStore.save(merchantConfig.tmnCode, merchantConfig.hashSecret, merchantConfig.returnUrl);
-            continueHandleReturn(data, merchantConfig);
+            if (!isConfigured(cloudConfig)) {
+                showResult("Thieu cau hinh VNPAY", "Hay cap nhat TMN code, hash secret va return URL trong cau hinh sandbox.");
+                return;
+            }
+            continueHandleReturn(data, cloudConfig);
         }));
     }
 
-    private void continueHandleReturn(Uri data, VnpaySettingsStore.MerchantConfig merchantConfig) {
+    private void continueHandleReturn(Uri data, VnpayConfigCloudRepository.MerchantConfig merchantConfig) {
         if (!isConfigured(merchantConfig)) {
-            showResult("Thiếu cấu hình VNPAY", "Hãy cập nhật TMN code, hash secret và return URL trong cấu hình sandbox.");
+            showResult("Thieu cau hinh VNPAY", "Hay cap nhat TMN code, hash secret va return URL trong cau hinh sandbox.");
             return;
         }
         if (!VnpayUtils.isValidReturnSignature(data, merchantConfig.hashSecret)) {
-            showResult("Chữ ký không hợp lệ", "Ứng dụng đã chặn kết quả thanh toán vì chữ ký phản hồi không khớp.");
+            showResult("Chu ky khong hop le", "Ung dung da chan ket qua thanh toan vi chu ky phan hoi khong khop.");
             return;
         }
 
         VnpayPaymentSessionStore.PendingPayment pendingPayment = paymentSessionStore.read();
         if (pendingPayment == null) {
-            showResult("Không tìm thấy phiên thanh toán", "Ứng dụng không còn lưu đơn chờ thanh toán qua VNPAY.");
+            showResult("Khong tim thay phien thanh toan", "Ung dung khong con luu don cho thanh toan qua VNPAY.");
             return;
         }
 
         String txnRef = VnpayUtils.readQuery(data, "vnp_TxnRef");
         if (!pendingPayment.orderId.equals(txnRef)) {
-            showResult("Sai mã đơn", "Mã đơn trả về từ VNPAY không khớp với đơn đang chờ.");
+            showResult("Sai ma don", "Ma don tra ve tu VNPAY khong khop voi don dang cho.");
             return;
         }
 
         String responseCode = VnpayUtils.readQuery(data, "vnp_ResponseCode");
         String transactionNo = VnpayUtils.readQuery(data, "vnp_TransactionNo");
         if (!"00".equals(responseCode)) {
-            showResult("Thanh toán chưa thành công", "VNPAY trả về mã phản hồi: " + (TextUtils.isEmpty(responseCode) ? "-" : responseCode));
+            showResult("Thanh toan chua thanh cong", "VNPAY tra ve ma phan hoi: " + (TextUtils.isEmpty(responseCode) ? "-" : responseCode));
             return;
         }
 
-        tvStatus.setText("Đang xác nhận thanh toán...");
-        tvDetail.setText("Ứng dụng đang cập nhật hóa đơn sau khi VNPAY báo thành công.");
+        tvStatus.setText("Dang xac nhan thanh toan...");
+        tvDetail.setText("Ung dung dang cap nhat hoa don sau khi VNPAY bao thanh cong.");
 
         orderRepository.payOrder(
                 pendingPayment.orderId,
@@ -101,17 +107,17 @@ public class VnpayReturnActivity extends AppCompatActivity {
                 pendingPayment.promoCode,
                 (success, message) -> runOnUiThread(() -> {
                     if (!success) {
-                        showResult("Không thể cập nhật đơn", message == null ? "VNPAY đã trả thành công nhưng app chưa cập nhật được hóa đơn." : message);
+                        showResult("Khong the cap nhat don", message == null ? "VNPAY da tra thanh cong nhung app chua cap nhat duoc hoa don." : message);
                         return;
                     }
                     paymentSessionStore.clear();
-                    showResult("Thanh toán thành công", "Đơn đã được xác nhận thanh toán qua VNPAY. Đang quay về trang chủ...");
+                    showResult("Thanh toan thanh cong", "Don da duoc xac nhan thanh toan qua VNPAY. Dang quay ve trang chu...");
                     tvStatus.postDelayed(this::openHome, 900);
                 })
         );
     }
 
-    private boolean isConfigured(@Nullable VnpaySettingsStore.MerchantConfig config) {
+    private boolean isConfigured(@Nullable VnpayConfigCloudRepository.MerchantConfig config) {
         return config != null
                 && !TextUtils.isEmpty(config.tmnCode)
                 && !TextUtils.isEmpty(config.hashSecret)

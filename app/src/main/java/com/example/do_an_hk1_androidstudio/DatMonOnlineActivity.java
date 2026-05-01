@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -137,19 +138,67 @@ public class DatMonOnlineActivity extends AppCompatActivity {
             Toast.makeText(this, "Hãy thêm địa chỉ giao hàng trước khi đặt online.", Toast.LENGTH_SHORT).show();
             return;
         }
-        List<String> labels = new ArrayList<>();
-        for (LocalCustomerAddress address : currentAddresses) {
-            labels.add(address.getLabel() + " - " + address.buildDisplayAddress());
+
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_option_picker, null, false);
+        TextView tvTitle = dialogView.findViewById(R.id.tvPickerTitle);
+        TextView tvSubtitle = dialogView.findViewById(R.id.tvPickerSubtitle);
+        LinearLayout layoutOptions = dialogView.findViewById(R.id.layoutPickerOptions);
+
+        tvTitle.setText("Chọn địa chỉ giao hàng");
+        tvSubtitle.setText("Ưu tiên chọn đúng người nhận và điểm giao để đơn online xử lý nhanh hơn.");
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
         }
 
-        new AlertDialog.Builder(this)
-                .setTitle("Chọn địa chỉ giao hàng")
-                .setItems(labels.toArray(new String[0]), (dialog, which) -> {
-                    selectedAddress = currentAddresses.get(which);
-                    bindSelectedAddress();
-                })
-                .setNegativeButton("Đóng", null)
-                .show();
+        LayoutInflater inflater = LayoutInflater.from(this);
+        for (LocalCustomerAddress address : currentAddresses) {
+            View itemView = inflater.inflate(R.layout.item_picker_option, layoutOptions, false);
+            TextView tvOptionTitle = itemView.findViewById(R.id.tvPickerOptionTitle);
+            TextView tvOptionSubtitle = itemView.findViewById(R.id.tvPickerOptionSubtitle);
+            TextView btnPick = itemView.findViewById(R.id.btnPickOption);
+
+            String title = address.getLabel();
+            if (address.isDefault()) {
+                title = title + " • Mặc định";
+            }
+            tvOptionTitle.setText(title);
+
+            String subtitle = address.buildDisplayAddress();
+            String meta = buildAddressMeta(address);
+            if (!TextUtils.isEmpty(meta)) {
+                subtitle = meta + "\n" + subtitle;
+            }
+            tvOptionSubtitle.setText(subtitle);
+
+            btnPick.setOnClickListener(v -> {
+                selectedAddress = address;
+                bindSelectedAddress();
+                dialog.dismiss();
+            });
+            layoutOptions.addView(itemView);
+        }
+
+        dialogView.findViewById(R.id.btnClosePicker).setOnClickListener(v -> dialog.dismiss());
+        dialog.show();
+    }
+
+    private String buildAddressMeta(LocalCustomerAddress address) {
+        StringBuilder builder = new StringBuilder();
+        if (!TextUtils.isEmpty(address.getRecipientName())) {
+            builder.append(address.getRecipientName().trim());
+        }
+        if (!TextUtils.isEmpty(address.getPhone())) {
+            if (builder.length() > 0) {
+                builder.append(" • ");
+            }
+            builder.append(address.getPhone().trim());
+        }
+        return builder.toString();
     }
 
     private void renderCart() {
@@ -273,6 +322,7 @@ public class DatMonOnlineActivity extends AppCompatActivity {
                         intent.putExtra(ThanhToanKhachActivity.EXTRA_AMOUNT, itemsTotal(items));
                         intent.putExtra(ThanhToanKhachActivity.EXTRA_CUSTOMER_ONLINE_ONLY, true);
                         intent.putExtra(ThanhToanKhachActivity.EXTRA_INITIAL_PAYMENT_METHOD, "vnpay");
+                        intent.putExtra(ThanhToanKhachActivity.EXTRA_AUTO_SUBMIT_PAYMENT, true);
                         startActivity(intent);
                         finish();
                         return;

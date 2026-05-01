@@ -1,115 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/dashboard_card">
+    android:layout_margin="20dp"
+    app:cardBackgroundColor="@color/dashboard_card"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="8dp"
+    app:strokeWidth="0dp">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingTop="8dp">
+        android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/edtAddressLabel"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/manager_search_background"
-            android:hint="Nhãn địa chỉ (Nhà riêng, Công ty...)"
-            android:padding="12dp"
-            android:textColor="@color/dashboard_text_primary"
-            android:textColorHint="@color/dashboard_text_secondary" />
+            android:orientation="vertical"
+            android:padding="18dp">
 
-        <EditText
-            android:id="@+id/edtRecipientName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/manager_search_background"
-            android:hint="Tên người nhận"
-            android:padding="12dp"
-            android:textColor="@color/dashboard_text_primary"
-            android:textColorHint="@color/dashboard_text_secondary" />
+            <EditText
+                android:id="@+id/edtAddressLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/manager_search_background"
+                android:hint="Nhãn địa chỉ (Nhà riêng, Công ty...)"
+                android:padding="12dp"
+                android:textColor="@color/dashboard_text_primary"
+                android:textColorHint="@color/dashboard_text_secondary" />
 
-        <EditText
-            android:id="@+id/edtRecipientPhone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/manager_search_background"
-            android:hint="Số điện thoại"
-            android:inputType="phone"
-            android:padding="12dp"
-            android:textColor="@color/dashboard_text_primary"
-            android:textColorHint="@color/dashboard_text_secondary" />
+            <EditText
+                android:id="@+id/edtRecipientName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/manager_search_background"
+                android:hint="Tên người nhận"
+                android:padding="12dp"
+                android:textColor="@color/dashboard_text_primary"
+                android:textColorHint="@color/dashboard_text_secondary" />
 
-        <AutoCompleteTextView
-            android:id="@+id/autoCountry"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/manager_search_background"
-            android:hint="Quốc gia"
-            android:inputType="none"
-            android:padding="12dp"
-            android:textColor="@color/dashboard_text_primary"
-            android:textColorHint="@color/dashboard_text_secondary" />
+            <EditText
+                android:id="@+id/edtRecipientPhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/manager_search_background"
+                android:hint="Số điện thoại"
+                android:inputType="phone"
+                android:padding="12dp"
+                android:textColor="@color/dashboard_text_primary"
+                android:textColorHint="@color/dashboard_text_secondary" />
 
-        <AutoCompleteTextView
-            android:id="@+id/autoProvince"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/manager_search_background"
-            android:hint="Tỉnh / Thành phố"
-            android:inputType="none"
-            android:padding="12dp"
-            android:textColor="@color/dashboard_text_primary"
-            android:textColorHint="@color/dashboard_text_secondary" />
+            <AutoCompleteTextView
+                android:id="@+id/autoCountry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/manager_search_background"
+                android:hint="Quốc gia"
+                android:inputType="none"
+                android:padding="12dp"
+                android:textColor="@color/dashboard_text_primary"
+                android:textColorHint="@color/dashboard_text_secondary" />
 
-        <AutoCompleteTextView
-            android:id="@+id/autoDistrict"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/manager_search_background"
-            android:hint="Quận / Huyện"
-            android:inputType="none"
-            android:padding="12dp"
-            android:textColor="@color/dashboard_text_primary"
-            android:textColorHint="@color/dashboard_text_secondary" />
+            <AutoCompleteTextView
+                android:id="@+id/autoProvince"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/manager_search_background"
+                android:hint="Tỉnh / Thành phố"
+                android:inputType="none"
+                android:padding="12dp"
+                android:textColor="@color/dashboard_text_primary"
+                android:textColorHint="@color/dashboard_text_secondary" />
 
-        <AutoCompleteTextView
-            android:id="@+id/autoWard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/manager_search_background"
-            android:hint="Phường / Xã"
-            android:inputType="none"
-            android:padding="12dp"
-            android:textColor="@color/dashboard_text_primary"
-            android:textColorHint="@color/dashboard_text_secondary" />
+            <AutoCompleteTextView
+                android:id="@+id/autoDistrict"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/manager_search_background"
+                android:hint="Quận / Huyện"
+                android:inputType="none"
+                android:padding="12dp"
+                android:textColor="@color/dashboard_text_primary"
+                android:textColorHint="@color/dashboard_text_secondary" />
 
-        <EditText
-            android:id="@+id/edtDetailAddress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/manager_search_background"
-            android:hint="Số nhà, tên đường, địa chỉ cụ thể"
-            android:minLines="2"
-            android:padding="12dp"
-            android:textColor="@color/dashboard_text_primary"
-            android:textColorHint="@color/dashboard_text_secondary" />
+            <AutoCompleteTextView
+                android:id="@+id/autoWard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/manager_search_background"
+                android:hint="Phường / Xã"
+                android:inputType="none"
+                android:padding="12dp"
+                android:textColor="@color/dashboard_text_primary"
+                android:textColorHint="@color/dashboard_text_secondary" />
 
-        <CheckBox
-            android:id="@+id/checkDefaultAddress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:buttonTint="@color/dashboard_primary"
-            android:text="Đặt làm địa chỉ mặc định"
-            android:textColor="@color/dashboard_text_primary" />
-    </LinearLayout>
-</ScrollView>
+            <EditText
+                android:id="@+id/edtDetailAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/manager_search_background"
+                android:hint="Số nhà, tên đường, địa chỉ cụ thể"
+                android:minLines="2"
+                android:padding="12dp"
+                android:textColor="@color/dashboard_text_primary"
+                android:textColorHint="@color/dashboard_text_secondary" />
+
+            <CheckBox
+                android:id="@+id/checkDefaultAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:buttonTint="@color/dashboard_primary"
+                android:text="Đặt làm địa chỉ mặc định"
+                android:textColor="@color/dashboard_text_primary" />
+        </LinearLayout>
+    </ScrollView>
+</com.google.android.material.card.MaterialCardView>

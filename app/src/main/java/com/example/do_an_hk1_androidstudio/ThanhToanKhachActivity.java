@@ -1,39 +1,51 @@
 package com.example.do_an_hk1_androidstudio;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.do_an_hk1_androidstudio.cloud.OrderCloudRepository;
 import com.example.do_an_hk1_androidstudio.cloud.PromotionCloudRepository;
 import com.example.do_an_hk1_androidstudio.cloud.VnpayConfigCloudRepository;
+import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
+import com.example.do_an_hk1_androidstudio.local.model.LocalOrder;
+import com.example.do_an_hk1_androidstudio.local.model.LocalOrderItem;
 import com.example.do_an_hk1_androidstudio.local.model.LocalPromotion;
 import com.example.do_an_hk1_androidstudio.payment.VnpayPaymentSessionStore;
-import com.example.do_an_hk1_androidstudio.payment.VnpaySettingsStore;
 import com.example.do_an_hk1_androidstudio.payment.VnpayUtils;
 import com.example.do_an_hk1_androidstudio.ui.InsetsHelper;
 import com.example.do_an_hk1_androidstudio.ui.MoneyFormatter;
 import com.google.firebase.firestore.ListenerRegistration;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class ThanhToanKhachActivity extends AppCompatActivity {
 
     public static final String EXTRA_ORDER_ID = "order_id";
     public static final String EXTRA_DISPLAY_ORDER_CODE = "display_order_code";
     public static final String EXTRA_AMOUNT = "amount";
+    public static final String EXTRA_TABLE_NAME = "table_name";
     public static final String EXTRA_CUSTOMER_ONLINE_ONLY = "customer_online_only";
     public static final String EXTRA_INITIAL_PAYMENT_METHOD = "initial_payment_method";
+    public static final String EXTRA_AUTO_SUBMIT_PAYMENT = "auto_submit_payment";
 
     private final List<LocalPromotion> promotions = new ArrayList<>();
     private TextView tvDiscountPreview;
@@ -48,9 +60,16 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
     private boolean customerOnlineOnly;
     private OrderCloudRepository orderCloudRepository;
     private ListenerRegistration promotionsListener;
+    private ListenerRegistration orderListener;
     private VnpayPaymentSessionStore paymentSessionStore;
-    private VnpaySettingsStore vnpaySettingsStore;
     private VnpayConfigCloudRepository vnpayConfigCloudRepository;
+    private boolean autoSubmitPayment;
+    private boolean autoSubmitHandled;
+    private LocalSessionManager sessionManager;
+    @Nullable
+    private LocalOrder currentOrder;
+    @Nullable
+    private String currentTableName;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,9 +77,9 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
         setContentView(R.layout.activity_thanh_toan_khach);
         InsetsHelper.applyActivityRootPadding(this);
 
+        sessionManager = new LocalSessionManager(this);
         orderCloudRepository = new OrderCloudRepository(this);
         paymentSessionStore = new VnpayPaymentSessionStore(this);
-        vnpaySettingsStore = new VnpaySettingsStore(this);
         vnpayConfigCloudRepository = new VnpayConfigCloudRepository(this);
         listenPromotions();
 
@@ -76,23 +95,26 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
         rgMethod = findViewById(R.id.rgPayMethod);
         edtBankRef = findViewById(R.id.edtBankRef);
         edtPromoCode = findViewById(R.id.edtPromoCode);
+        TextView btnViewBill = findViewById(R.id.btnViewBill);
         TextView btnPay = findViewById(R.id.btnPayNow);
 
         orderId = getIntent().getStringExtra(EXTRA_ORDER_ID);
         displayOrderCode = getIntent().getStringExtra(EXTRA_DISPLAY_ORDER_CODE);
+        currentTableName = getIntent().getStringExtra(EXTRA_TABLE_NAME);
         initialPaymentMethod = getIntent().getStringExtra(EXTRA_INITIAL_PAYMENT_METHOD);
         amount = getIntent().getIntExtra(EXTRA_AMOUNT, 0);
         customerOnlineOnly = getIntent().getBooleanExtra(EXTRA_CUSTOMER_ONLINE_ONLY, false);
+        autoSubmitPayment = getIntent().getBooleanExtra(EXTRA_AUTO_SUBMIT_PAYMENT, false);
 
-        tvOrder.setText("Đơn: " + buildDisplayOrderCode());
-        tvAmount.setText("Số tiền: " + MoneyFormatter.format(amount));
-        tvDiscountPreview.setText("Giảm: " + MoneyFormatter.format(0));
+        tvOrder.setText("Don: " + buildDisplayOrderCode());
+        tvAmount.setText("So tien: " + MoneyFormatter.format(amount));
+        tvDiscountPreview.setText("Giam: " + MoneyFormatter.format(0));
 
         if (customerOnlineOnly) {
             TextView rbPayCash = findViewById(R.id.rbPayCash);
             View rbPayBank = findViewById(R.id.rbPayBank);
             if (rbPayCash != null) {
-                rbPayCash.setText("Thanh toán khi nhận hàng (COD)");
+                rbPayCash.setText("Thanh toan khi nhan hang (COD)");
             }
             if (rbPayBank != null) {
                 rbPayBank.setVisibility(View.GONE);
@@ -106,7 +128,20 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
 
         rgMethod.setOnCheckedChangeListener((group, checkedId) -> updateMethodState());
         updateMethodState();
+        btnViewBill.setOnClickListener(v -> openBillPreview());
         btnPay.setOnClickListener(v -> doPay());
+        listenOrderDetails();
+
+        if (savedInstanceState != null) {
+            autoSubmitHandled = savedInstanceState.getBoolean("auto_submit_handled", false);
+        }
+        maybeAutoSubmit();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("auto_submit_handled", autoSubmitHandled);
     }
 
     @Override
@@ -114,6 +149,9 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
         super.onDestroy();
         if (promotionsListener != null) {
             promotionsListener.remove();
+        }
+        if (orderListener != null) {
+            orderListener.remove();
         }
     }
 
@@ -124,25 +162,44 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
         });
     }
 
+    private void listenOrderDetails() {
+        orderListener = orderCloudRepository.listenAllOrders(fetchedOrders -> runOnUiThread(() -> {
+            LocalOrder matchedOrder = null;
+            for (LocalOrder order : fetchedOrders) {
+                if (orderId != null && orderId.equals(order.getOrderId())) {
+                    matchedOrder = order;
+                    break;
+                }
+            }
+            currentOrder = matchedOrder;
+            if (matchedOrder != null) {
+                currentTableName = !TextUtils.isEmpty(matchedOrder.getTableName()) ? matchedOrder.getTableName() : currentTableName;
+                amount = matchedOrder.getSubtotal() > 0 ? matchedOrder.getSubtotal() : amount;
+                TextView tvAmount = findViewById(R.id.tvPayAmount);
+                tvAmount.setText("So tien: " + MoneyFormatter.format(amount));
+            }
+        }));
+    }
+
     private void updateMethodState() {
         int checkedId = rgMethod.getCheckedRadioButtonId();
         boolean isBank = checkedId == R.id.rbPayBank && !customerOnlineOnly;
         boolean isVnpay = checkedId == R.id.rbPayVnpay;
         edtBankRef.setVisibility(isBank ? View.VISIBLE : View.GONE);
         if (isVnpay) {
-            tvPayHint.setText("Ứng dụng sẽ mở cổng thanh toán VNPAY sandbox, sau đó quay lại app để xác nhận.");
+            tvPayHint.setText("Ung dung se mo cong thanh toan VNPAY sandbox, sau do quay lai app de xac nhan.");
         } else if (isBank) {
-            tvPayHint.setText("Nhập mã giao dịch chuyển khoản để lưu vào lịch sử thanh toán.");
+            tvPayHint.setText("Nhap ma giao dich chuyen khoan de luu vao lich su thanh toan.");
         } else {
             tvPayHint.setText(customerOnlineOnly
-                    ? "Đơn sẽ được ghi nhận ở trạng thái chờ thanh toán khi giao hàng."
-                    : "Tiền mặt sẽ được ghi nhận ngay sau khi xác nhận.");
+                    ? "Don se duoc ghi nhan o trang thai cho thanh toan khi giao hang."
+                    : "Tien mat se duoc ghi nhan ngay sau khi xac nhan.");
         }
     }
 
     private void doPay() {
         if (TextUtils.isEmpty(orderId)) {
-            Toast.makeText(this, "Thiếu mã đơn hàng", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Thieu ma don hang", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -160,27 +217,39 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
         String method = checkedId == R.id.rbPayBank ? "bank" : "cash";
         String bankRef = edtBankRef.getText().toString().trim();
         if ("bank".equals(method) && TextUtils.isEmpty(bankRef)) {
-            Toast.makeText(this, "Vui lòng nhập mã giao dịch", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Vui long nhap ma giao dich", Toast.LENGTH_SHORT).show();
             return;
         }
         payWithDiscount(method, bankRef, promotionResult.discountAmount, promotionResult.promoCode);
+    }
+
+    private void maybeAutoSubmit() {
+        if (autoSubmitHandled || !autoSubmitPayment) {
+            return;
+        }
+        if (!"vnpay".equals(initialPaymentMethod)) {
+            return;
+        }
+        autoSubmitHandled = true;
+        rgMethod.check(R.id.rbPayVnpay);
+        doPay();
     }
 
     @Nullable
     private PromotionResult resolvePromotion() {
         String promoCode = edtPromoCode.getText().toString().trim();
         if (TextUtils.isEmpty(promoCode)) {
-            tvDiscountPreview.setText("Giảm: " + MoneyFormatter.format(0));
+            tvDiscountPreview.setText("Giam: " + MoneyFormatter.format(0));
             return new PromotionResult(0, null);
         }
 
         LocalPromotion promotion = findPromotionByCode(promoCode);
         if (promotion == null || !promotion.isActive()) {
-            Toast.makeText(this, "Mã giảm giá không hợp lệ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Ma giam gia khong hop le", Toast.LENGTH_SHORT).show();
             return null;
         }
         if (amount < promotion.getMinOrder()) {
-            Toast.makeText(this, "Đơn chưa đạt tối thiểu để dùng mã", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Don chua dat toi thieu de dung ma", Toast.LENGTH_SHORT).show();
             return null;
         }
 
@@ -194,7 +263,7 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
             discount = (int) promotion.getValue();
         }
         discount = Math.max(0, Math.min(discount, amount));
-        tvDiscountPreview.setText("Giảm: " + MoneyFormatter.format(discount));
+        tvDiscountPreview.setText("Giam: " + MoneyFormatter.format(discount));
         return new PromotionResult(discount, promotion.getCode());
     }
 
@@ -210,27 +279,35 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
 
     private void startVnpayPayment(PromotionResult promotionResult) {
         vnpayConfigCloudRepository.getConfig((cloudConfig, message) -> runOnUiThread(() -> {
-            VnpaySettingsStore.MerchantConfig merchantConfig = isConfigured(cloudConfig)
-                    ? cloudConfig
-                    : vnpaySettingsStore.read();
-            if (!isConfigured(merchantConfig)) {
-                Toast.makeText(this, "Hãy cấu hình TMN code, hash secret và return URL VNPAY sandbox trước.", Toast.LENGTH_LONG).show();
+            if (message != null) {
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+                return;
+            }
+            if (!isConfigured(cloudConfig)) {
+                Toast.makeText(this, "Hay cau hinh TMN code, hash secret va return URL VNPAY sandbox truoc.", Toast.LENGTH_LONG).show();
                 startActivity(new Intent(this, VnpaySandboxConfigActivity.class));
                 return;
             }
-            settingsCacheSave(merchantConfig);
-            launchVnpayPayment(promotionResult, merchantConfig);
+            launchVnpayPayment(promotionResult, cloudConfig);
         }));
     }
 
     private void launchVnpayPayment(PromotionResult promotionResult,
-                                    VnpaySettingsStore.MerchantConfig merchantConfig) {
+                                    VnpayConfigCloudRepository.MerchantConfig merchantConfig) {
         int finalAmount = Math.max(0, amount - promotionResult.discountAmount);
-        paymentSessionStore.save(orderId, amount, promotionResult.discountAmount, promotionResult.promoCode);
+        paymentSessionStore.save(
+                orderId,
+                amount,
+                promotionResult.discountAmount,
+                promotionResult.promoCode,
+                merchantConfig.tmnCode,
+                merchantConfig.hashSecret,
+                merchantConfig.returnUrl
+        );
         String paymentUrl = VnpayUtils.buildPaymentUrl(
                 orderId,
                 finalAmount,
-                "Thanh toán đơn " + buildDisplayOrderCode(),
+                "Thanh toan don " + buildDisplayOrderCode(),
                 merchantConfig.tmnCode,
                 merchantConfig.hashSecret,
                 merchantConfig.returnUrl
@@ -238,15 +315,11 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(paymentUrl)));
     }
 
-    private boolean isConfigured(@Nullable VnpaySettingsStore.MerchantConfig config) {
+    private boolean isConfigured(@Nullable VnpayConfigCloudRepository.MerchantConfig config) {
         return config != null
                 && !TextUtils.isEmpty(config.tmnCode)
                 && !TextUtils.isEmpty(config.hashSecret)
                 && !TextUtils.isEmpty(config.returnUrl);
-    }
-
-    private void settingsCacheSave(VnpaySettingsStore.MerchantConfig config) {
-        vnpaySettingsStore.save(config.tmnCode, config.hashSecret, config.returnUrl);
     }
 
     private void payWithDiscount(String method, String bankRef, int discountAmount, @Nullable String promoCode) {
@@ -259,13 +332,143 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
                 promoCode,
                 (success, message) -> runOnUiThread(() -> {
                     if (!success) {
-                        Toast.makeText(this, message == null ? "Không thể thanh toán đơn hàng" : message, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, message == null ? "Khong the thanh toan don hang" : message, Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    Toast.makeText(this, "Thanh toán thành công!", Toast.LENGTH_SHORT).show();
-                    finish();
+                    Toast.makeText(this, "Thanh toan thanh cong!", Toast.LENGTH_SHORT).show();
+                    showDemoBill(new PromotionResult(discountAmount, promoCode), true);
                 })
         );
+    }
+
+    private void openBillPreview() {
+        if (currentOrder == null) {
+            Toast.makeText(this, "Bill dang duoc tai. Thu lai sau giay lat.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        PromotionResult previewPromotion = resolvePromotion();
+        if (previewPromotion == null) {
+            return;
+        }
+        showDemoBill(previewPromotion, false);
+    }
+
+    private void showDemoBill(@NonNull PromotionResult promotionResult, boolean finishAfterClose) {
+        if (currentOrder == null) {
+            if (finishAfterClose) {
+                finish();
+            }
+            return;
+        }
+
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_demo_bill, null, false);
+        bindDemoBill(dialogView, promotionResult);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        dialogView.findViewById(R.id.btnDemoClose).setOnClickListener(v -> {
+            dialog.dismiss();
+            if (finishAfterClose) {
+                finish();
+            }
+        });
+        dialogView.findViewById(R.id.btnDemoPrint).setOnClickListener(v -> {
+            Toast.makeText(this, "Da mo ban xem truoc hoa don. Chua ket noi may in that.", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+            if (finishAfterClose) {
+                finish();
+            }
+        });
+
+        dialog.setOnCancelListener(dialogInterface -> {
+            if (finishAfterClose) {
+                finish();
+            }
+        });
+        dialog.show();
+    }
+
+    private void bindDemoBill(@NonNull View dialogView, @NonNull PromotionResult promotionResult) {
+        if (currentOrder == null) {
+            return;
+        }
+
+        TextView tvBillTableName = dialogView.findViewById(R.id.tvBillTableName);
+        TextView tvBillDate = dialogView.findViewById(R.id.tvBillDate);
+        TextView tvBillNumber = dialogView.findViewById(R.id.tvBillNumber);
+        TextView tvBillCashier = dialogView.findViewById(R.id.tvBillCashier);
+        TextView tvBillPrintedAt = dialogView.findViewById(R.id.tvBillPrintedAt);
+        TextView tvBillTimeIn = dialogView.findViewById(R.id.tvBillTimeIn);
+        TextView tvBillTimeOut = dialogView.findViewById(R.id.tvBillTimeOut);
+        TextView tvBillSubtotal = dialogView.findViewById(R.id.tvBillSubtotal);
+        TextView tvBillDiscount = dialogView.findViewById(R.id.tvBillDiscount);
+        TextView tvBillGrandTotal = dialogView.findViewById(R.id.tvBillGrandTotal);
+        LinearLayout layoutLines = dialogView.findViewById(R.id.layoutDemoBillLines);
+
+        long createdMillis = currentOrder.getCreatedAtMillis();
+        long printedMillis = System.currentTimeMillis();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        int subtotal = currentOrder.getSubtotal() > 0 ? currentOrder.getSubtotal() : amount;
+        int discountAmount = Math.max(0, promotionResult.discountAmount);
+        int grandTotal = Math.max(0, subtotal - discountAmount);
+
+        tvBillTableName.setText(buildBillTargetLabel());
+        tvBillDate.setText("Ngay: " + dateFormat.format(new Date(createdMillis)));
+        tvBillNumber.setText("So: " + buildDisplayOrderCode());
+        tvBillCashier.setText("Thu ngan: " + safe(sessionManager.getCurrentUserFullName(), "Nhan vien"));
+        tvBillPrintedAt.setText("In luc: " + timeFormat.format(new Date(printedMillis)));
+        tvBillTimeIn.setText("Gio vao: " + timeFormat.format(new Date(createdMillis)));
+        tvBillTimeOut.setText("Gio ra: " + timeFormat.format(new Date(printedMillis)));
+        tvBillSubtotal.setText(MoneyFormatter.format(subtotal));
+        tvBillDiscount.setText(MoneyFormatter.format(discountAmount));
+        tvBillGrandTotal.setText(MoneyFormatter.format(grandTotal));
+
+        layoutLines.removeAllViews();
+        LayoutInflater inflater = LayoutInflater.from(this);
+        for (LocalOrderItem item : currentOrder.getItems()) {
+            View lineView = inflater.inflate(R.layout.item_demo_bill_line, layoutLines, false);
+            TextView tvName = lineView.findViewById(R.id.tvDemoBillItemName);
+            TextView tvQty = lineView.findViewById(R.id.tvDemoBillItemQty);
+            TextView tvPrice = lineView.findViewById(R.id.tvDemoBillItemPrice);
+            TextView tvLineTotal = lineView.findViewById(R.id.tvDemoBillItemTotal);
+
+            String itemTitle = item.getProductName();
+            if (!TextUtils.isEmpty(item.getVariantName())) {
+                itemTitle = itemTitle + " (" + item.getVariantName() + ")";
+            }
+            tvName.setText(itemTitle);
+            tvQty.setText(String.valueOf(item.getQty()));
+            tvPrice.setText(MoneyFormatter.format(item.getUnitPrice()));
+            tvLineTotal.setText(MoneyFormatter.format(item.getLineTotal()));
+            layoutLines.addView(lineView);
+        }
+    }
+
+    @NonNull
+    private String buildBillTargetLabel() {
+        if (!TextUtils.isEmpty(currentTableName)) {
+            return "Ban " + currentTableName;
+        }
+        if (currentOrder != null && !TextUtils.isEmpty(currentOrder.getDeliveryAddressText())) {
+            return "Don online";
+        }
+        return "Khach le";
+    }
+
+    @NonNull
+    private String safe(@Nullable String primary, @Nullable String fallback) {
+        if (!TextUtils.isEmpty(primary)) {
+            return primary;
+        }
+        return fallback == null ? "-" : fallback;
     }
 
     private String buildDisplayOrderCode() {

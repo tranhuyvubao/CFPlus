@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class DonHangCuaToiActivity extends AppCompatActivity {
+    private static final long CUSTOMER_CANCEL_WINDOW_MS = 3 * 60 * 1000L;
 
     private final List<LocalOrder> orders = new ArrayList<>();
     private MyOrderAdapter adapter;
@@ -129,6 +130,8 @@ public class DonHangCuaToiActivity extends AppCompatActivity {
         private final TextView tvItemsPreview;
         private final TextView btnPay;
         private final TextView btnReview;
+        private final TextView btnContactStaff;
+        private final TextView btnCancelOrder;
 
         MyOrderVH(@NonNull View itemView) {
             super(itemView);
@@ -139,6 +142,8 @@ public class DonHangCuaToiActivity extends AppCompatActivity {
             tvItemsPreview = itemView.findViewById(R.id.tvMyOrderItems);
             btnPay = itemView.findViewById(R.id.btnPayMyOrder);
             btnReview = itemView.findViewById(R.id.btnReviewMyOrder);
+            btnContactStaff = itemView.findViewById(R.id.btnContactStaffMyOrder);
+            btnCancelOrder = itemView.findViewById(R.id.btnCancelMyOrder);
         }
 
         void bind(LocalOrder order) {
@@ -166,6 +171,35 @@ public class DonHangCuaToiActivity extends AppCompatActivity {
                 });
             } else {
                 btnPay.setVisibility(View.GONE);
+            }
+
+            boolean cancellableByCustomer = "created".equals(status)
+                    && (System.currentTimeMillis() - order.getCreatedAtMillis()) <= CUSTOMER_CANCEL_WINDOW_MS;
+            btnCancelOrder.setVisibility(cancellableByCustomer ? View.VISIBLE : View.GONE);
+            if (cancellableByCustomer) {
+                btnCancelOrder.setOnClickListener(v -> orderRepository.cancelOrder(order.getOrderId(), (success, message) -> runOnUiThread(() -> {
+                    if (!success) {
+                        Toast.makeText(DonHangCuaToiActivity.this,
+                                message == null ? "Khong the huy don luc nay." : message,
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    Toast.makeText(DonHangCuaToiActivity.this, "Da huy don trong thoi gian cho phep.", Toast.LENGTH_SHORT).show();
+                })));
+            }
+
+            boolean canRequestSupport = "created".equals(status) || "confirmed".equals(status);
+            btnContactStaff.setVisibility(canRequestSupport ? View.VISIBLE : View.GONE);
+            if (canRequestSupport) {
+                btnContactStaff.setOnClickListener(v -> orderRepository.requestStaffSupport(
+                        order.getOrderId(),
+                        "Khach yeu cau nhan vien ho tro sua mon.",
+                        (success, message) -> runOnUiThread(() -> Toast.makeText(
+                                DonHangCuaToiActivity.this,
+                                success ? "Da gui yeu cau ho tro den nhan vien." : (message == null ? "Chua gui duoc yeu cau." : message),
+                                Toast.LENGTH_SHORT
+                        ).show()))
+                );
             }
 
             boolean canReview = "paid".equals(status) || "completed".equals(status);

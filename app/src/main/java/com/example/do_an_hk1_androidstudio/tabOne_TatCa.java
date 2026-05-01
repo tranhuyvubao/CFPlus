@@ -30,7 +30,6 @@ import com.example.do_an_hk1_androidstudio.cloud.OrderCloudRepository;
 import com.example.do_an_hk1_androidstudio.cloud.WishlistCloudRepository;
 import com.example.do_an_hk1_androidstudio.local.CustomerCartStore;
 import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
-import com.example.do_an_hk1_androidstudio.local.WishlistStore;
 import com.example.do_an_hk1_androidstudio.local.model.LocalCategory;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrder;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrderItem;
@@ -69,7 +68,6 @@ public class tabOne_TatCa extends Fragment {
     private OrderCloudRepository orderRepository;
     private WishlistCloudRepository wishlistCloudRepository;
     private CustomerCartStore cartStore;
-    private WishlistStore wishlistStore;
     private LocalSessionManager sessionManager;
     private ListenerRegistration categoriesListener;
     private ListenerRegistration productsListener;
@@ -101,9 +99,7 @@ public class tabOne_TatCa extends Fragment {
         orderRepository = new OrderCloudRepository(requireContext());
         wishlistCloudRepository = new WishlistCloudRepository(requireContext());
         cartStore = new CustomerCartStore(requireContext());
-        wishlistStore = new WishlistStore(requireContext());
         sessionManager = new LocalSessionManager(requireContext());
-        favoriteIds.addAll(wishlistStore.getFavoriteIds());
 
         linearCategoryFilters = view.findViewById(R.id.linearCategoryFilters);
         linearQuickFilters = view.findViewById(R.id.linearQuickFilters);
@@ -145,18 +141,17 @@ public class tabOne_TatCa extends Fragment {
         String userId = sessionManager.getCurrentUserId();
         if (userId == null) {
             favoriteIds.clear();
-            favoriteIds.addAll(wishlistStore.getFavoriteIds());
+            if (isAdded()) {
+                renderContent();
+            }
             return;
         }
         favoritesListener = wishlistCloudRepository.listenFavoriteIds(userId, ids -> {
             favoriteIds.clear();
             favoriteIds.addAll(ids);
-            wishlistStore.replaceAll(ids);
             if (isAdded()) {
                 renderContent();
             }
-        });
-        wishlistCloudRepository.migrateLocalFavorites(userId, wishlistStore.getFavoriteIds(), (success, message) -> {
         });
     }
 
@@ -573,7 +568,6 @@ public class tabOne_TatCa extends Fragment {
             if (nextFavorite) {
                 favoriteIds.add(product.getProductId());
             }
-            wishlistStore.setFavorite(product.getProductId(), nextFavorite);
             bindFavoriteIcon(btnFavorite, product.getProductId());
             tvBadge.setText(buildBadge(product));
             UiMotion.pulse(btnFavorite);
@@ -594,17 +588,7 @@ public class tabOne_TatCa extends Fragment {
 
         addButton.setOnClickListener(v -> {
             UiMotion.bounce(addButton);
-            cartStore.addItem(
-                    product.getProductId(),
-                    product.getName(),
-                    product.getBasePrice(),
-                    1,
-                    null,
-                    null,
-                    null,
-                    product.getImageUrl()
-            );
-            Toast.makeText(requireContext(), "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+            openProductDetail(product, image);
         });
 
         itemView.setOnClickListener(v -> {
@@ -622,6 +606,21 @@ public class tabOne_TatCa extends Fragment {
             startActivity(intent, options.toBundle());
         });
         return itemView;
+    }
+
+    private void openProductDetail(@NonNull LocalProduct product, @NonNull View image) {
+        Intent intent = new Intent(getActivity(), chitiet_sanpham.class);
+        intent.putExtra("Ten", product.getName());
+        intent.putExtra("Gia", String.valueOf(product.getBasePrice()));
+        intent.putExtra("hinhAnh", product.getImageUrl());
+        intent.putExtra("productId", product.getProductId());
+        intent.putExtra("image_transition_name", "product_image_" + product.getProductId());
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                requireActivity(),
+                image,
+                "product_image_" + product.getProductId()
+        );
+        startActivity(intent, options.toBundle());
     }
 
     private void bindFavoriteIcon(ImageButton button, String productId) {

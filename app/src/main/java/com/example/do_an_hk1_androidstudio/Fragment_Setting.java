@@ -11,7 +11,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.do_an_hk1_androidstudio.cloud.StaffPushTokenRepository;
 import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
+import com.example.do_an_hk1_androidstudio.ui.StaffNotificationSyncManager;
 
 public class Fragment_Setting extends Fragment {
 
@@ -31,6 +33,8 @@ public class Fragment_Setting extends Fragment {
         tvThongBao.setOnClickListener(v -> startActivity(new Intent(getActivity(), NotificationInboxActivity.class)));
         tvThongTinCuaHang.setOnClickListener(v -> startActivity(new Intent(getActivity(), ThongTinCuaHangActivity.class)));
         tvDangXuat.setOnClickListener(v -> {
+            new StaffPushTokenRepository(requireContext()).deactivateCurrentSessionToken();
+            StaffNotificationSyncManager.getInstance(requireContext()).stop();
             sessionManager.clear();
             Intent intent = new Intent(getActivity(), MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

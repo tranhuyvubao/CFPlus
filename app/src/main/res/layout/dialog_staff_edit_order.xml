@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="20dp"
+    app:cardBackgroundColor="@color/dashboard_card"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="8dp"
+    app:strokeWidth="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/tvEditOrderTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sửa đơn"
+            android:textColor="@color/dashboard_text_primary"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvEditOrderSummary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/manager_soft_pill"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="8dp"
+            android:textColor="@color/dashboard_primary"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvEditOrderEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/manager_search_background"
+            android:gravity="center"
+            android:padding="20dp"
+            android:text="Đơn hiện chưa có món nào."
+            android:textColor="@color/dashboard_text_secondary"
+            android:visibility="gone" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvEditOrderItems"
+            android:layout_width="match_parent"
+            android:layout_height="360dp"
+            android:layout_marginTop="16dp"
+            android:clipToPadding="false"
+            android:paddingBottom="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="end"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/btnCancelEditedOrder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/manager_back_chip"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="10dp"
+                android:text="Huỷ"
+                android:textColor="@color/dashboard_primary"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/btnSaveEditedOrder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/manager_primary_pill"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="10dp"
+                android:text="Lưu thay đổi"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

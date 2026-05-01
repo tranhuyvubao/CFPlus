@@ -92,5 +92,33 @@
             android:textColor="@color/dashboard_accent"
             android:textStyle="bold"
             android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/btnContactStaffMyOrder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/manager_back_chip"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="Liên hệ nhân viên sửa món"
+            android:textAlignment="center"
+            android:textColor="@color/dashboard_primary"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/btnCancelMyOrder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/manager_soft_pill"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="Hủy đơn (trong 3 phút)"
+            android:textAlignment="center"
+            android:textColor="@color/dashboard_accent"
+            android:textStyle="bold"
+            android:visibility="gone" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

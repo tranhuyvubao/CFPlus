@@ -9,7 +9,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.do_an_hk1_androidstudio.cloud.VnpayConfigCloudRepository;
-import com.example.do_an_hk1_androidstudio.payment.VnpaySettingsStore;
 import com.example.do_an_hk1_androidstudio.ui.InsetsHelper;
 
 public class VnpaySandboxConfigActivity extends AppCompatActivity {
@@ -17,7 +16,6 @@ public class VnpaySandboxConfigActivity extends AppCompatActivity {
     private EditText edtTmnCode;
     private EditText edtHashSecret;
     private EditText edtReturnUrl;
-    private VnpaySettingsStore settingsStore;
     private VnpayConfigCloudRepository cloudRepository;
 
     @Override
@@ -26,7 +24,6 @@ public class VnpaySandboxConfigActivity extends AppCompatActivity {
         setContentView(R.layout.activity_vnpay_sandbox_config);
         InsetsHelper.applyActivityRootPadding(this);
 
-        settingsStore = new VnpaySettingsStore(this);
         cloudRepository = new VnpayConfigCloudRepository(this);
         edtTmnCode = findViewById(R.id.edtVnpayTmnCode);
         edtHashSecret = findViewById(R.id.edtVnpayHashSecret);
@@ -39,10 +36,9 @@ public class VnpaySandboxConfigActivity extends AppCompatActivity {
     }
 
     private void fillCurrentValues() {
-        VnpaySettingsStore.MerchantConfig config = settingsStore.read();
-        edtTmnCode.setText(config.tmnCode);
-        edtHashSecret.setText(config.hashSecret);
-        edtReturnUrl.setText(config.returnUrl);
+        edtTmnCode.setText("");
+        edtHashSecret.setText("");
+        edtReturnUrl.setText("");
 
         cloudRepository.getConfig((cloudConfig, message) -> runOnUiThread(() -> {
             if (cloudConfig == null) {
@@ -51,7 +47,6 @@ public class VnpaySandboxConfigActivity extends AppCompatActivity {
                 }
                 return;
             }
-            settingsStore.save(cloudConfig.tmnCode, cloudConfig.hashSecret, cloudConfig.returnUrl);
             edtTmnCode.setText(cloudConfig.tmnCode);
             edtHashSecret.setText(cloudConfig.hashSecret);
             edtReturnUrl.setText(cloudConfig.returnUrl);
@@ -63,16 +58,15 @@ public class VnpaySandboxConfigActivity extends AppCompatActivity {
         String hashSecret = edtHashSecret.getText().toString().trim();
         String returnUrl = edtReturnUrl.getText().toString().trim();
         if (TextUtils.isEmpty(tmnCode) || TextUtils.isEmpty(hashSecret) || TextUtils.isEmpty(returnUrl)) {
-            Toast.makeText(this, "Vui lòng nhập đủ TMN code, hash secret và return URL.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Vui long nhap du TMN code, hash secret va return URL.", Toast.LENGTH_SHORT).show();
             return;
         }
         cloudRepository.saveConfig(tmnCode, hashSecret, returnUrl, (success, message) -> runOnUiThread(() -> {
             if (!success) {
-                Toast.makeText(this, message == null ? "Không thể lưu cấu hình VNPAY lên Firebase." : message, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, message == null ? "Khong the luu cau hinh VNPAY len Firebase." : message, Toast.LENGTH_LONG).show();
                 return;
             }
-            settingsStore.save(tmnCode, hashSecret, returnUrl);
-            Toast.makeText(this, "Đã lưu cấu hình VNPAY sandbox lên Firebase.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Da luu cau hinh VNPAY sandbox len Firebase.", Toast.LENGTH_SHORT).show();
             finish();
         }));
     }
@@ -80,12 +74,11 @@ public class VnpaySandboxConfigActivity extends AppCompatActivity {
     private void clearConfig() {
         cloudRepository.clearConfig((success, message) -> runOnUiThread(() -> {
             if (!success) {
-                Toast.makeText(this, message == null ? "Không thể xóa cấu hình VNPAY trên Firebase." : message, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, message == null ? "Khong the xoa cau hinh VNPAY tren Firebase." : message, Toast.LENGTH_LONG).show();
                 return;
             }
-            settingsStore.clear();
             fillCurrentValues();
-            Toast.makeText(this, "Đã xóa cấu hình VNPAY sandbox trên Firebase.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Da xoa cau hinh VNPAY sandbox tren Firebase.", Toast.LENGTH_SHORT).show();
         }));
     }
 }

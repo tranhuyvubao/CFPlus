@@ -4,8 +4,12 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.Window;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -120,21 +124,55 @@ public class DatBanActivity extends AppCompatActivity {
             return;
         }
 
-        String[] labels = new String[activeTables.size()];
-        for (int i = 0; i < activeTables.size(); i++) {
-            LocalCafeTable table = activeTables.get(i);
-            labels[i] = table.getName() + " (" + normalizeStatus(table.getStatus()) + ")";
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_option_picker, null, false);
+        TextView tvTitle = dialogView.findViewById(R.id.tvPickerTitle);
+        TextView tvSubtitle = dialogView.findViewById(R.id.tvPickerSubtitle);
+        LinearLayout layoutOptions = dialogView.findViewById(R.id.layoutPickerOptions);
+
+        tvTitle.setText("Chọn bàn");
+        tvSubtitle.setText("Chọn bàn phù hợp cho lượt đặt trước của khách hàng.");
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
         }
 
-        new AlertDialog.Builder(this)
-                .setTitle("Chọn bàn")
-                .setItems(labels, (dialog, which) -> {
-                    LocalCafeTable table = activeTables.get(which);
-                    selectedTableId = table.getTableId();
-                    edtTenBan.setText(table.getName());
-                })
-                .setNegativeButton("Hủy", null)
-                .show();
+        LayoutInflater inflater = LayoutInflater.from(this);
+        for (LocalCafeTable table : activeTables) {
+            View itemView = inflater.inflate(R.layout.item_picker_option, layoutOptions, false);
+            TextView tvOptionTitle = itemView.findViewById(R.id.tvPickerOptionTitle);
+            TextView tvOptionSubtitle = itemView.findViewById(R.id.tvPickerOptionSubtitle);
+            TextView btnPick = itemView.findViewById(R.id.btnPickOption);
+
+            tvOptionTitle.setText(table.getName());
+            StringBuilder subtitle = new StringBuilder();
+            if (!TextUtils.isEmpty(table.getArea())) {
+                subtitle.append(table.getArea());
+            }
+            if (!TextUtils.isEmpty(table.getCode())) {
+                if (subtitle.length() > 0) {
+                    subtitle.append(" • ");
+                }
+                subtitle.append("Mã ").append(table.getCode());
+            }
+            if (subtitle.length() > 0) {
+                subtitle.append(" • ");
+            }
+            subtitle.append(normalizeStatus(table.getStatus()));
+            tvOptionSubtitle.setText(subtitle.toString());
+            btnPick.setOnClickListener(v -> {
+                selectedTableId = table.getTableId();
+                edtTenBan.setText(table.getName());
+                dialog.dismiss();
+            });
+            layoutOptions.addView(itemView);
+        }
+
+        dialogView.findViewById(R.id.btnClosePicker).setOnClickListener(v -> dialog.dismiss());
+        dialog.show();
     }
 
     private void submitReservation() {

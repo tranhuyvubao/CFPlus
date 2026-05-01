@@ -157,6 +157,16 @@ public class CatalogCloudRepository {
                            String categoryId,
                            boolean active,
                            @NonNull CompletionCallback callback) {
+        addProduct(name, basePrice, imageUrl, categoryId, active, null, callback);
+    }
+
+    public void addProduct(String name,
+                           int basePrice,
+                           @Nullable String imageUrl,
+                           String categoryId,
+                           boolean active,
+                           @Nullable List<String> availableSizes,
+                           @NonNull CompletionCallback callback) {
         String id = DataHelper.newId("product");
         long now = System.currentTimeMillis();
         Map<String, Object> values = new HashMap<>();
@@ -166,6 +176,7 @@ public class CatalogCloudRepository {
         values.put("image_url", normalizeNullable(imageUrl));
         values.put("category_id", categoryId);
         values.put("is_active", active);
+        values.put("available_sizes", normalizeSizes(availableSizes));
         values.put("created_at", now);
         values.put("updated_at", now);
         saveDocument("products", id, values, callback);
@@ -178,12 +189,24 @@ public class CatalogCloudRepository {
                               String categoryId,
                               boolean active,
                               @NonNull CompletionCallback callback) {
+        updateProduct(productId, name, basePrice, imageUrl, categoryId, active, null, callback);
+    }
+
+    public void updateProduct(String productId,
+                              String name,
+                              int basePrice,
+                              @Nullable String imageUrl,
+                              String categoryId,
+                              boolean active,
+                              @Nullable List<String> availableSizes,
+                              @NonNull CompletionCallback callback) {
         Map<String, Object> values = new HashMap<>();
         values.put("name", safe(name));
         values.put("base_price", basePrice);
         values.put("image_url", normalizeNullable(imageUrl));
         values.put("category_id", categoryId);
         values.put("is_active", active);
+        values.put("available_sizes", normalizeSizes(availableSizes));
         values.put("updated_at", FieldValue.serverTimestamp());
         updateDocument("products", productId, values, callback);
     }
@@ -267,8 +290,47 @@ public class CatalogCloudRepository {
                 stringValue(snapshot.getString("name"), ""),
                 intValue(snapshot.get("base_price")),
                 snapshot.getString("image_url"),
-                boolValue(snapshot.get("is_active"), true)
+                boolValue(snapshot.get("is_active"), true),
+                parseSizes(snapshot.get("available_sizes"))
         );
+    }
+
+    @NonNull
+    private List<String> parseSizes(@Nullable Object rawValue) {
+        List<String> sizes = new ArrayList<>();
+        if (!(rawValue instanceof List<?>)) {
+            return sizes;
+        }
+        for (Object item : (List<?>) rawValue) {
+            if (item == null) {
+                continue;
+            }
+            String value = String.valueOf(item).trim().toUpperCase();
+            if ("S".equals(value) || "M".equals(value) || "L".equals(value)) {
+                if (!sizes.contains(value)) {
+                    sizes.add(value);
+                }
+            }
+        }
+        return sizes;
+    }
+
+    @NonNull
+    private List<String> normalizeSizes(@Nullable List<String> sizes) {
+        List<String> normalized = new ArrayList<>();
+        if (sizes == null) {
+            return normalized;
+        }
+        for (String size : sizes) {
+            if (size == null) {
+                continue;
+            }
+            String value = size.trim().toUpperCase();
+            if (("S".equals(value) || "M".equals(value) || "L".equals(value)) && !normalized.contains(value)) {
+                normalized.add(value);
+            }
+        }
+        return normalized;
     }
 
     private String safe(String value) {
