@@ -25,6 +25,12 @@ public interface NotificationInboxDao {
     @Query("UPDATE notification_inbox SET read = 1 WHERE id = :id")
     void markRead(String id);
 
+    @Query("UPDATE notification_inbox SET read = 1")
+    void markAllRead();
+
+    @Query("UPDATE notification_inbox SET read = 1 WHERE user_id = :userId")
+    void markAllReadForUser(String userId);
+
     @Query("SELECT COUNT(*) FROM notification_inbox WHERE read = 0")
     int countUnread();
 

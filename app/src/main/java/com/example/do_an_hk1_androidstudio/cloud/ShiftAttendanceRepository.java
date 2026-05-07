@@ -25,7 +25,9 @@ public class ShiftAttendanceRepository {
                                @NonNull String action,
                                double latitude,
                                double longitude,
-                               float distanceMeters) {
+                               float distanceMeters,
+                               long actionAtMillis,
+                               long shiftDurationMinutes) {
         FirebaseProvider.ensureAuthenticated(appContext, (success, message) -> {
             if (!success) {
                 return;
@@ -39,6 +41,8 @@ public class ShiftAttendanceRepository {
             values.put("latitude", latitude);
             values.put("longitude", longitude);
             values.put("distance_meters", distanceMeters);
+            values.put("action_at", actionAtMillis);
+            values.put("shift_duration_minutes", shiftDurationMinutes);
             values.put("created_at", System.currentTimeMillis());
             firestore.collection("shift_attendance_logs").document(id).set(values);
         });

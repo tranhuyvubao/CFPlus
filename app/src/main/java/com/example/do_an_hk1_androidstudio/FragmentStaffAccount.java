@@ -70,6 +70,8 @@ public class FragmentStaffAccount extends Fragment {
                 .setOnClickListener(v -> openInventoryAction(QuanLyKhoActivity.ACTION_SHIFT_USAGE));
         view.findViewById(R.id.rowStaffShiftAttendance)
                 .setOnClickListener(v -> startActivity(new Intent(requireContext(), ShiftCheckInActivity.class)));
+        view.findViewById(R.id.rowStaffSupportChat)
+                .setOnClickListener(v -> startActivity(new Intent(requireContext(), StaffSupportThreadsActivity.class)));
         view.findViewById(R.id.rowStaffEditProfile)
                 .setOnClickListener(v -> startActivity(new Intent(requireContext(), SuaThongTinCaNhanActivity.class)));
 

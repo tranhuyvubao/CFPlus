@@ -34,7 +34,7 @@
                     android:id="@+id/tvFeaturedTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Goi y cho ban"
+                    android:text="Gợi ý cho bạn"
                     android:textColor="@color/dashboard_text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -44,7 +44,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Chon nhanh tu nhung mon ban co kha nang thich."
+                    android:text="Chọn nhanh từ những món bạn có khả năng thích."
                     android:textColor="@color/dashboard_text_secondary"
                     android:textSize="13sp" />
 
@@ -99,7 +99,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="4dp"
             android:layout_marginTop="14dp"
-            android:text="0 mon phu hop"
+            android:text="0 món phù hợp"
             android:textColor="@color/dashboard_text_secondary"
             android:textSize="13sp"
             android:textStyle="bold" />
@@ -113,7 +113,7 @@
             android:background="@drawable/manager_search_background"
             android:gravity="center"
             android:padding="20dp"
-            android:text="Chua co mon phu hop de hien thi."
+            android:text="Chưa có món phù hợp để hiển thị."
             android:textColor="@color/dashboard_text_secondary"
             android:textSize="15sp"
             android:visibility="gone" />

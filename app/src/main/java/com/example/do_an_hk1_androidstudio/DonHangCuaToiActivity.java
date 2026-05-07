@@ -2,14 +2,18 @@ package com.example.do_an_hk1_androidstudio;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -180,26 +184,18 @@ public class DonHangCuaToiActivity extends AppCompatActivity {
                 btnCancelOrder.setOnClickListener(v -> orderRepository.cancelOrder(order.getOrderId(), (success, message) -> runOnUiThread(() -> {
                     if (!success) {
                         Toast.makeText(DonHangCuaToiActivity.this,
-                                message == null ? "Khong the huy don luc nay." : message,
+                                message == null ? "Không thể hủy đơn lúc này." : message,
                                 Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    Toast.makeText(DonHangCuaToiActivity.this, "Da huy don trong thoi gian cho phep.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DonHangCuaToiActivity.this, "Đã hủy đơn trong thời gian cho phép.", Toast.LENGTH_SHORT).show();
                 })));
             }
 
             boolean canRequestSupport = "created".equals(status) || "confirmed".equals(status);
             btnContactStaff.setVisibility(canRequestSupport ? View.VISIBLE : View.GONE);
             if (canRequestSupport) {
-                btnContactStaff.setOnClickListener(v -> orderRepository.requestStaffSupport(
-                        order.getOrderId(),
-                        "Khach yeu cau nhan vien ho tro sua mon.",
-                        (success, message) -> runOnUiThread(() -> Toast.makeText(
-                                DonHangCuaToiActivity.this,
-                                success ? "Da gui yeu cau ho tro den nhan vien." : (message == null ? "Chua gui duoc yeu cau." : message),
-                                Toast.LENGTH_SHORT
-                        ).show()))
-                );
+                btnContactStaff.setOnClickListener(v -> showSupportRequestDialog(order));
             }
 
             boolean canReview = "paid".equals(status) || "completed".equals(status);
@@ -262,5 +258,41 @@ public class DonHangCuaToiActivity extends AppCompatActivity {
 
     private String safe(String value, String fallback) {
         return value == null || value.trim().isEmpty() ? fallback : value;
+    }
+
+    private void showSupportRequestDialog(@NonNull LocalOrder order) {
+        EditText input = new EditText(this);
+        input.setHint("Ví dụ: Giảm đá ly latte, bỏ topping thạch.");
+        input.setMinLines(3);
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        int padding = dp(14);
+        input.setPadding(padding, padding, padding, padding);
+
+        new AlertDialog.Builder(this)
+                .setTitle("Gửi yêu cầu sửa món")
+                .setMessage("Nhập nội dung cần nhân viên hỗ trợ để xử lý nhanh hơn.")
+                .setView(input)
+                .setNegativeButton("Hủy", null)
+                .setPositiveButton("Gửi", (dialog, which) -> {
+                    String supportNote = input.getText() == null ? "" : input.getText().toString().trim();
+                    if (TextUtils.isEmpty(supportNote)) {
+                        Toast.makeText(this, "Vui lòng nhập lời nhắn cho nhân viên.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    orderRepository.requestStaffSupport(
+                            order.getOrderId(),
+                            supportNote,
+                            (success, message) -> runOnUiThread(() -> Toast.makeText(
+                                    DonHangCuaToiActivity.this,
+                                    success ? "Đã gửi yêu cầu hỗ trợ đến nhân viên." : (message == null ? "Chưa gửi được yêu cầu." : message),
+                                    Toast.LENGTH_SHORT
+                            ).show()))
+                    ;
+                })
+                .show();
+    }
+
+    private int dp(int value) {
+        return Math.round(value * getResources().getDisplayMetrics().density);
     }
 }

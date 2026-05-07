@@ -28,6 +28,10 @@ public class StaffNotificationCloudRepository {
         void onChanged(@NonNull List<StaffNotificationRecord> notifications);
     }
 
+    public interface PushDispatchCallback {
+        void onComplete(boolean success);
+    }
+
     public static class StaffNotificationRecord {
         public final String id;
         public final String eventKey;
@@ -40,6 +44,7 @@ public class StaffNotificationCloudRepository {
         public final String tableName;
         public final String status;
         public final long createdAt;
+        public final long pushDispatchedAt;
 
         public StaffNotificationRecord(String id,
                                        String eventKey,
@@ -51,7 +56,8 @@ public class StaffNotificationCloudRepository {
                                        String tableId,
                                        String tableName,
                                        String status,
-                                       long createdAt) {
+                                       long createdAt,
+                                       long pushDispatchedAt) {
             this.id = id;
             this.eventKey = eventKey;
             this.type = type;
@@ -63,6 +69,7 @@ public class StaffNotificationCloudRepository {
             this.tableName = tableName;
             this.status = status;
             this.createdAt = createdAt;
+            this.pushDispatchedAt = pushDispatchedAt;
         }
     }
 
@@ -135,11 +142,28 @@ public class StaffNotificationCloudRepository {
                                     document.getString("tableId"),
                                     document.getString("tableName"),
                                     document.getString("status"),
-                                    longValue(document.get("createdAt"))
+                                    longValue(document.get("createdAt")),
+                                    longValueOrZero(document.get("pushDispatchedAt"))
                             ));
                         }
                     }
                     callback.onChanged(result);
+                });
+    }
+
+    public void markPushDispatched(@NonNull String notificationId, @Nullable PushDispatchCallback callback) {
+        firestore.collection("staff_notifications")
+                .document(notificationId)
+                .update("pushDispatchedAt", System.currentTimeMillis(), "updatedAt", FieldValue.serverTimestamp())
+                .addOnSuccessListener(unused -> {
+                    if (callback != null) {
+                        callback.onComplete(true);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    if (callback != null) {
+                        callback.onComplete(false);
+                    }
                 });
     }
 
@@ -165,6 +189,16 @@ public class StaffNotificationCloudRepository {
             return ((Number) value).longValue();
         }
         return System.currentTimeMillis();
+    }
+
+    private long longValueOrZero(@Nullable Object value) {
+        if (value instanceof Long) {
+            return (Long) value;
+        }
+        if (value instanceof Number) {
+            return ((Number) value).longValue();
+        }
+        return 0L;
     }
 
     @NonNull

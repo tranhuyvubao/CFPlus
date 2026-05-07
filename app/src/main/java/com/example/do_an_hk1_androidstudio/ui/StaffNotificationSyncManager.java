@@ -45,7 +45,9 @@ public final class StaffNotificationSyncManager {
         final String userId = sessionManager.getCurrentUserId();
         registration = repository.listenStaffNotifications(notifications -> {
             for (StaffNotificationCloudRepository.StaffNotificationRecord item : notifications) {
-                boolean shouldShowSystemNotification = initialSyncDone && !seenNotificationIds.contains(item.id);
+                boolean alreadySeenInSession = seenNotificationIds.contains(item.id);
+                boolean shouldShowSystemNotification = !alreadySeenInSession
+                        && (initialSyncDone || item.pushDispatchedAt <= 0L);
                 seenNotificationIds.add(item.id);
                 NotificationCenter.storeAndShow(
                         appContext,
@@ -59,6 +61,9 @@ public final class StaffNotificationSyncManager {
                         item.status,
                         shouldShowSystemNotification
                 );
+                if (shouldShowSystemNotification) {
+                    repository.markPushDispatched(item.id, null);
+                }
             }
             initialSyncDone = true;
         });

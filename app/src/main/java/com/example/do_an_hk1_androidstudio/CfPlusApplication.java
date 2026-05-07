@@ -14,6 +14,7 @@ import com.example.do_an_hk1_androidstudio.cloud.StaffPushTokenRepository;
 import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
 import com.example.do_an_hk1_androidstudio.local.room.PendingSyncRepository;
 import com.example.do_an_hk1_androidstudio.ui.NotificationCenter;
+import com.example.do_an_hk1_androidstudio.ui.ShiftAttendanceStateStore;
 import com.example.do_an_hk1_androidstudio.ui.StaffNotificationSyncManager;
 import com.google.android.material.color.DynamicColors;
 
@@ -33,7 +34,8 @@ public class CfPlusApplication extends Application {
         DynamicColors.applyToActivitiesIfAvailable(this);
         NotificationCenter.ensureChannel(this);
         new PendingSyncRepository(this).flushPendingActions();
-        if ("staff".equals(new LocalSessionManager(this).getCurrentUserRole())) {
+        if ("staff".equals(new LocalSessionManager(this).getCurrentUserRole())
+                && ShiftAttendanceStateStore.isCheckedIn(this)) {
             StaffNotificationSyncManager.getInstance(this).startIfNeeded();
             new StaffPushTokenRepository(this).syncForCurrentSession();
         }

@@ -40,9 +40,11 @@ public class trangchu extends AppCompatActivity implements FragmentHistory.OnThe
     private LinearLayout chatBubble;
     private FrameLayout sideMenuOverlay;
     private LinearLayout sideMenuPanel;
+    private TextView tvChatBubbleLabel;
     private StoreCloudRepository storeRepository;
     private ListenerRegistration storeProfileListener;
-    private boolean customerCanUseChat;
+    private boolean canUseMainChatBubble;
+    private Class<?> mainChatTargetActivity;
     private int activeNavItemId = View.NO_ID;
     private FrameLayout btnHeaderNotifications;
     private TextView tvHeaderNotificationBadge;
@@ -76,7 +78,7 @@ public class trangchu extends AppCompatActivity implements FragmentHistory.OnThe
 
         String role = normalizeRole(sessionManager.getCurrentUserRole());
         applyBottomNavForRole(role);
-        setupCustomerChatBubble(role);
+        setupMainChatBubble(role);
         setupStaffNotificationBell(role);
         setupSidebar(role);
         setupStoreBranding(headerLogo);
@@ -156,15 +158,37 @@ public class trangchu extends AppCompatActivity implements FragmentHistory.OnThe
         }
     }
 
-    private void setupCustomerChatBubble(String role) {
+    private void setupMainChatBubble(String role) {
         role = normalizeRole(role);
         chatBubble = findViewById(R.id.chatBubble);
+        tvChatBubbleLabel = findViewById(R.id.tvChatBubbleLabel);
         if (chatBubble == null) {
             return;
         }
-        customerCanUseChat = "customer".equals(role);
+        if ("staff".equals(role)) {
+            canUseMainChatBubble = true;
+            mainChatTargetActivity = StaffSupportThreadsActivity.class;
+            if (tvChatBubbleLabel != null) {
+                tvChatBubbleLabel.setText("Chat");
+            }
+            chatBubble.setContentDescription("Mở chat hỗ trợ khách hàng");
+        } else if ("customer".equals(role)) {
+            canUseMainChatBubble = true;
+            mainChatTargetActivity = ChatboxActivity.class;
+            if (tvChatBubbleLabel != null) {
+                tvChatBubbleLabel.setText("AI");
+            }
+            chatBubble.setContentDescription("Mở chat AI hỗ trợ");
+        } else {
+            canUseMainChatBubble = false;
+            mainChatTargetActivity = null;
+        }
         updateChatBubbleVisibility(false);
-        chatBubble.setOnClickListener(v -> startActivity(new Intent(this, ChatboxActivity.class)));
+        chatBubble.setOnClickListener(v -> {
+            if (mainChatTargetActivity != null) {
+                startActivity(new Intent(this, mainChatTargetActivity));
+            }
+        });
     }
 
     private void setupStaffNotificationBell(String role) {
@@ -198,6 +222,7 @@ public class trangchu extends AppCompatActivity implements FragmentHistory.OnThe
 
         setSidebarRowVisible(R.id.rowSidebarCart, !manager && !staff);
         setSidebarRowVisible(R.id.rowSidebarOrders, !manager && !staff);
+        setSidebarRowVisible(R.id.rowSidebarReservation, !manager && !staff);
         setSidebarRowVisible(R.id.rowSidebarChat, !manager && !staff);
         setSidebarRowVisible(R.id.rowSidebarAnalytics, manager);
         setSidebarRowVisible(R.id.rowSidebarProducts, manager);
@@ -229,6 +254,10 @@ public class trangchu extends AppCompatActivity implements FragmentHistory.OnThe
         bindSidebarRow(R.id.rowSidebarOrders, () -> {
             closeSidebar();
             startActivity(new Intent(this, DonHangCuaToiActivity.class));
+        });
+        bindSidebarRow(R.id.rowSidebarReservation, () -> {
+            closeSidebar();
+            startActivity(new Intent(this, DatBanActivity.class));
         });
         bindSidebarRow(R.id.rowSidebarChat, () -> {
             closeSidebar();
@@ -295,7 +324,7 @@ public class trangchu extends AppCompatActivity implements FragmentHistory.OnThe
         if (chatBubble == null) {
             return;
         }
-        chatBubble.setVisibility(customerCanUseChat && onHomeTab ? LinearLayout.VISIBLE : LinearLayout.GONE);
+        chatBubble.setVisibility(canUseMainChatBubble && onHomeTab ? LinearLayout.VISIBLE : LinearLayout.GONE);
     }
 
     private void bindHeaderNotificationBadge() {

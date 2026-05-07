@@ -25,6 +25,7 @@ public class LocalOrder {
     private final int lastCustomerItemAddedQty;
     private final long lastCustomerItemAddedAtMillis;
     private final List<LocalOrderItem> lastCustomerAddedItems;
+    private final String supportRequestNote;
     private final List<LocalOrderItem> items;
 
     public LocalOrder(String orderId,
@@ -60,6 +61,7 @@ public class LocalOrder {
                 0,
                 0L,
                 null,
+                null,
                 items);
     }
 
@@ -81,6 +83,7 @@ public class LocalOrder {
                       int lastCustomerItemAddedQty,
                       long lastCustomerItemAddedAtMillis,
                       List<LocalOrderItem> lastCustomerAddedItems,
+                      String supportRequestNote,
                       List<LocalOrderItem> items) {
         this.orderId = orderId;
         this.orderCode = orderCode;
@@ -100,6 +103,7 @@ public class LocalOrder {
         this.lastCustomerItemAddedQty = lastCustomerItemAddedQty;
         this.lastCustomerItemAddedAtMillis = lastCustomerItemAddedAtMillis;
         this.lastCustomerAddedItems = lastCustomerAddedItems == null ? new ArrayList<>() : new ArrayList<>(lastCustomerAddedItems);
+        this.supportRequestNote = supportRequestNote;
         this.items = items == null ? new ArrayList<>() : new ArrayList<>(items);
     }
 
@@ -185,6 +189,10 @@ public class LocalOrder {
 
     public List<LocalOrderItem> getLastCustomerAddedItems() {
         return Collections.unmodifiableList(lastCustomerAddedItems);
+    }
+
+    public String getSupportRequestNote() {
+        return supportRequestNote;
     }
 
     public List<LocalOrderItem> getItems() {

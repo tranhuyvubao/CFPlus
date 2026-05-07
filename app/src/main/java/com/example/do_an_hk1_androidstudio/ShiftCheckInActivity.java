@@ -2,7 +2,6 @@ package com.example.do_an_hk1_androidstudio;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -18,11 +17,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.example.do_an_hk1_androidstudio.cloud.ShiftAttendanceRepository;
+import com.example.do_an_hk1_androidstudio.cloud.StaffPushTokenRepository;
 import com.example.do_an_hk1_androidstudio.cloud.StoreCloudRepository;
 import com.example.do_an_hk1_androidstudio.config.CafeStoreConfig;
 import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
 import com.example.do_an_hk1_androidstudio.local.model.StoreBranch;
 import com.example.do_an_hk1_androidstudio.ui.InsetsHelper;
+import com.example.do_an_hk1_androidstudio.ui.ShiftAttendanceStateStore;
+import com.example.do_an_hk1_androidstudio.ui.StaffNotificationSyncManager;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.text.SimpleDateFormat;
@@ -32,10 +34,6 @@ import java.util.List;
 import java.util.Locale;
 
 public class ShiftCheckInActivity extends AppCompatActivity {
-
-    private static final String PREF_NAME = "shift_attendance";
-    private static final String KEY_CHECKED_IN = "checked_in";
-    private static final String KEY_LAST_ACTION = "last_action";
 
     private TextView tvShiftStatus;
     private TextView tvShiftHint;
@@ -142,11 +140,6 @@ public class ShiftCheckInActivity extends AppCompatActivity {
         float[] result = new float[1];
         Location.distanceBetween(location.getLatitude(), location.getLongitude(), branch.getLatitude(), branch.getLongitude(), result);
         float distance = result[0];
-        if (distance > CafeStoreConfig.ATTENDANCE_RADIUS_METERS) {
-            tvShiftHint.setText("Bạn đang cách " + branch.getName() + " khoảng " + Math.round(distance) + "m, cần trong bán kính 50m.");
-            Toast.makeText(this, "Bạn đang ở ngoài bán kính cho phép.", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
         String userId = sessionManager.getCurrentUserId();
         String userName = sessionManager.getCurrentUserFullName();
@@ -160,8 +153,30 @@ public class ShiftCheckInActivity extends AppCompatActivity {
             userName = "Nhân viên quán";
         }
 
-        repository.logShiftAction(userId, userName, action, location.getLatitude(), location.getLongitude(), distance);
-        saveState("check_in".equals(action), action);
+        long now = System.currentTimeMillis();
+        long checkInAt = ShiftAttendanceStateStore.getLastCheckInAt(this);
+        long shiftDurationMinutes = "check_out".equals(action) && checkInAt > 0
+                ? Math.max(0, (now - checkInAt) / 60000L)
+                : 0L;
+
+        repository.logShiftAction(
+                userId,
+                userName,
+                action,
+                location.getLatitude(),
+                location.getLongitude(),
+                distance,
+                now,
+                shiftDurationMinutes
+        );
+        ShiftAttendanceStateStore.saveState(this, "check_in".equals(action), action, now);
+        if ("check_in".equals(action)) {
+            StaffNotificationSyncManager.getInstance(this).startIfNeeded();
+            new StaffPushTokenRepository(this).syncForCurrentSession();
+        } else {
+            StaffNotificationSyncManager.getInstance(this).stop();
+            new StaffPushTokenRepository(this).deactivateCurrentSessionToken();
+        }
         tvShiftHint.setText(("check_in".equals(action) ? "Check-in" : "Check-out")
                 + " thành công tại "
                 + branch.getName()
@@ -191,20 +206,11 @@ public class ShiftCheckInActivity extends AppCompatActivity {
     }
 
     private void renderState() {
-        SharedPreferences preferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
-        boolean checkedIn = preferences.getBoolean(KEY_CHECKED_IN, false);
-        String lastAction = preferences.getString(KEY_LAST_ACTION, "Chưa có thao tác");
+        boolean checkedIn = ShiftAttendanceStateStore.isCheckedIn(this);
+        String lastAction = ShiftAttendanceStateStore.getLastAction(this);
         tvShiftStatus.setText(checkedIn ? "Đang trong ca" : "Chưa vào ca");
         if (tvShiftHint.getText() == null || tvShiftHint.getText().toString().trim().isEmpty()) {
             tvShiftHint.setText(lastAction);
         }
-    }
-
-    private void saveState(boolean checkedIn, String action) {
-        getSharedPreferences(PREF_NAME, MODE_PRIVATE)
-                .edit()
-                .putBoolean(KEY_CHECKED_IN, checkedIn)
-                .putString(KEY_LAST_ACTION, ("check_in".equals(action) ? "Đã check-in" : "Đã check-out"))
-                .apply();
     }
 }

@@ -3,6 +3,7 @@ param(
     [switch]$LaunchApp,
     [switch]$OpenWeb,
     [switch]$DeployHosting,
+    [switch]$DeployFirestoreRules,
     [switch]$VisibleLogs,
     [int]$BackendPort = 3000,
     [int]$WebPort = 5173
@@ -64,6 +65,24 @@ function Invoke-HostingDeploy {
         Pop-Location
     }
     Write-Step "Deploy Hosting thanh cong."
+}
+
+function Invoke-FirestoreRulesDeploy {
+    if (-not (Test-CommandExists "firebase")) {
+        throw "Khong tim thay Firebase CLI trong PATH. Hay cai firebase-tools va dang nhap `firebase login` truoc."
+    }
+
+    Write-Step "Dang deploy Firestore rules..."
+    Push-Location $Root
+    try {
+        & firebase deploy --only firestore:rules
+        if ($LASTEXITCODE -ne 0) {
+            throw "Firestore rules deploy that bai voi ma $LASTEXITCODE."
+        }
+    } finally {
+        Pop-Location
+    }
+    Write-Step "Deploy Firestore rules thanh cong."
 }
 
 function Save-Pid {
@@ -187,6 +206,10 @@ if (-not (Test-CommandExists "node")) {
 
 if ($DeployHosting) {
     Invoke-HostingDeploy
+}
+
+if ($DeployFirestoreRules) {
+    Invoke-FirestoreRulesDeploy
 }
 
 $envPath = Join-Path $BackendDir ".env"

@@ -114,7 +114,7 @@ public class TableCloudRepository {
                           @NonNull CompletionCallback callback) {
         FirebaseProvider.ensureAuthenticated(appContext, (authSuccess, authMessage) -> {
             if (!authSuccess) {
-                callback.onComplete(false, authMessage == null ? "Firebase auth chua san sang" : authMessage);
+                callback.onComplete(false, authMessage == null ? "Firebase auth chưa sẵn sàng" : authMessage);
                 return;
             }
             saveTableInternal(tableId, name, code, area, status, isActive, callback);
@@ -146,7 +146,7 @@ public class TableCloudRepository {
         }
 
         if (TAKEAWAY_TABLE_ID.equals(tableId)) {
-            callback.onComplete(false, "Ban Take away khong duoc sua");
+            callback.onComplete(false, "Bàn Take away không được sửa");
             return;
         }
 
@@ -160,11 +160,11 @@ public class TableCloudRepository {
     public void deleteTable(String tableId, @NonNull CompletionCallback callback) {
         FirebaseProvider.ensureAuthenticated(appContext, (authSuccess, authMessage) -> {
             if (!authSuccess) {
-                callback.onComplete(false, authMessage == null ? "Firebase auth chua san sang" : authMessage);
+                callback.onComplete(false, authMessage == null ? "Firebase auth chưa sẵn sàng" : authMessage);
                 return;
             }
             if (TAKEAWAY_TABLE_ID.equals(tableId)) {
-                callback.onComplete(false, "Ban Take away khong duoc xoa");
+                callback.onComplete(false, "Bàn Take away không được xóa");
                 return;
             }
             firestore.collection("tables")
@@ -210,7 +210,7 @@ public class TableCloudRepository {
                                   @NonNull CompletionCallback callback) {
         FirebaseProvider.ensureAuthenticated(appContext, (authSuccess, authMessage) -> {
             if (!authSuccess) {
-                callback.onComplete(false, authMessage == null ? "Firebase auth chua san sang" : authMessage);
+                callback.onComplete(false, authMessage == null ? "Firebase auth chưa sẵn sàng" : authMessage);
                 return;
             }
 
@@ -323,7 +323,7 @@ public class TableCloudRepository {
                                          @NonNull CompletionCallback callback) {
         FirebaseProvider.ensureAuthenticated(appContext, (authSuccess, authMessage) -> {
             if (!authSuccess) {
-                callback.onComplete(false, authMessage == null ? "Firebase auth chua san sang" : authMessage);
+                callback.onComplete(false, authMessage == null ? "Firebase auth chưa sẵn sàng" : authMessage);
                 return;
             }
 

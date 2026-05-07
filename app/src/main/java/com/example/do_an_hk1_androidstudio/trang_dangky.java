@@ -23,9 +23,13 @@ import javax.mail.MessagingException;
 
 public class trang_dangky extends AppCompatActivity {
     private EditText edtemail;
+    private EditText edtHoTen;
+    private EditText edtSoDienThoai;
+    private EditText edtDiaChi;
     private TextInputEditText edtmk;
     private TextInputEditText edtmklai;
     private TextView testEmail;
+    private TextView testThongTin;
     private TextView testMk;
     private TextView testMklai;
     private TextView tvDK;
@@ -41,15 +45,20 @@ public class trang_dangky extends AppCompatActivity {
         userCloudRepository = new UserCloudRepository(this);
 
         edtemail = findViewById(R.id.edtemail);
+        edtHoTen = findViewById(R.id.edtHoTen);
+        edtSoDienThoai = findViewById(R.id.edtSoDienThoai);
+        edtDiaChi = findViewById(R.id.edtDiaChi);
         edtmk = findViewById(R.id.edtmk);
         edtmklai = findViewById(R.id.edtmklai);
         testEmail = findViewById(R.id.testEmail);
+        testThongTin = findViewById(R.id.testThongTin);
         testMk = findViewById(R.id.testMk);
         testMklai = findViewById(R.id.testMklai);
         tvDK = findViewById(R.id.tvDK);
         tvDN = findViewById(R.id.tvDN);
 
         testEmail.setVisibility(View.GONE);
+        testThongTin.setVisibility(View.GONE);
         testMk.setVisibility(View.GONE);
         testMklai.setVisibility(View.GONE);
 
@@ -62,6 +71,9 @@ public class trang_dangky extends AppCompatActivity {
 
         tvDK.setOnClickListener(view -> {
             String email = valueOf(edtemail);
+            String fullName = valueOf(edtHoTen);
+            String phone = valueOf(edtSoDienThoai);
+            String address = valueOf(edtDiaChi);
             String password = valueOf(edtmk);
             String passwordAgain = valueOf(edtmklai);
 
@@ -73,6 +85,14 @@ public class trang_dangky extends AppCompatActivity {
                 isValid = false;
             } else {
                 testEmail.setVisibility(View.GONE);
+            }
+
+            if (fullName.length() < 2 || !phone.matches("^0\\d{9,10}$") || address.length() < 6) {
+                testThongTin.setText("Vui lòng nhập đủ họ tên, số điện thoại hợp lệ và địa chỉ mặc định.");
+                testThongTin.setVisibility(View.VISIBLE);
+                isValid = false;
+            } else {
+                testThongTin.setVisibility(View.GONE);
             }
 
             if (password.length() < 6 || !password.matches(".*[a-zA-Z].*") || !password.matches(".*\\d.*")) {
@@ -104,12 +124,12 @@ public class trang_dangky extends AppCompatActivity {
                     testEmail.setVisibility(View.VISIBLE);
                     return;
                 }
-                showOTPDialog(email);
+                showOTPDialog(email, password, fullName, phone, address);
             });
         });
     }
 
-    private void showOTPDialog(String email) {
+    private void showOTPDialog(String email, String password, String fullName, String phone, String address) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View dialogView = getLayoutInflater().inflate(R.layout.xacthuc_otp_dangnhap, null);
         builder.setView(dialogView);
@@ -143,7 +163,7 @@ public class trang_dangky extends AppCompatActivity {
             if (userOtp.equals(otp)) {
                 Toast.makeText(this, "Xác thực thành công!", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
-                registerLocalAccount(email, valueOf(edtmk));
+                registerLocalAccount(email, password, fullName, phone, address);
             } else {
                 edtotp.setError("Mã OTP không chính xác!");
             }
@@ -171,8 +191,8 @@ public class trang_dangky extends AppCompatActivity {
         }).start();
     }
 
-    private void registerLocalAccount(String email, String password) {
-        userCloudRepository.registerCustomer(email, password, (user, message) -> {
+    private void registerLocalAccount(String email, String password, String fullName, String phone, String address) {
+        userCloudRepository.registerCustomer(email, password, fullName, phone, address, (user, message) -> {
             if (user != null) {
                 Toast.makeText(this, "Đăng ký thành công! Vui lòng đăng nhập.", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(trang_dangky.this, MainActivity.class);

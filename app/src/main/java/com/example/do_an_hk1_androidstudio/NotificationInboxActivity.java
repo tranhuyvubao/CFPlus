@@ -7,6 +7,7 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -47,7 +48,20 @@ public class NotificationInboxActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        markAllAsRead();
         bindNotifications();
+    }
+
+    private void markAllAsRead() {
+        String userId = new LocalSessionManager(this).getCurrentUserId();
+        if (userId == null) {
+            CfPlusLocalDatabase.getInstance(this).notificationInboxDao().markAllRead();
+        } else {
+            CfPlusLocalDatabase.getInstance(this).notificationInboxDao().markAllReadForUser(userId);
+        }
+        NotificationManagerCompat.from(this).cancelAll();
+        sendBroadcast(new android.content.Intent(NotificationCenter.ACTION_INBOX_UPDATED)
+                .setPackage(getPackageName()));
     }
 
     private void bindNotifications() {

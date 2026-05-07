@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.example.do_an_hk1_androidstudio.cloud.StaffPushTokenRepository;
 import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
 import com.example.do_an_hk1_androidstudio.ui.NotificationCenter;
+import com.example.do_an_hk1_androidstudio.ui.ShiftAttendanceStateStore;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -20,7 +21,12 @@ public class CfPlusFirebaseMessagingService extends FirebaseMessagingService {
         String status = remoteMessage.getData().get("status");
         String notificationId = valueOrDefault(remoteMessage.getData().get("notificationId"), remoteMessage.getMessageId() == null ? "fcm_" + System.currentTimeMillis() : remoteMessage.getMessageId());
         String eventKey = remoteMessage.getData().get("eventKey");
-        String userId = new LocalSessionManager(this).getCurrentUserId();
+        LocalSessionManager sessionManager = new LocalSessionManager(this);
+        String userId = sessionManager.getCurrentUserId();
+        if ("staff".equals(sessionManager.getCurrentUserRole())
+                && !ShiftAttendanceStateStore.isCheckedIn(this)) {
+            return;
+        }
 
         if (remoteMessage.getNotification() != null) {
             title = valueOrDefault(remoteMessage.getNotification().getTitle(), title);

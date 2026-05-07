@@ -78,6 +78,22 @@ service cloud.firestore {
       allow read, write: if request.auth != null;
     }
 
+    match /support_chat_threads/{threadId} {
+      allow read, write: if request.auth != null;
+
+      match /messages/{messageId} {
+        allow read, write: if request.auth != null;
+      }
+    }
+
+    match /shift_attendance_logs/{logId} {
+      allow read, write: if request.auth != null;
+    }
+
+    match /reviews/{reviewId} {
+      allow read, write: if request.auth != null;
+    }
+
     match /stock_transactions/{transactionId} {
       allow read, write: if request.auth != null;
     }

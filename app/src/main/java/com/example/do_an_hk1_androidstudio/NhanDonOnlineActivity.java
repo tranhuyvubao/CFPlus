@@ -2,6 +2,7 @@ package com.example.do_an_hk1_androidstudio;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -326,19 +327,25 @@ public class NhanDonOnlineActivity extends AppCompatActivity {
             }
 
             if (order.needsStaffAttention()) {
-                int addedQty = Math.max(1, order.getLastCustomerItemAddedQty());
                 tvNewItemsAlert.setVisibility(View.VISIBLE);
-                StringBuilder alert = new StringBuilder("Khách vừa thêm ")
-                        .append(addedQty)
-                        .append(" món");
+                String supportRequestNote = order.getSupportRequestNote();
                 List<LocalOrderItem> addedItems = order.getLastCustomerAddedItems();
-                if (!addedItems.isEmpty()) {
-                    alert.append(": ").append(addedItems.get(0).getProductName());
+                StringBuilder alert = new StringBuilder();
+                if (!TextUtils.isEmpty(supportRequestNote)) {
+                    alert.append("Yêu cầu sửa món: ").append(supportRequestNote.trim());
+                } else if (!addedItems.isEmpty()) {
+                    int addedQty = Math.max(1, order.getLastCustomerItemAddedQty());
+                    alert.append("Khách vừa thêm ")
+                            .append(addedQty)
+                            .append(" món: ")
+                            .append(addedItems.get(0).getProductName());
                     if (addedItems.size() > 1) {
                         alert.append(" +").append(addedItems.size() - 1).append(" món khác");
                     }
+                    alert.append(" - kiểm tra lại đơn");
+                } else {
+                    alert.append("Khách đang cần hỗ trợ, vui lòng kiểm tra đơn.");
                 }
-                alert.append(" - kiểm tra lại đơn");
                 tvNewItemsAlert.setText(alert.toString());
             } else {
                 tvNewItemsAlert.setVisibility(View.GONE);

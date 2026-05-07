@@ -56,6 +56,8 @@
         <activity android:name=".VnpaySandboxConfigActivity" />
         <activity android:name=".FavoritesActivity" />
         <activity android:name=".ShiftCheckInActivity" />
+        <activity android:name=".SupportChatActivity" />
+        <activity android:name=".StaffSupportThreadsActivity" />
         <activity
             android:name=".VnpayReturnActivity"
             android:exported="true">

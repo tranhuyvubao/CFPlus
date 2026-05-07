@@ -67,6 +67,8 @@ public class FragmentCustomerAccount extends Fragment {
                 .setOnClickListener(v -> startActivity(new Intent(requireContext(), SuaThongTinCaNhanActivity.class)));
         view.findViewById(R.id.rowCustomerAddresses)
                 .setOnClickListener(v -> startActivity(new Intent(requireContext(), HoSoKhachHangActivity.class)));
+        view.findViewById(R.id.rowCustomerBooking)
+                .setOnClickListener(v -> startActivity(new Intent(requireContext(), DatBanActivity.class)));
 
         return view;
     }

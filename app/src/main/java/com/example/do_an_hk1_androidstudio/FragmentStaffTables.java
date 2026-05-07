@@ -52,6 +52,7 @@ public class FragmentStaffTables extends Fragment {
         tvEmpty = view.findViewById(R.id.tvStaffTablesEmpty);
         View btnReservations = view.findViewById(R.id.btnStaffReservations);
         View btnBarMode = view.findViewById(R.id.btnStaffBarMode);
+        View btnSupportChat = view.findViewById(R.id.btnStaffSupportChat);
         btnTakeaway = view.findViewById(R.id.btnStaffTakeaway);
 
         rvTables.setLayoutManager(new GridLayoutManager(requireContext(), 3));
@@ -63,6 +64,8 @@ public class FragmentStaffTables extends Fragment {
         btnTakeaway.setOnClickListener(v -> openTakeawayBill());
         btnBarMode.setOnClickListener(v ->
                 startActivity(new Intent(requireContext(), KdsBarActivity.class)));
+        btnSupportChat.setOnClickListener(v ->
+                startActivity(new Intent(requireContext(), StaffSupportThreadsActivity.class)));
         renderTakeawayButton();
         return view;
     }

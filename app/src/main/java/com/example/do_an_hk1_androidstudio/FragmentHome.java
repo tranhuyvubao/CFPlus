@@ -70,10 +70,20 @@ public class FragmentHome extends Fragment {
         bannerScrollView = view.findViewById(R.id.bannerScrollView);
         layoutPromoBanners = view.findViewById(R.id.layoutPromoBanners);
         View btnOpenCart = view.findViewById(R.id.btnOpenCart);
+        View btnOpenReservation = view.findViewById(R.id.btnOpenReservation);
+        View btnFloatingSupportChat = view.findViewById(R.id.btnFloatingSupportChat);
 
         if (btnOpenCart != null) {
             btnOpenCart.setOnClickListener(v ->
                     startActivity(new Intent(requireContext(), DatMonOnlineActivity.class)));
+        }
+        if (btnOpenReservation != null) {
+            btnOpenReservation.setOnClickListener(v ->
+                    startActivity(new Intent(requireContext(), DatBanActivity.class)));
+        }
+        if (btnFloatingSupportChat != null) {
+            btnFloatingSupportChat.setOnClickListener(v ->
+                    startActivity(new Intent(requireContext(), SupportChatActivity.class)));
         }
 
         viewPager2.setVisibility(View.VISIBLE);
@@ -258,7 +268,7 @@ public class FragmentHome extends Fragment {
 
         new AlertDialog.Builder(requireContext())
                 .setView(scrollView)
-                .setNegativeButton("Dong", null)
+                .setNegativeButton("Đóng", null)
                 .show();
     }
 
@@ -270,7 +280,7 @@ public class FragmentHome extends Fragment {
         TextView action = itemView.findViewById(R.id.tvPickerProductAction);
 
         name.setText(product.getName());
-        meta.setText("Mon trong banner");
+        meta.setText("Món trong banner");
         price.setText(MoneyFormatter.format(product.getBasePrice()));
         action.setText("Xem");
         Glide.with(requireContext())
@@ -318,7 +328,7 @@ public class FragmentHome extends Fragment {
             searchList.clear();
             searchAdapter.notifyDataSetChanged();
             tvSearchEmpty.setVisibility(View.VISIBLE);
-            Toast.makeText(getContext(), "Tu khoa khong hop le.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Từ khóa không hợp lệ.", Toast.LENGTH_SHORT).show();
             return;
         }
 

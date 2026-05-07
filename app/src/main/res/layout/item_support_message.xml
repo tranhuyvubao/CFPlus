@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutMessageContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingVertical="4dp">
+
+    <TextView
+        android:id="@+id/tvSupportSender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxWidth="280dp"
+        android:text="Người gửi"
+        android:textColor="@color/dashboard_text_secondary"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvSupportContent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/manager_search_background"
+        android:maxWidth="280dp"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="10dp"
+        android:text="Nội dung"
+        android:textColor="@color/dashboard_text_primary"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tvSupportTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:maxWidth="280dp"
+        android:text="12:30"
+        android:textColor="@color/dashboard_text_secondary"
+        android:textSize="11sp" />
+</LinearLayout>

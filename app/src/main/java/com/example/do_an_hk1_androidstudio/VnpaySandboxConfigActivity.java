@@ -58,15 +58,15 @@ public class VnpaySandboxConfigActivity extends AppCompatActivity {
         String hashSecret = edtHashSecret.getText().toString().trim();
         String returnUrl = edtReturnUrl.getText().toString().trim();
         if (TextUtils.isEmpty(tmnCode) || TextUtils.isEmpty(hashSecret) || TextUtils.isEmpty(returnUrl)) {
-            Toast.makeText(this, "Vui long nhap du TMN code, hash secret va return URL.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Vui lòng nhập đủ TMN code, hash secret và return URL.", Toast.LENGTH_SHORT).show();
             return;
         }
         cloudRepository.saveConfig(tmnCode, hashSecret, returnUrl, (success, message) -> runOnUiThread(() -> {
             if (!success) {
-                Toast.makeText(this, message == null ? "Khong the luu cau hinh VNPAY len Firebase." : message, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, message == null ? "Không thể lưu cấu hình VNPAY lên Firebase." : message, Toast.LENGTH_LONG).show();
                 return;
             }
-            Toast.makeText(this, "Da luu cau hinh VNPAY sandbox len Firebase.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Đã lưu cấu hình VNPAY sandbox lên Firebase.", Toast.LENGTH_SHORT).show();
             finish();
         }));
     }
@@ -74,11 +74,11 @@ public class VnpaySandboxConfigActivity extends AppCompatActivity {
     private void clearConfig() {
         cloudRepository.clearConfig((success, message) -> runOnUiThread(() -> {
             if (!success) {
-                Toast.makeText(this, message == null ? "Khong the xoa cau hinh VNPAY tren Firebase." : message, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, message == null ? "Không thể xóa cấu hình VNPAY trên Firebase." : message, Toast.LENGTH_LONG).show();
                 return;
             }
             fillCurrentValues();
-            Toast.makeText(this, "Da xoa cau hinh VNPAY sandbox tren Firebase.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Đã xóa cấu hình VNPAY sandbox trên Firebase.", Toast.LENGTH_SHORT).show();
         }));
     }
 }

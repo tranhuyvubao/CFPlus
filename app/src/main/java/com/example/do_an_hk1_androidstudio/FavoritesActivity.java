@@ -147,7 +147,7 @@ public class FavoritesActivity extends AppCompatActivity {
         void bind(LocalProduct product) {
             tvName.setText(product.getName());
             tvPrice.setText(MoneyFormatter.format(product.getBasePrice()));
-            tvBadge.setText("Yeu thich");
+            tvBadge.setText("Yêu thích");
             Glide.with(FavoritesActivity.this)
                     .load(product.getImageUrl())
                     .placeholder(R.drawable.cfplus4)
@@ -164,7 +164,7 @@ public class FavoritesActivity extends AppCompatActivity {
                 if (customerId == null) {
                     android.widget.Toast.makeText(
                             FavoritesActivity.this,
-                            "Vui long dang nhap de dong bo mon yeu thich.",
+                            "Vui lòng đăng nhập để đồng bộ món yêu thích.",
                             android.widget.Toast.LENGTH_SHORT
                     ).show();
                     return;
@@ -181,7 +181,7 @@ public class FavoritesActivity extends AppCompatActivity {
                         bindFavorites();
                         android.widget.Toast.makeText(
                                 FavoritesActivity.this,
-                                message == null ? "Chua dong bo duoc mon yeu thich len Firebase." : message,
+                                message == null ? "Chưa đồng bộ được món yêu thích lên Firebase." : message,
                                 android.widget.Toast.LENGTH_SHORT
                         ).show();
                     }

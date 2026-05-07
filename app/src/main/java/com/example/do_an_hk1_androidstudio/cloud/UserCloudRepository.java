@@ -122,6 +122,15 @@ public class UserCloudRepository {
     }
 
     public void registerCustomer(String email, String plainPassword, @NonNull UserCallback callback) {
+        registerCustomer(email, plainPassword, "", "", "", callback);
+    }
+
+    public void registerCustomer(String email,
+                                 String plainPassword,
+                                 String fullName,
+                                 String phone,
+                                 String detailAddress,
+                                 @NonNull UserCallback callback) {
         emailExists(email, (exists, message) -> {
             if (message != null) {
                 callback.onResult(null, message);
@@ -139,8 +148,8 @@ public class UserCloudRepository {
             userData.put("username", safe(email));
             userData.put("email", safe(email));
             userData.put("password_hash", DataHelper.sha256(plainPassword));
-            userData.put("full_name", "");
-            userData.put("phone", "");
+            userData.put("full_name", safe(fullName));
+            userData.put("phone", safe(phone));
             userData.put("role", "customer");
             userData.put("gender", null);
             userData.put("birthday", null);
@@ -156,12 +165,29 @@ public class UserCloudRepository {
             profile.put("created_at", now);
             profile.put("updated_at", now);
 
+            Map<String, Object> addressData = new HashMap<>();
+            String addressId = DataHelper.newId("addr");
+            addressData.put("address_id", addressId);
+            addressData.put("customer_id", userId);
+            addressData.put("label", "Nhà");
+            addressData.put("recipient_name", safe(fullName));
+            addressData.put("phone", safe(phone));
+            addressData.put("country", "Việt Nam");
+            addressData.put("province", "");
+            addressData.put("district", "");
+            addressData.put("ward", "");
+            addressData.put("detail_address", safe(detailAddress));
+            addressData.put("is_default", true);
+            addressData.put("created_at", now);
+            addressData.put("updated_at", now);
+
             firestore.collection("users")
                     .document(userId)
                     .set(userData)
                     .continueWithTask(task -> firestore.collection("customer_profiles").document(userId).set(profile))
+                    .continueWithTask(task -> firestore.collection("customer_addresses").document(addressId).set(addressData))
                     .addOnSuccessListener(unused -> callback.onResult(
-                            new LocalUser(userId, safe(email), safe(email), "", "", "customer", null, true, null, now, now),
+                            new LocalUser(userId, safe(email), safe(email), safe(fullName), safe(phone), "customer", null, true, null, now, now),
                             null
                     ))
                     .addOnFailureListener(e -> callback.onResult(null, e.getMessage()));

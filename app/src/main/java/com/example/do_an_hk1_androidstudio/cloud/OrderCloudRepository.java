@@ -15,6 +15,7 @@ import com.example.do_an_hk1_androidstudio.local.model.LocalOrder;
 import com.example.do_an_hk1_androidstudio.local.model.LocalOrderItem;
 import com.example.do_an_hk1_androidstudio.local.room.PendingSyncRepository;
 import com.example.do_an_hk1_androidstudio.ui.NotificationCenter;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -79,7 +80,7 @@ public class OrderCloudRepository {
                                     @NonNull CompletionCallback callback) {
         FirebaseProvider.ensureAuthenticated(appContext, (authSuccess, authMessage) -> {
             if (!authSuccess) {
-                callback.onComplete(false, authMessage == null ? "Firebase auth chua san sang" : authMessage);
+                callback.onComplete(false, authMessage == null ? "Firebase auth chưa sẵn sàng" : authMessage);
                 return;
             }
             long createdAt = System.currentTimeMillis();
@@ -380,7 +381,7 @@ public class OrderCloudRepository {
     public void updateOrderStatus(String orderId, String nextStatus, @Nullable String staffId, @NonNull CompletionCallback callback) {
         FirebaseProvider.ensureAuthenticated(appContext, (authSuccess, authMessage) -> {
             if (!authSuccess) {
-                callback.onComplete(false, authMessage == null ? "Firebase auth chua san sang" : authMessage);
+                callback.onComplete(false, authMessage == null ? "Firebase auth chưa sẵn sàng" : authMessage);
                 return;
             }
             Map<String, Object> updates = new HashMap<>();
@@ -388,6 +389,7 @@ public class OrderCloudRepository {
             updates.put("updatedAt", FieldValue.serverTimestamp());
             updates.put("needsStaffAttention", false);
             updates.put("lastCustomerAction", null);
+            updates.put("supportRequestNote", null);
             updates.put("lastCustomerItemAddedQty", 0);
             updates.put("lastCustomerItemAddedAt", 0L);
             updates.put("lastCustomerAddedItems", new ArrayList<>());
@@ -396,7 +398,14 @@ public class OrderCloudRepository {
             }
             firestore.collection("orders")
                     .document(orderId)
-                    .update(updates)
+                    .get()
+                    .continueWithTask(getTask -> {
+                        DocumentSnapshot orderSnapshot = getTask.getResult();
+                        return firestore.collection("orders")
+                                .document(orderId)
+                                .update(updates)
+                                .continueWithTask(updateTask -> releaseTableIfNeeded(orderSnapshot, nextStatus));
+                    })
                     .addOnSuccessListener(unused -> {
                         actionLogRepository.log(orderId, mapStatusAction(nextStatus), staffId, buildActorName(), null);
                         NotificationCenter.storeAndShow(
@@ -432,7 +441,7 @@ public class OrderCloudRepository {
 
         FirebaseProvider.ensureAuthenticated(appContext, (authSuccess, authMessage) -> {
             if (!authSuccess) {
-                callback.onComplete(false, authMessage == null ? "Firebase auth chua san sang" : authMessage);
+                callback.onComplete(false, authMessage == null ? "Firebase auth chưa sẵn sàng" : authMessage);
                 return;
             }
 
@@ -473,6 +482,7 @@ public class OrderCloudRepository {
             updates.put("updatedAt", FieldValue.serverTimestamp());
             updates.put("needsStaffAttention", false);
             updates.put("lastCustomerAction", null);
+            updates.put("supportRequestNote", null);
             updates.put("lastCustomerItemAddedQty", 0);
             updates.put("lastCustomerItemAddedAt", 0L);
             updates.put("lastCustomerAddedItems", new ArrayList<>());
@@ -504,7 +514,7 @@ public class OrderCloudRepository {
                                  @NonNull CompletionCallback callback) {
         FirebaseProvider.ensureAuthenticated(appContext, (authSuccess, authMessage) -> {
             if (!authSuccess) {
-                callback.onComplete(false, authMessage == null ? "Firebase auth chua san sang" : authMessage);
+                callback.onComplete(false, authMessage == null ? "Firebase auth chưa sẵn sàng" : authMessage);
                 return;
             }
             Map<String, Object> updates = new HashMap<>();
@@ -539,7 +549,7 @@ public class OrderCloudRepository {
                                    @NonNull CompletionCallback callback) {
         FirebaseProvider.ensureAuthenticated(appContext, (authSuccess, authMessage) -> {
             if (!authSuccess) {
-                callback.onComplete(false, authMessage == null ? "Firebase auth chua san sang" : authMessage);
+                callback.onComplete(false, authMessage == null ? "Firebase auth chưa sẵn sàng" : authMessage);
                 return;
             }
 
@@ -570,11 +580,11 @@ public class OrderCloudRepository {
                             targetTable.put("updatedAt", System.currentTimeMillis());
                             firestore.collection("tables").document(newTableId).update(targetTable);
                         }
-                        actionLogRepository.log(orderId, "Doi ban cho khach", staffId, buildActorName(), nullableTrim(newTableName));
+                        actionLogRepository.log(orderId, "Đổi bàn cho khách", staffId, buildActorName(), nullableTrim(newTableName));
                         emitStaffNotification(
                                 "table_changed",
                                 "table_changed_" + orderId + "_" + String.valueOf(newTableId),
-                                "Da doi ban cho khach",
+                                "Đã đổi bàn cho khách",
                                 "Don " + orderId + " vua duoc chuyen sang " + String.valueOf(newTableName) + ".",
                                 orderId,
                                 null,
@@ -595,21 +605,36 @@ public class OrderCloudRepository {
     public void requestStaffSupport(String orderId, @Nullable String requestNote, @NonNull CompletionCallback callback) {
         FirebaseProvider.ensureAuthenticated(appContext, (authSuccess, authMessage) -> {
             if (!authSuccess) {
-                callback.onComplete(false, authMessage == null ? "Firebase auth chua san sang" : authMessage);
+                callback.onComplete(false, authMessage == null ? "Firebase auth chưa sẵn sàng" : authMessage);
                 return;
             }
             Map<String, Object> updates = new HashMap<>();
             updates.put("needsStaffAttention", true);
             updates.put("lastCustomerAction", "support_request");
             updates.put("lastCustomerItemAddedAt", System.currentTimeMillis());
+            updates.put("lastCustomerItemAddedQty", 0);
+            updates.put("lastCustomerAddedItems", new ArrayList<>());
             updates.put("updatedAt", FieldValue.serverTimestamp());
-            if (!TextUtils.isEmpty(requestNote)) {
-                updates.put("note", requestNote.trim());
-            }
+            updates.put("supportRequestNote", TextUtils.isEmpty(requestNote) ? null : requestNote.trim());
             firestore.collection("orders")
                     .document(orderId)
                     .update(updates)
-                    .addOnSuccessListener(unused -> callback.onComplete(true, null))
+                    .addOnSuccessListener(unused -> {
+                        String orderLabel = orderId;
+                        String supportText = TextUtils.isEmpty(requestNote) ? "Khách cần hỗ trợ sửa món." : requestNote.trim();
+                        emitStaffNotification(
+                                "customer_support_request",
+                                "customer_support_request_" + orderId + "_" + System.currentTimeMillis(),
+                                "Khách yêu cầu sửa món",
+                                "Đơn " + orderLabel + ": " + supportText,
+                                orderId,
+                                "customer_app",
+                                null,
+                                null,
+                                "created"
+                        );
+                        callback.onComplete(true, null);
+                    })
                     .addOnFailureListener(e -> callback.onComplete(false, e.getMessage()));
         });
     }
@@ -624,7 +649,7 @@ public class OrderCloudRepository {
         }
         FirebaseProvider.ensureAuthenticated(appContext, (authSuccess, authMessage) -> {
             if (!authSuccess) {
-                callback.onComplete(false, authMessage == null ? "Firebase auth chua san sang" : authMessage);
+                callback.onComplete(false, authMessage == null ? "Firebase auth chưa sẵn sàng" : authMessage);
                 return;
             }
             Map<String, Object> updates = new HashMap<>();
@@ -649,7 +674,7 @@ public class OrderCloudRepository {
                          @NonNull CompletionCallback callback) {
         FirebaseProvider.ensureAuthenticated(appContext, (authSuccess, authMessage) -> {
             if (!authSuccess) {
-                callback.onComplete(false, authMessage == null ? "Firebase auth chua san sang" : authMessage);
+                callback.onComplete(false, authMessage == null ? "Firebase auth chưa sẵn sàng" : authMessage);
                 return;
             }
             int finalAmount = Math.max(0, originalAmount - discountAmount);
@@ -672,7 +697,14 @@ public class OrderCloudRepository {
             firestore.collection("payments")
                     .document(orderId)
                     .set(payment)
-                    .continueWithTask(task -> firestore.collection("orders").document(orderId).update(orderUpdate))
+                    .continueWithTask(task -> firestore.collection("orders").document(orderId).get())
+                    .continueWithTask(getOrderTask -> {
+                        DocumentSnapshot orderSnapshot = getOrderTask.getResult();
+                        return firestore.collection("orders")
+                                .document(orderId)
+                                .update(orderUpdate)
+                                .continueWithTask(updateTask -> releaseTableIfNeeded(orderSnapshot, "paid"));
+                    })
                     .addOnSuccessListener(unused -> {
                         actionLogRepository.log(orderId, "Thanh toán đơn", sessionManager.getCurrentUserId(), buildActorName(), method);
                         NotificationCenter.storeAndShow(
@@ -795,6 +827,7 @@ public class OrderCloudRepository {
                 intValue(doc.getLong("lastCustomerItemAddedQty")),
                 longValueOrZero(doc.get("lastCustomerItemAddedAt")),
                 mapSnapshotItems(doc.get("lastCustomerAddedItems"), valueOf(doc.getString("orderId"))),
+                doc.getString("supportRequestNote"),
                 mapOrderItems(doc)
         );
     }
@@ -984,6 +1017,25 @@ public class OrderCloudRepository {
             return "customer_qr";
         }
         return "staff_pos";
+    }
+
+    private com.google.android.gms.tasks.Task<Void> releaseTableIfNeeded(@Nullable DocumentSnapshot orderSnapshot,
+                                                                         @NonNull String nextStatus) {
+        if (orderSnapshot == null) {
+            return Tasks.forResult(null);
+        }
+        boolean shouldRelease = "paid".equals(nextStatus) || "cancelled".equals(nextStatus) || "completed".equals(nextStatus);
+        if (!shouldRelease) {
+            return Tasks.forResult(null);
+        }
+        String tableId = orderSnapshot.getString("tableId");
+        if (TextUtils.isEmpty(tableId) || TableCloudRepository.TAKEAWAY_TABLE_ID.equals(tableId)) {
+            return Tasks.forResult(null);
+        }
+        Map<String, Object> tableValues = new HashMap<>();
+        tableValues.put("status", "free");
+        tableValues.put("updatedAt", System.currentTimeMillis());
+        return firestore.collection("tables").document(tableId).update(tableValues);
     }
 
     private static class ListenerRegistrationHolder implements ListenerRegistration {

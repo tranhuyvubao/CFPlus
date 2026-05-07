@@ -83,6 +83,85 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Họ và tên"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/edtHoTen"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/manager_search_background"
+                    android:hint="Nhập họ và tên của bạn"
+                    android:inputType="textPersonName"
+                    android:minHeight="48dp"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textColorHint="@color/dashboard_text_secondary"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Số điện thoại"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/edtSoDienThoai"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/manager_search_background"
+                    android:hint="Nhập số điện thoại"
+                    android:inputType="phone"
+                    android:minHeight="48dp"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textColorHint="@color/dashboard_text_secondary"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Địa chỉ mặc định"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/edtDiaChi"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/manager_search_background"
+                    android:gravity="top"
+                    android:hint="Nhập địa chỉ nhận hàng mặc định"
+                    android:minHeight="72dp"
+                    android:padding="14dp"
+                    android:textColor="@color/dashboard_text_primary"
+                    android:textColorHint="@color/dashboard_text_secondary"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/testThongTin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Vui lòng nhập đủ thông tin hồ sơ"
+                    android:textColor="#D32F2F"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
                     android:id="@+id/tvmatkhau"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

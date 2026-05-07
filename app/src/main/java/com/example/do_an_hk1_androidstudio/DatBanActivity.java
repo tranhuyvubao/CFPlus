@@ -2,44 +2,38 @@ package com.example.do_an_hk1_androidstudio;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.Window;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.do_an_hk1_androidstudio.cloud.TableCloudRepository;
+import com.example.do_an_hk1_androidstudio.cloud.UserCloudRepository;
 import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
-import com.example.do_an_hk1_androidstudio.local.model.LocalCafeTable;
 import com.example.do_an_hk1_androidstudio.ui.InsetsHelper;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 public class DatBanActivity extends AppCompatActivity {
 
-    private EditText edtTenBan;
     private EditText edtThoiGian;
     private EditText edtSoNguoi;
     private EditText edtGhiChu;
-    private String selectedTableId;
     private TableCloudRepository tableRepository;
+    private UserCloudRepository userRepository;
     private LocalSessionManager localSessionManager;
-    private final List<LocalCafeTable> activeTables = new ArrayList<>();
+    private TextView tvCustomerInfo;
+    private boolean customerInfoReady;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,6 +42,7 @@ public class DatBanActivity extends AppCompatActivity {
         InsetsHelper.applyActivityRootPadding(this);
 
         tableRepository = new TableCloudRepository(this);
+        userRepository = new UserCloudRepository(this);
         localSessionManager = new LocalSessionManager(this);
 
         TextView tvBack = findViewById(R.id.tvBack);
@@ -55,8 +50,7 @@ public class DatBanActivity extends AppCompatActivity {
             tvBack.setOnClickListener(v -> finish());
         }
 
-        edtTenBan = findViewById(R.id.edtTenBan);
-        TextView btnChonBan = findViewById(R.id.btnChonBan);
+        tvCustomerInfo = findViewById(R.id.tvCustomerInfo);
         edtThoiGian = findViewById(R.id.edtThoiGian);
         edtSoNguoi = findViewById(R.id.edtSoNguoi);
         edtGhiChu = findViewById(R.id.edtGhiChu);
@@ -66,21 +60,29 @@ public class DatBanActivity extends AppCompatActivity {
         edtThoiGian.setFocusable(false);
         edtThoiGian.setClickable(true);
 
-        btnChonBan.setOnClickListener(v -> showPickTableDialog());
         edtThoiGian.setOnClickListener(v -> showDateTimePicker());
         btnDatBan.setOnClickListener(v -> submitReservation());
 
-        loadActiveTables();
+        bindCustomerInfo();
     }
 
-    private void loadActiveTables() {
-        tableRepository.getActiveTables((tables, message) -> runOnUiThread(() -> {
-            activeTables.clear();
-            for (LocalCafeTable table : tables) {
-                if (table.isActive()) {
-                    activeTables.add(table);
-                }
+    private void bindCustomerInfo() {
+        String userId = localSessionManager.getCurrentUserId();
+        if (TextUtils.isEmpty(userId)) {
+            tvCustomerInfo.setText("Bạn chưa đăng nhập. Vui lòng đăng nhập để đặt bàn.");
+            customerInfoReady = false;
+            return;
+        }
+        String fullName = localSessionManager.getCurrentUserFullName();
+        String email = localSessionManager.getCurrentUserEmail();
+        tvCustomerInfo.setText(buildCustomerInfo(fullName, email, null));
+        customerInfoReady = isCustomerInfoComplete(fullName, null);
+        userRepository.getUserById(userId, (user, message) -> runOnUiThread(() -> {
+            if (user == null) {
+                return;
             }
+            customerInfoReady = isCustomerInfoComplete(user.getFullName(), user.getPhone());
+            tvCustomerInfo.setText(buildCustomerInfo(user.getFullName(), user.getEmail(), user.getPhone()));
         }));
     }
 
@@ -118,77 +120,24 @@ public class DatBanActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-    private void showPickTableDialog() {
-        if (activeTables.isEmpty()) {
-            Toast.makeText(this, "Chưa có bàn nào trong hệ thống", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_option_picker, null, false);
-        TextView tvTitle = dialogView.findViewById(R.id.tvPickerTitle);
-        TextView tvSubtitle = dialogView.findViewById(R.id.tvPickerSubtitle);
-        LinearLayout layoutOptions = dialogView.findViewById(R.id.layoutPickerOptions);
-
-        tvTitle.setText("Chọn bàn");
-        tvSubtitle.setText("Chọn bàn phù hợp cho lượt đặt trước của khách hàng.");
-
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setView(dialogView)
-                .create();
-        Window window = dialog.getWindow();
-        if (window != null) {
-            window.setBackgroundDrawableResource(android.R.color.transparent);
-        }
-
-        LayoutInflater inflater = LayoutInflater.from(this);
-        for (LocalCafeTable table : activeTables) {
-            View itemView = inflater.inflate(R.layout.item_picker_option, layoutOptions, false);
-            TextView tvOptionTitle = itemView.findViewById(R.id.tvPickerOptionTitle);
-            TextView tvOptionSubtitle = itemView.findViewById(R.id.tvPickerOptionSubtitle);
-            TextView btnPick = itemView.findViewById(R.id.btnPickOption);
-
-            tvOptionTitle.setText(table.getName());
-            StringBuilder subtitle = new StringBuilder();
-            if (!TextUtils.isEmpty(table.getArea())) {
-                subtitle.append(table.getArea());
-            }
-            if (!TextUtils.isEmpty(table.getCode())) {
-                if (subtitle.length() > 0) {
-                    subtitle.append(" • ");
-                }
-                subtitle.append("Mã ").append(table.getCode());
-            }
-            if (subtitle.length() > 0) {
-                subtitle.append(" • ");
-            }
-            subtitle.append(normalizeStatus(table.getStatus()));
-            tvOptionSubtitle.setText(subtitle.toString());
-            btnPick.setOnClickListener(v -> {
-                selectedTableId = table.getTableId();
-                edtTenBan.setText(table.getName());
-                dialog.dismiss();
-            });
-            layoutOptions.addView(itemView);
-        }
-
-        dialogView.findViewById(R.id.btnClosePicker).setOnClickListener(v -> dialog.dismiss());
-        dialog.show();
-    }
-
     private void submitReservation() {
         String customerId = localSessionManager.getCurrentUserId();
         if (TextUtils.isEmpty(customerId)) {
             Toast.makeText(this, "Vui lòng đăng nhập", Toast.LENGTH_SHORT).show();
             return;
         }
+        if (!customerInfoReady) {
+            Toast.makeText(this, "Vui lòng bổ sung họ tên và số điện thoại trước khi đặt bàn.", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(this, SuaThongTinCaNhanActivity.class));
+            return;
+        }
 
-        String tenBan = edtTenBan.getText().toString().trim();
         String thoiGianStr = edtThoiGian.getText().toString().trim();
         String soNguoiStr = edtSoNguoi.getText().toString().trim();
         String ghiChu = edtGhiChu.getText().toString().trim();
 
-        if (TextUtils.isEmpty(tenBan) || TextUtils.isEmpty(thoiGianStr) || TextUtils.isEmpty(soNguoiStr)) {
-            Toast.makeText(this, "Vui lòng nhập bàn, thời gian và số người", Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(thoiGianStr) || TextUtils.isEmpty(soNguoiStr)) {
+            Toast.makeText(this, "Vui lòng nhập thời gian và số người", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -219,8 +168,8 @@ public class DatBanActivity extends AppCompatActivity {
 
         tableRepository.createReservation(
                 customerId,
-                selectedTableId,
-                tenBan,
+                null,
+                "Chưa xếp bàn",
                 reserveDate.getTime(),
                 peopleCount,
                 ghiChu,
@@ -235,9 +184,17 @@ public class DatBanActivity extends AppCompatActivity {
         );
     }
 
-    private String normalizeStatus(String status) {
-        if ("occupied".equals(status)) return "Đang dùng";
-        if ("reserved".equals(status)) return "Đã đặt";
-        return "Trống";
+    private String buildCustomerInfo(String fullName, String email, String phone) {
+        return "Khách hàng: " + fallback(fullName, "Chưa cập nhật")
+                + "\nSố điện thoại: " + fallback(phone, "Chưa cập nhật")
+                + "\nEmail: " + fallback(email, "Chưa cập nhật");
+    }
+
+    private String fallback(String value, String defaultValue) {
+        return TextUtils.isEmpty(value) ? defaultValue : value.trim();
+    }
+
+    private boolean isCustomerInfoComplete(String fullName, String phone) {
+        return !TextUtils.isEmpty(fullName) && !TextUtils.isEmpty(phone);
     }
 }

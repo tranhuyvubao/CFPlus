@@ -246,7 +246,7 @@ public class StoreCloudRepository {
     }
 
     private String fallbackMessage(@Nullable String value) {
-        return value == null ? "Firebase auth chua san sang" : value;
+        return value == null ? "Firebase auth chưa sẵn sàng" : value;
     }
 
     private static class ListenerRegistrationHolder implements ListenerRegistration {

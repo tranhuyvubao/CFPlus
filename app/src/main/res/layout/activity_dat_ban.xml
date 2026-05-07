@@ -50,37 +50,23 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:text="Chọn bàn, thời gian và số lượng khách cho lượt đặt trước."
+                    android:text="Nhập thời gian, số lượng khách và ghi chú cho lượt đặt trước."
                     android:textColor="@color/dashboard_text_secondary"
                     android:textSize="14sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <EditText
-            android:id="@+id/edtTenBan"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/manager_search_background"
-            android:elevation="3dp"
-            android:hint="Tên bàn"
-            android:paddingHorizontal="16dp"
-            android:singleLine="true"
-            android:textColor="@color/dashboard_text_primary"
-            android:textColorHint="@color/dashboard_text_secondary" />
-
         <TextView
-            android:id="@+id/btnChonBan"
+            android:id="@+id/tvCustomerInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/manager_back_chip"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/manager_search_background"
             android:elevation="3dp"
-            android:gravity="center"
-            android:padding="13dp"
-            android:text="Chọn bàn từ danh sách"
-            android:textColor="@color/dashboard_primary"
-            android:textStyle="bold" />
+            android:padding="14dp"
+            android:text="Thông tin khách hàng sẽ tự điền từ hồ sơ."
+            android:textColor="@color/dashboard_text_secondary"
+            android:textSize="13sp" />
 
         <EditText
             android:id="@+id/edtThoiGian"

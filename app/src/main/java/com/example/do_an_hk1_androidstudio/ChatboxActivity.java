@@ -96,6 +96,13 @@ public class ChatboxActivity extends AppCompatActivity {
             appendUser(msg);
             edtMessage.setText("");
             hideProductSuggestions();
+            if (wantsHumanSupport(msg)) {
+                appendBot("Mình chuyển bạn sang chat trực tiếp với nhân viên để hỗ trợ nhanh hơn.");
+                android.content.Intent intent = new android.content.Intent(this, SupportChatActivity.class);
+                intent.putExtra(SupportChatActivity.EXTRA_SEED_MESSAGE, msg);
+                startActivity(intent);
+                return;
+            }
             if (ChatBackendConfig.isConfigured()) {
                 askBackend(msg);
             } else {
@@ -437,6 +444,14 @@ public class ChatboxActivity extends AppCompatActivity {
             }
         }
         return false;
+    }
+
+    private boolean wantsHumanSupport(String rawMessage) {
+        String normalized = normalizeSearchText(rawMessage);
+        return containsAny(
+                normalized,
+                "nhan vien", "lien he nhan vien", "ho tro", "gap nhan vien", "chat nhan vien", "tu van"
+        );
     }
 
     private String getCategoryName(String categoryId) {

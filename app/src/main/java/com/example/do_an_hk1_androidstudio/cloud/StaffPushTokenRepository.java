@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 
 import com.example.do_an_hk1_androidstudio.local.DataHelper;
 import com.example.do_an_hk1_androidstudio.local.LocalSessionManager;
+import com.example.do_an_hk1_androidstudio.ui.ShiftAttendanceStateStore;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -36,7 +37,8 @@ public class StaffPushTokenRepository {
             return;
         }
         String role = sessionManager.getCurrentUserRole();
-        if (!"staff".equals(role)) {
+        boolean checkedIn = ShiftAttendanceStateStore.isCheckedIn(appContext);
+        if (!"staff".equals(role) || !checkedIn) {
             FirebaseMessaging.getInstance().unsubscribeFromTopic(STAFF_TOPIC);
             markTokenInactive(token);
             return;

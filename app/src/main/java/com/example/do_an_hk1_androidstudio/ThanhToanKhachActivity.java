@@ -189,7 +189,7 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
         if (isVnpay) {
             tvPayHint.setText("Ung dung se mo cong thanh toan VNPAY sandbox, sau do quay lai app de xac nhan.");
         } else if (isBank) {
-            tvPayHint.setText("Nhap ma giao dich chuyen khoan de luu vao lich su thanh toan.");
+            tvPayHint.setText("Nhập mã giao dịch chuyển khoản để lưu vào lịch sử thanh toán.");
         } else {
             tvPayHint.setText(customerOnlineOnly
                     ? "Don se duoc ghi nhan o trang thai cho thanh toan khi giao hang."
@@ -199,7 +199,7 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
 
     private void doPay() {
         if (TextUtils.isEmpty(orderId)) {
-            Toast.makeText(this, "Thieu ma don hang", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Thiếu mã đơn hàng", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -217,7 +217,7 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
         String method = checkedId == R.id.rbPayBank ? "bank" : "cash";
         String bankRef = edtBankRef.getText().toString().trim();
         if ("bank".equals(method) && TextUtils.isEmpty(bankRef)) {
-            Toast.makeText(this, "Vui long nhap ma giao dich", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Vui lòng nhập mã giao dịch", Toast.LENGTH_SHORT).show();
             return;
         }
         payWithDiscount(method, bankRef, promotionResult.discountAmount, promotionResult.promoCode);
@@ -245,11 +245,11 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
 
         LocalPromotion promotion = findPromotionByCode(promoCode);
         if (promotion == null || !promotion.isActive()) {
-            Toast.makeText(this, "Ma giam gia khong hop le", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Mã giảm giá không hợp lệ", Toast.LENGTH_SHORT).show();
             return null;
         }
         if (amount < promotion.getMinOrder()) {
-            Toast.makeText(this, "Don chua dat toi thieu de dung ma", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Đơn chưa đạt tối thiểu để dùng mã", Toast.LENGTH_SHORT).show();
             return null;
         }
 
@@ -307,7 +307,7 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
         String paymentUrl = VnpayUtils.buildPaymentUrl(
                 orderId,
                 finalAmount,
-                "Thanh toan don " + buildDisplayOrderCode(),
+                "Thanh toán đơn " + buildDisplayOrderCode(),
                 merchantConfig.tmnCode,
                 merchantConfig.hashSecret,
                 merchantConfig.returnUrl
@@ -332,10 +332,10 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
                 promoCode,
                 (success, message) -> runOnUiThread(() -> {
                     if (!success) {
-                        Toast.makeText(this, message == null ? "Khong the thanh toan don hang" : message, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, message == null ? "Không thể thanh toán đơn hàng" : message, Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    Toast.makeText(this, "Thanh toan thanh cong!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Thanh toán thành công!", Toast.LENGTH_SHORT).show();
                     showDemoBill(new PromotionResult(discountAmount, promoCode), true);
                 })
         );
@@ -343,7 +343,7 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
 
     private void openBillPreview() {
         if (currentOrder == null) {
-            Toast.makeText(this, "Bill dang duoc tai. Thu lai sau giay lat.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Bill đang được tải. Thử lại sau giây lát.", Toast.LENGTH_SHORT).show();
             return;
         }
         PromotionResult previewPromotion = resolvePromotion();
@@ -379,8 +379,16 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
                 finish();
             }
         });
-        dialogView.findViewById(R.id.btnDemoPrint).setOnClickListener(v -> {
-            Toast.makeText(this, "Da mo ban xem truoc hoa don. Chua ket noi may in that.", Toast.LENGTH_SHORT).show();
+        TextView btnDemoPrint = dialogView.findViewById(R.id.btnDemoPrint);
+        if (finishAfterClose) {
+            btnDemoPrint.setText("Thanh toán thành công");
+        } else {
+            btnDemoPrint.setText("In hóa đơn");
+        }
+        btnDemoPrint.setOnClickListener(v -> {
+            if (!finishAfterClose) {
+                Toast.makeText(this, "Đã mở bản xem trước hóa đơn. Chưa kết nối máy in thật.", Toast.LENGTH_SHORT).show();
+            }
             dialog.dismiss();
             if (finishAfterClose) {
                 finish();
@@ -421,12 +429,12 @@ public class ThanhToanKhachActivity extends AppCompatActivity {
         int grandTotal = Math.max(0, subtotal - discountAmount);
 
         tvBillTableName.setText(buildBillTargetLabel());
-        tvBillDate.setText("Ngay: " + dateFormat.format(new Date(createdMillis)));
+        tvBillDate.setText("Ngày: " + dateFormat.format(new Date(createdMillis)));
         tvBillNumber.setText("So: " + buildDisplayOrderCode());
         tvBillCashier.setText("Thu ngan: " + safe(sessionManager.getCurrentUserFullName(), "Nhan vien"));
         tvBillPrintedAt.setText("In luc: " + timeFormat.format(new Date(printedMillis)));
-        tvBillTimeIn.setText("Gio vao: " + timeFormat.format(new Date(createdMillis)));
-        tvBillTimeOut.setText("Gio ra: " + timeFormat.format(new Date(printedMillis)));
+        tvBillTimeIn.setText("Giờ vào: " + timeFormat.format(new Date(createdMillis)));
+        tvBillTimeOut.setText("Giờ ra: " + timeFormat.format(new Date(printedMillis)));
         tvBillSubtotal.setText(MoneyFormatter.format(subtotal));
         tvBillDiscount.setText(MoneyFormatter.format(discountAmount));
         tvBillGrandTotal.setText(MoneyFormatter.format(grandTotal));

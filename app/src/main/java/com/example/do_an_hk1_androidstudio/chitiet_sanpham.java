@@ -215,13 +215,13 @@ public class chitiet_sanpham extends AppCompatActivity {
 
     private void addToCart() {
         if (TextUtils.isEmpty(productId)) {
-            Toast.makeText(this, "Khong tim thay san pham de them vao gio.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Không tìm thấy sản phẩm để thêm vào giỏ.", Toast.LENGTH_SHORT).show();
             return;
         }
         String size = getSelectedSize();
         String da = getSelectedIce();
         if (size == null || da == null) {
-            Toast.makeText(this, "Vui long chon size va muc da.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Vui lòng chọn size và mức đá.", Toast.LENGTH_SHORT).show();
             return;
         }
         cartStore.addItem(productId, tenSanPham, giaSanPham, soLuong, size, da, null, hinhAnh);
@@ -230,7 +230,7 @@ public class chitiet_sanpham extends AppCompatActivity {
         if (tvCartCount != null && tvCartCount.getVisibility() == android.view.View.VISIBLE) {
             UiMotion.pulse(tvCartCount);
         }
-        Toast.makeText(this, "Da them vao gio hang online.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Đã thêm vào giỏ hàng online.", Toast.LENGTH_SHORT).show();
     }
 
     private void openCart() {
@@ -265,7 +265,7 @@ public class chitiet_sanpham extends AppCompatActivity {
         bindFavoriteState();
         UiMotion.pulse(btnFavoriteTop);
         Toast.makeText(this,
-                nextFavorite ? "Da luu vao yeu thich." : "Da xoa khoi yeu thich.",
+                nextFavorite ? "Đã lưu vào yêu thích." : "Đã xóa khỏi yêu thích.",
                 Toast.LENGTH_SHORT).show();
 
         String customerId = sessionManager.getCurrentUserId();
@@ -276,7 +276,7 @@ public class chitiet_sanpham extends AppCompatActivity {
                 favoriteIds.add(productId);
             }
             bindFavoriteState();
-            Toast.makeText(this, "Vui long dang nhap de dong bo mon yeu thich.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Vui lòng đăng nhập để đồng bộ món yêu thích.", Toast.LENGTH_SHORT).show();
             return;
         }
         wishlistCloudRepository.setFavorite(customerId, productId, nextFavorite, (success, message) -> runOnUiThread(() -> {
@@ -287,7 +287,7 @@ public class chitiet_sanpham extends AppCompatActivity {
                     favoriteIds.add(productId);
                 }
                 bindFavoriteState();
-                Toast.makeText(this, message == null ? "Chua dong bo duoc mon yeu thich len Firebase." : message, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, message == null ? "Chưa đồng bộ được món yêu thích lên Firebase." : message, Toast.LENGTH_SHORT).show();
             }
         }));
     }
@@ -312,7 +312,7 @@ public class chitiet_sanpham extends AppCompatActivity {
     private void capNhatSoLuong() {
         tvSo.setText(String.valueOf(soLuong));
         int tongTien = giaSanPham * soLuong;
-        tvGia.setText("Tong tien: " + MoneyFormatter.format(tongTien));
+        tvGia.setText("Tổng tiền: " + MoneyFormatter.format(tongTien));
         updateOptionPreview();
     }
 
@@ -323,9 +323,9 @@ public class chitiet_sanpham extends AppCompatActivity {
         String size = getSelectedSize();
         String da = getSelectedIce();
         String preview = "Lua chon: "
-                + (size == null ? "chua chon size" : "size " + size)
+                + (size == null ? "chưa chọn size" : "size " + size)
                 + " | "
-                + (da == null ? "chua chon muc da" : da.toLowerCase())
+                + (da == null ? "chưa chọn mức đá" : da.toLowerCase())
                 + " | SL " + soLuong;
         tvOptionPreview.setText(preview);
     }
@@ -338,10 +338,10 @@ public class chitiet_sanpham extends AppCompatActivity {
     }
 
     private String getSelectedIce() {
-        if (checkDaNhieu.isChecked()) return "Da binh thuong";
+        if (checkDaNhieu.isChecked()) return "Đá bình thường";
         if (checkItDa.isChecked()) return "It da";
-        if (checkDaRieng.isChecked()) return "Da rieng";
-        if (checkKhongDa.isChecked()) return "Khong da";
+        if (checkDaRieng.isChecked()) return "Đá riêng";
+        if (checkKhongDa.isChecked()) return "Không đá";
         return null;
     }
 
